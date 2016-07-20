@@ -68,11 +68,28 @@ class Model(object):
         """Generates the connectivity matrix for the model
         :returns: TODO
 
+
+                element | N1 | N2
+                ------------------
+        row -->   0     | 0  |  1
+                  1     | 1  |  2
+                  2     | 0  |  3
+                  .       .     .
+                  .       .     .
+                  .       .     .
+                  9     | 3  |  4
+
         """
-        C_lines = np.array()
+        # Connectivity matrix for the segments
+        conn_lines = np.zeros((len(self.segments), 2))
         # For different element types:
-        for curr_line in self.segments:
-            pass
+        count = 0
+        for num, curr_line in self.segments.items():
+            conn_lines[count, 0] = curr_line._node1.number
+            conn_lines[count, 1] = curr_line._node2.number
+            count += 1
+
+        return conn_lines
 
 
 class Node(object):

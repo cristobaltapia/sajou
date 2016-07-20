@@ -87,6 +87,50 @@ class BasicTestSuite(unittest.TestCase):
         print(test_model.segments)
         print("+--------------------------------------------------+")
 
+    def test_connectivity_matrix(self):
+        """Test the generation of the connectivity matrix.
+        :returns: TODO
+
+        """
+        test_model = pybar.model.Model(name='Test Model', dimensionality="2D")
+        # create Node at (0,0)
+        node_0 = test_model.Node((0,0))
+        #
+        nodes_id = np.arange(10)
+        # Create lines between this node and the others
+        print("\n+--------------------------------------------------+")
+        for curr_node in nodes_id:
+            x = 1*np.cos(2*np.pi*curr_node / 10.)
+            y = 1*np.sin(2*np.pi*curr_node / 10.)
+            # create node
+            new_node = test_model.Node((x, y))
+            # create line
+            new_line = test_model.Line(node1=node_0, node2=new_node)
+
+        print("| Generating connectivity matrix:")
+        conn = test_model.generate_connectivity_matrix()
+        self.assertEqual(conn[0, 0], 0)
+        self.assertEqual(conn[0, 1], 1)
+        self.assertEqual(conn[1, 0], 0)
+        self.assertEqual(conn[1, 1], 2)
+        self.assertEqual(conn[2, 0], 0)
+        self.assertEqual(conn[2, 1], 3)
+        self.assertEqual(conn[3, 0], 0)
+        self.assertEqual(conn[3, 1], 4)
+        self.assertEqual(conn[4, 0], 0)
+        self.assertEqual(conn[4, 1], 5)
+        self.assertEqual(conn[5, 0], 0)
+        self.assertEqual(conn[5, 1], 6)
+        self.assertEqual(conn[6, 0], 0)
+        self.assertEqual(conn[6, 1], 7)
+        self.assertEqual(conn[7, 0], 0)
+        self.assertEqual(conn[7, 1], 8)
+        self.assertEqual(conn[8, 0], 0)
+        self.assertEqual(conn[8, 1], 9)
+        self.assertEqual(conn[9, 0], 0)
+        self.assertEqual(conn[9, 1], 10)
+        print(conn)
+        print("+--------------------------------------------------+")
 
 
 if __name__ == '__main__':

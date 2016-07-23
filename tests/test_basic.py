@@ -53,8 +53,8 @@ class BasicTestSuite(unittest.TestCase):
         test_model = pybar.model.Model(name='Test Model', dimensionality="2D")
         node_1 = test_model.Node((0,0))
         node_2 = test_model.Node((10,20.5))
-        # Line element
-        line = test_model.Line(node1=node_1, node2=node_2)
+        # Segment element
+        line = test_model.Segment(node1=node_1, node2=node_2)
 
         self.assertEqual(line.number, 0)
         self.assertEqual(line._node1, node_1)
@@ -78,7 +78,7 @@ class BasicTestSuite(unittest.TestCase):
             # create node
             new_node = test_model.Node((x, y))
             # create line
-            new_line = test_model.Line(node1=node_0, node2=new_node)
+            new_line = test_model.Segment(node1=node_0, node2=new_node)
             print('| --> ' + str(new_line))
             self.assertEqual(new_line.number, curr_node)
 
@@ -87,7 +87,7 @@ class BasicTestSuite(unittest.TestCase):
         print(test_model.segments)
         print("+--------------------------------------------------+")
 
-    def test_connectivity_matrix(self):
+    def test_connectivity_matrix2D(self):
         """Test the generation of the connectivity matrix.
         :returns: TODO
 
@@ -105,10 +105,10 @@ class BasicTestSuite(unittest.TestCase):
             # create node
             new_node = test_model.Node((x, y))
             # create line
-            new_line = test_model.Line(node1=node_0, node2=new_node)
+            new_line = test_model.Segment(node1=node_0, node2=new_node)
 
         print("| Generating connectivity matrix:")
-        conn = test_model.generate_connectivity_matrix()
+        conn = test_model._generate_connectivity_matrix2D()
         self.assertEqual(conn[0, 0], 0)
         self.assertEqual(conn[0, 1], 1)
         self.assertEqual(conn[1, 0], 0)
@@ -130,6 +130,21 @@ class BasicTestSuite(unittest.TestCase):
         self.assertEqual(conn[9, 0], 0)
         self.assertEqual(conn[9, 1], 10)
         print(conn)
+        print("+--------------------------------------------------+")
+
+    def test_material_creation(self):
+        """Test the creation of material in the model
+        :returns: TODO
+
+        """
+        test_model = pybar.model.Model(name='Test Model', dimensionality="2D")
+        material = test_model.Material(name='Test Material', data=(12000., ), type='isotropic')
+
+        print("\n+--------------------------------------------------+")
+        print("| Create material:")
+        self.assertEqual(test_model.materials['Test Material'], material)
+        self.assertEqual(test_model.materials['Test Material']._data, (12000., ))
+        print(material)
         print("+--------------------------------------------------+")
 
 

@@ -20,6 +20,7 @@ class Model(object):
         self._dimensionality = dimensionality
         self.nodes = dict()
         self.segments = dict()
+        self.beam_sections = dict()
         self.materials = dict()
         self.n_nodes = 0
         self.n_segments = 0
@@ -66,6 +67,30 @@ class Model(object):
 
         return material
 
+    def BeamSection(self, name, material, data, type='rectangular'):
+        """Function use to create a BeamSection instance in the model
+
+        :name: name of the section
+        :material: material for the section
+        :data: data (see BeamSection class definition)
+        :type: type of the section (see BeamSection class definition)
+        :returns: a beam section instance
+
+        """
+        # The material can be passed both as a string, corresponding to
+        # a key of the material dictionary of the model, or as a
+        # material instance directly.
+
+        if type(material) == str:
+            material_section = self.materials[material]
+        else:
+            material_section = material
+
+        section = BeamSection(name=name, material=material_section, data=data, type=type)
+        # Add section to the list of beam sections
+        self.beam_sections[name] = section
+
+        return section
 
     def __str__(self):
         """
@@ -74,7 +99,7 @@ class Model(object):
         str('Model: {name}, Nodes: {n_nodes}, Segments: {n_segments}'.format(
             name=self._name, n_nodes=self.n_nodes, n_segments=self.n_segments))
 
-    def _ensemble_K(self):
+    def _rigidity_matrix_2D(self):
         """Generates the global stiffness matrix
 
         :returns: TODO
@@ -82,7 +107,7 @@ class Model(object):
         """
         pass
 
-    def generate_connectivity_matrix(self):
+    def _generate_connectivity_matrix2D(self):
         """Generates the connectivity matrix for the model
         :returns: TODO
 
@@ -108,7 +133,6 @@ class Model(object):
             count += 1
 
         return conn_lines
-
 
 class Node(object):
 
@@ -200,22 +224,57 @@ class Material(object):
         return 'Material: {name}'.format(name=self._name)
 
 
-class Section(object):
+class BeamSection(object):
 
-    """Defines a section"""
+    """Defines a beam section"""
 
-    def __init__(self, material, table, type='rectangular'):
+    def __init__(self, name, material, data, type='rectangular'):
         """Initiates the section
 
-        :material: material object
-        :table: TODO
+        :name: name of the section
+        :material: material of the section defined as an instance of Material object
+        :data: properties of the section:
         :type: defines the type of cross-section
-                - rectangular: table=(width, height,)
-                - circular:    table=(r, )
-                - triangular:  table=(base, height)
+                - rectangular: data=(width, height,)
+                - circular:    data=(r, )
+                - I-section:  data=(H, h_f, w_web, w_f)
+                - general:    data=(A, I_3,)
 
         """
+        self._name = name
         self._material = material
-        self._table = table
+        self._data = data
         self._type = type
+        self._area = self.calc_area()
+        self._I33, self._I22 = self.calc_inertia()
+
+    def calc_area(self):
+        """Calculate the area of the section
+        :returns: TODO
+
+        """
+        type = self._type
+
+        if type == 'rectangular':
+            width = self._data[0]
+            height = self._data[1]
+            return width * height
+
+        elif type == 'circular':
+            radius = self._adta[0]
+            return np.pi * radius**2
+
+    def calc_inertia(self):
+        """Calculate the moment of inertia of the beam section
+        :returns: TODO
+
+        """
+        type = self._type
+
+        if type == 'rectangular':
+            width = self._data[0]
+            height = self._data[1]
+            I_33 = width * height**3 / 12.
+            I_22 = height * width**3 / 12.
+            return I_33, I_22
 

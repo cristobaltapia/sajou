@@ -81,7 +81,7 @@ class Model(object):
         # a key of the material dictionary of the model, or as a
         # material instance directly.
 
-        if type(material) == str:
+        if isinstance(material, str):
             material_section = self.materials[material]
         else:
             material_section = material
@@ -223,7 +223,6 @@ class Material(object):
         """
         return 'Material: {name}'.format(name=self._name)
 
-
 class BeamSection(object):
 
     """Defines a beam section"""
@@ -277,4 +276,16 @@ class BeamSection(object):
             I_33 = width * height**3 / 12.
             I_22 = height * width**3 / 12.
             return I_33, I_22
+
+    def __str__(self):
+        """
+        Returns the printable string for this object
+        """
+        return 'Beam Section: {name}, type: {t}'.format(name=self._name, t=self._type)
+
+    def __repr__(self):
+        """
+        Returns the printable string for this object
+        """
+        return 'Beam Section: {name}, type: {t}'.format(name=self._name, t=self._type)
 

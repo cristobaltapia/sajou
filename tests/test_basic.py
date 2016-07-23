@@ -144,8 +144,24 @@ class BasicTestSuite(unittest.TestCase):
         print("| Create material:")
         self.assertEqual(test_model.materials['Test Material'], material)
         self.assertEqual(test_model.materials['Test Material']._data, (12000., ))
-        print(material)
+        print("| --> "+str(material))
         print("+--------------------------------------------------+")
+
+    def test_beam_section_creation(self):
+        """Test the generation of a beam sectino in the model
+        :returns: TODO
+
+        """
+        test_model = pybar.model.Model(name='Test Model', dimensionality="2D")
+        material = test_model.Material(name='Test Material', data=(12000., ), type='isotropic')
+        beam_section = test_model.BeamSection(name='Test Section', material=material, data=(100, 200.), type='rectangular')
+        print("\n+--------------------------------------------------+")
+        print("| Create a beam section:")
+        self.assertEqual(beam_section._area, (100.*200.))
+        self.assertEqual(beam_section._I33, (100.*200**3/ 12.))
+        print("| --> "+str(beam_section))
+        print("+--------------------------------------------------+")
+
 
 
 if __name__ == '__main__':

@@ -20,6 +20,7 @@ class Model(object):
         self._dimensionality = dimensionality
         self.nodes = dict()
         self.segments = dict()
+        self.materials = dict()
         self.n_nodes = 0
         self.n_segments = 0
 
@@ -36,18 +37,35 @@ class Model(object):
 
         return node
 
-    def Line(self, node1, node2):
+    def Segment(self, node1, node2):
         """Define a line between two nodes.
 
         :node1: first node
         :node2: second node
 
         """
-        line = Line(node1=node1, node2=node2, number=self.n_segments)
+        line = Segment(node1=node1, node2=node2, number=self.n_segments)
         self.segments[line.number] = line
         self.n_segments += 1
 
         return line
+
+    def Material(self, name, data, type='isotropic'):
+        """Function used to create a Material instance in the model
+
+        :name: name of the material
+        :data: data for the material
+        :type: type of the material
+        :returns: a Material instance
+
+        """
+        material = Material(name=name, data=data, type=type)
+        # Add the material to the dictionary of materials in the current
+        # model
+        self.materials[name] = material
+
+        return material
+
 
     def __str__(self):
         """
@@ -116,7 +134,7 @@ class Node(object):
         """
         return 'Node {number}: ({x},{y})'.format(number=self.number, x=self.x, y=self.y)
 
-class Line(object):
+class Segment(object):
 
     """2-Dimensional line, joining two nodes"""
 
@@ -142,27 +160,44 @@ class Line(object):
         """
         Returns the printable string for this object
         """
-        return 'Line {number}: ({n1},{n2})'.format(number=self.number, n1=self._node1, n2=self._node2)
+        return 'Segment {number}: ({n1},{n2})'.format(number=self.number, n1=self._node1, n2=self._node2)
 
     def __repr__(self):
         """
         Returns the printable string for this object
         """
-        return 'Line {number}'.format(number=self.number)
+        return 'Segment {number}'.format(number=self.number)
 
 class Material(object):
 
     """Material properties"""
 
-    def __init__(self, table, type='isotropic'):
+    # TODO: create function to print information of the material
+    def __init__(self, name, data, type='isotropic'):
         """TODO: to be defined1.
 
-        :table: TODO
-        :type: TODO
+        :name: name of the material
+        :table: properties of the material
+        :type: type of the material:
+            - 'isotropic': data = (E, )
+            - 'orthotropic': data = (E_1, E_2, E_3)
 
         """
-        self._table = table
+        self._name = name
+        self._data = data
         self._type = type
+
+    def __str__(self):
+        """
+        Returns the printable string for this object
+        """
+        return 'Material: {name}'.format(name=self._name)
+
+    def __repr__(self):
+        """
+        Returns the printable string for this object
+        """
+        return 'Material: {name}'.format(name=self._name)
 
 
 class Section(object):

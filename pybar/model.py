@@ -137,22 +137,20 @@ class Model(object):
 
 class Node(np.ndarray):
 
-    """2-Dimensional nodes"""
+    """nodes"""
     def __new__(cls, position, number):
-        obj = np.asarray(position).view(cls)
+        # A z-coordinate is incorporated if only two are given
+        if len(position) == 2:
+            obj = np.asarray([position[0], position[1], 0.0]).view(cls)
+            obj.z = 0.0
+        else:
+            obj = np.asarray(position).view(cls)
+            obj.z = position[2]
+
         obj.number = number
         obj.x = position[0]
         obj.y = position[1]
         return obj
-
-    def __init__(self, position, number):
-        """
-        position: tuple (x,y)
-        """
-        np.ndarray.__init__(position)
-        self.x = position[0]
-        self.y = position[1]
-        self.number = number
 
     def __repr__(self):
         """
@@ -164,11 +162,11 @@ class Node(np.ndarray):
         """
         Returns the printable string for this object
         """
-        return 'Node {number}: ({x},{y})'.format(number=self.number, x=self.x, y=self.y)
+        return 'Node {number}: ({x},{y},{z})'.format(number=self.number, x=self.x, y=self.y, z=self.z)
 
 class Segment(object):
 
-    """2-Dimensional line, joining two nodes"""
+    """Line objects, joining two nodes"""
 
     def __init__(self, node1, node2, number):
         """TODO: to be defined1.
@@ -188,7 +186,7 @@ class Segment(object):
         delta_y = node2.y - node1.y
         self._alpha = np.arctan2(delta_y, delta_x)
         # Local coordinate system
-        #self._localSys = Csys_two_points(point1=node1, point2=node2, type='cartesian')
+        self._localCSys = Csys_two_points(point1=node1, point2=node2, type='cartesian')
 
     def __str__(self):
         """

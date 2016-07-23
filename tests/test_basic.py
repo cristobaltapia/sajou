@@ -162,6 +162,25 @@ class BasicTestSuite(unittest.TestCase):
         print("| --> "+str(beam_section))
         print("+--------------------------------------------------+")
 
+    def test_local_coordinate_system(self):
+        """est the generation of the local coordinate system of a segment
+        :returns: TODO
+
+        """
+        test_model = pybar.model.Model(name='Test Model', dimensionality="2D")
+        node_1 = test_model.Node((0,0))
+        node_2 = test_model.Node((10,20.5))
+        # Segment element
+        line = test_model.Segment(node1=node_1, node2=node_2)
+        localsys = line._localCSys
+        print("\n+--------------------------------------------------+")
+        print("| Generate local coordinate system:")
+        print("| --> " + str(line._localCSys))
+        print("| --> "+ str(localsys._v1))
+        print("| --> "+ str(localsys._v2))
+        print("| --> "+ str(localsys._v3))
+        print("+--------------------------------------------------+")
+
 
 
 if __name__ == '__main__':

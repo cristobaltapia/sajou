@@ -57,8 +57,8 @@ class BasicTestSuite(unittest.TestCase):
         line = test_model.Segment(node1=node_1, node2=node_2)
 
         self.assertEqual(line.number, 0)
-        self.assertEqual(line._node1, node_1)
-        self.assertEqual(line._node2, node_2)
+        self.assertEqual(line._node1[0], node_1[0])
+        self.assertEqual(line._node2[0], node_2[0])
 
     def test_multiple_line_generation(self):
         """Test the generation of multiple lines

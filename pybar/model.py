@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # encoding: utf-8
 import numpy as np
+from .utils import Csys_two_points
 """
 Includes all the necessary objects to create the model.
 """
@@ -134,14 +135,21 @@ class Model(object):
 
         return conn_lines
 
-class Node(object):
+class Node(np.ndarray):
 
     """2-Dimensional nodes"""
+    def __new__(cls, position, number):
+        obj = np.asarray(position).view(cls)
+        obj.number = number
+        obj.x = position[0]
+        obj.y = position[1]
+        return obj
 
     def __init__(self, position, number):
         """
         position: tuple (x,y)
         """
+        np.ndarray.__init__(position)
         self.x = position[0]
         self.y = position[1]
         self.number = number
@@ -179,6 +187,8 @@ class Segment(object):
         delta_x = node2.x - node1.x
         delta_y = node2.y - node1.y
         self._alpha = np.arctan2(delta_y, delta_x)
+        # Local coordinate system
+        #self._localSys = Csys_two_points(point1=node1, point2=node2, type='cartesian')
 
     def __str__(self):
         """
@@ -288,4 +298,5 @@ class BeamSection(object):
         Returns the printable string for this object
         """
         return 'Beam Section: {name}, type: {t}'.format(name=self._name, t=self._type)
+
 

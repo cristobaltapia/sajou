@@ -137,12 +137,11 @@ class Model2D(Model):
         :node2: second node
 
         """
-        line = Segment(node1=node1, node2=node2, number=self.n_segments)
+        line = Segment2D(node1=node1, node2=node2, number=self.n_segments)
         self.segments[line.number] = line
         self.n_segments += 1
 
         return line
-
 
 class Model3D(Model):
 
@@ -173,7 +172,7 @@ class Model3D(Model):
         :node2: second node
 
         """
-        line = Segment(node1=node1, node2=node2, number=self.n_segments)
+        line = Segment3D(node1=node1, node2=node2, number=self.n_segments)
         self.segments[line.number] = line
         self.n_segments += 1
 
@@ -264,6 +263,70 @@ class Segment(object):
         Returns the printable string for this object
         """
         return 'Segment {number}'.format(number=self.number)
+
+class Segment2D(Segment):
+
+    """Line objects, joining two nodes"""
+
+    def __init__(self, node1, node2, number):
+        """TODO: to be defined1.
+
+        :node1: first node
+        :node2: second node
+        :number: number of the line
+
+        """
+        Segment.__init__(self, node1, node2, number)
+        # Define status of each degree of freedom, for each node
+        # 1: free; 0: restrained
+        # - Node 1
+        dof1 = 1 # trans x
+        dof2 = 1 # trans y
+        dof6 = 1 # rot z
+
+        # Node 2
+        dof7 = 1  # trans x
+        dof8 = 1  # trans y
+        dof12 = 1 # rot z
+
+        # Transformation matrix
+        #T = self._localCSys.calc_tranformation_matrix(self._length, cx, cy, cz)
+        #self.tranformation_matrix = T
+
+class Segment3D(Segment):
+
+    """Line objects, joining two nodes"""
+
+    def __init__(self, node1, node2, number):
+        """TODO: to be defined1.
+
+        :node1: first node
+        :node2: second node
+        :number: number of the line
+
+        """
+        Segment.__init__(self, node1, node2, number)
+        # Define status of each degree of freedom, for each node
+        # 1: free; 0: restrained
+        # - Node 1
+        dof1 = 1 # trans x
+        dof2 = 1 # trans y
+        dof3 = 1 # trans z
+        dof4 = 1 # rot x
+        dof5 = 1 # rot y
+        dof6 = 1 # rot z
+
+        # Node 2
+        dof7 = 1  # trans x
+        dof8 = 1  # trans y
+        dof9 = 1  # trans z
+        dof10 = 1 # rot x
+        dof11 = 1 # rot y
+        dof12 = 1 # rot z
+
+        # Transformation matrix
+        #T = self._localCSys.calc_tranformation_matrix(self._length, cx, cy, cz)
+        #self.tranformation_matrix = T
 
 class Material(object):
 

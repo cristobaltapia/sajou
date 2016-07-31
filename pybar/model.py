@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # encoding: utf-8
 import numpy as np
-from .utils import Csys_two_points
+from .utils import Local_Csys_two_points
 """
 Includes all the necessary objects to create the model.
 """
@@ -25,32 +25,6 @@ class Model(object):
         self.materials = dict()
         self.n_nodes = 0
         self.n_segments = 0
-
-    def Node(self, position):
-        """TODO: Docstring for Node.
-
-        :*kwargs: TODO
-        :returns: TODO
-
-        """
-        node = Node(position=position, number=self.n_nodes)
-        self.nodes[node.number] = node
-        self.n_nodes += 1
-
-        return node
-
-    def Segment(self, node1, node2):
-        """Define a line between two nodes.
-
-        :node1: first node
-        :node2: second node
-
-        """
-        line = Segment(node1=node1, node2=node2, number=self.n_segments)
-        self.segments[line.number] = line
-        self.n_segments += 1
-
-        return line
 
     def Material(self, name, data, type='isotropic'):
         """Function used to create a Material instance in the model
@@ -100,14 +74,6 @@ class Model(object):
         str('Model: {name}, Nodes: {n_nodes}, Segments: {n_segments}'.format(
             name=self._name, n_nodes=self.n_nodes, n_segments=self.n_segments))
 
-    def _rigidity_matrix_2D(self):
-        """Generates the global stiffness matrix
-
-        :returns: TODO
-
-        """
-        pass
-
     def _generate_connectivity_matrix2D(self):
         """Generates the connectivity matrix for the model
         :returns: TODO
@@ -135,21 +101,95 @@ class Model(object):
 
         return conn_lines
 
+class Model2D(Model):
+
+    """Subclass of the 'Model' class. It is intended to be used for the 2-dimensional
+    models of frame structures."""
+
+    def __init__(self, name, dimensionality):
+        """TODO: to be defined1. """
+        Model.__init__(self, name, dimensionality)
+
+    def Node(self, position):
+        """2D implementation of the Node.
+
+        :*kwargs: TODO
+        :returns: instance of Node
+
+        """
+        # chack that the position has only two members (2D point)
+        if len(position) != 2:
+            print("| --> ERROR: to create a node in a 2D model you have to pass _only_ two"
+                  " coordinates.")
+            return None
+
+        # A coordinate z=0 is passed to initiate the Node Instance
+        node = Node(position=(*position, 0), number=self.n_nodes)
+        self.nodes[node.number] = node
+        self.n_nodes += 1
+
+        return node
+
+    def Segment(self, node1, node2):
+        """Define a line between two nodes.
+
+        :node1: first node
+        :node2: second node
+
+        """
+        line = Segment(node1=node1, node2=node2, number=self.n_segments)
+        self.segments[line.number] = line
+        self.n_segments += 1
+
+        return line
+
+
+class Model3D(Model):
+
+    """Subclass of the 'Model' class. It is intended to be used for the 3-dimensional
+    models of frame structures."""
+
+    def __init__(self, name, dimensionality):
+        """TODO: to be defined1. """
+        Model.__init__(self, name, dimensionality)
+
+    def Node(self, position):
+        """3D implementation of the Node.
+
+        :*kwargs: TODO
+        :returns: instance of Node
+
+        """
+        node = Node3D(position=position, number=self.n_nodes)
+        self.nodes[node.number] = node
+        self.n_nodes += 1
+
+        return node
+
+    def Segment(self, node1, node2):
+        """Define a line between two nodes.
+
+        :node1: first node
+        :node2: second node
+
+        """
+        line = Segment(node1=node1, node2=node2, number=self.n_segments)
+        self.segments[line.number] = line
+        self.n_segments += 1
+
+        return line
+
 class Node(np.ndarray):
 
-    """nodes"""
+    """3-dimensional implementation of Nodes"""
     def __new__(cls, position, number):
         # A z-coordinate is incorporated if only two are given
-        if len(position) == 2:
-            obj = np.asarray([position[0], position[1], 0.0]).view(cls)
-            obj.z = 0.0
-        else:
-            obj = np.asarray(position).view(cls)
-            obj.z = position[2]
-
+        obj = np.asarray(position).view(cls)
         obj.number = number
         obj.x = position[0]
         obj.y = position[1]
+        obj.z = position[2]
+
         return obj
 
     def __repr__(self):
@@ -176,17 +216,42 @@ class Segment(object):
         :number: number of the line
 
         """
+        self._beam_section = None
         # TODO: accept tuples with coordinates also
         self._node1 = node1
         self._node2 = node2
         # TODO: check that the number is not in use
         self.number = number
-        # calculate angle that the line forms with the horizontal
+        # Calculate the length of the element
         delta_x = node2.x - node1.x
         delta_y = node2.y - node1.y
+        delta_z = node2.z - node1.z
+        self._length = np.sqrt(delta_x**2 + delta_y**2 + delta_z**2)
+        # calculate angle that the line forms with the horizontal
         self._alpha = np.arctan2(delta_y, delta_x)
         # Local coordinate system
-        self._localCSys = Csys_two_points(point1=node1, point2=node2, type='cartesian')
+        self._localCSys = Local_Csys_two_points(point1=node1, point2=node2, type='cartesian')
+
+        # Director cosines
+        delta = node2 - node1
+        cx = delta[0] / self._length
+        cy = delta[1] / self._length
+        cz = delta[2] / self._length
+
+        # Transformation matrix
+        #T = self._localCSys.calc_tranformation_matrix(self._length, cx, cy, cz)
+        #self.tranformation_matrix = T
+
+    def assign_section(self, beam_section):
+        """Assign a beam section instance to the segment
+
+        :beam_section: a BeamSection instance
+        :returns: self
+
+        """
+        self._beam_section = beam_section
+
+        return self
 
     def __str__(self):
         """

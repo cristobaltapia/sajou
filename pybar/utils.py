@@ -34,6 +34,30 @@ class CoordSys(object):
         """
         pass
 
+    def calc_tranformation_matrix(self, length, cx, cy, cz):
+        """Calculates the transformation matrix for the current instance of local system
+        :returns: TODO
+
+        """
+        T = np.zeros(6)
+
+        t4 = (-cx*cz*Sp - cy*Cp)/den
+        t5 = (-cy*cz*Sp + cx*Cp)/den
+        t6 = Sp*den
+
+        t7 = (-cx*cz*Cp + cy*Sp)/den
+        t8 = (-cy*cz*Cp - cx*Sp)/den
+        t9 = Cp*den
+
+        T[0] = cx
+        T[1] = cy
+        T[2] = cz
+        T[3] = cx
+        T[4] = cy
+        T[5] = cz
+
+        return T
+
     def __str__(self):
         """
         Returns the printable string for this object
@@ -46,8 +70,7 @@ class CoordSys(object):
         """
         return 'CSys {t}'.format(t=self._type)
 
-
-class Csys_two_points(CoordSys):
+class Local_Csys_two_points(CoordSys):
 
     """Class implementing local coordinate systems"""
 
@@ -65,6 +88,7 @@ class Csys_two_points(CoordSys):
         ############################################################
         # Calculate unit vectors
         ############################################################
+        # FIXME: no need to transform to np array
         # - Convert to numpy arrays
         p1 = np.array(point1)
         p2 = np.array(point2)

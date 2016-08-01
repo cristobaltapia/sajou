@@ -25,6 +25,7 @@ class Model(object):
         self.materials = dict()
         self.n_nodes = 0
         self.n_segments = 0
+        self._connectivity = None
 
     def Material(self, name, data, type='isotropic'):
         """Function used to create a Material instance in the model
@@ -99,13 +100,15 @@ class Model(object):
         """
         # Connectivity matrix for the segments
         conn_lines = np.zeros((len(self.segments), 3))
-        # For different element types:
+        #
         count = 0
         for num, curr_line in self.segments.items():
             conn_lines[count, 0] = curr_line.number
             conn_lines[count, 1] = curr_line._node1.number
             conn_lines[count, 2] = curr_line._node2.number
             count += 1
+
+        self._connectivity = conn_lines
 
         return conn_lines
 
@@ -261,7 +264,8 @@ class Segment(object):
         """
         Returns the printable string for this object
         """
-        return 'Segment {number}: ({n1},{n2})'.format(number=self.number, n1=self._node1, n2=self._node2)
+        return 'Segment {number}: (N{n1}, N{n2})'.format(number=self.number,
+                n1=self._node1.number, n2=self._node2.number)
 
     def __repr__(self):
         """

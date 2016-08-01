@@ -39,22 +39,18 @@ class CoordSys(object):
         :returns: TODO
 
         """
-        T = np.zeros(6)
+        T = np.zeros([6,6])
 
-        t4 = (-cx*cz*Sp - cy*Cp)/den
-        t5 = (-cy*cz*Sp + cx*Cp)/den
-        t6 = Sp*den
-
-        t7 = (-cx*cz*Cp + cy*Sp)/den
-        t8 = (-cy*cz*Cp - cx*Sp)/den
-        t9 = Cp*den
-
-        T[0] = cx
-        T[1] = cy
-        T[2] = cz
-        T[3] = cx
-        T[4] = cy
-        T[5] = cz
+        T[0,0] = cx
+        T[0,1] = cy
+        T[1,0] = -cy
+        T[1,1] = cx
+        T[2,2] = 1
+        T[3,3] = cx
+        T[3,4] = cy
+        T[4,3] = -cy
+        T[4,4] = cx
+        T[5,5] = 1
 
         return T
 

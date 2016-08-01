@@ -246,8 +246,8 @@ class Segment(object):
         cz = delta[2] / self._length
 
         # Transformation matrix
-        #T = self._localCSys.calc_tranformation_matrix(self._length, cx, cy, cz)
-        #self.tranformation_matrix = T
+        T = self._localCSys.calc_tranformation_matrix(self._length, cx, cy, cz)
+        self.transformation_matrix = T
 
     def assign_section(self, beam_section):
         """Assign a beam section instance to the segment

@@ -98,12 +98,13 @@ class Model(object):
 
         """
         # Connectivity matrix for the segments
-        conn_lines = np.zeros((len(self.segments), 2))
+        conn_lines = np.zeros((len(self.segments), 3))
         # For different element types:
         count = 0
         for num, curr_line in self.segments.items():
-            conn_lines[count, 0] = curr_line._node1.number
-            conn_lines[count, 1] = curr_line._node2.number
+            conn_lines[count, 0] = curr_line.number
+            conn_lines[count, 1] = curr_line._node1.number
+            conn_lines[count, 2] = curr_line._node2.number
             count += 1
 
         return conn_lines

@@ -71,7 +71,14 @@ class Model(object):
         """
         Printable string
         """
-        str('Model: {name}, Nodes: {n_nodes}, Segments: {n_segments}'.format(
+        return str('Model: Name: {name}, Nodes: {n_nodes}, Segments: {n_segments}'.format(
+            name=self._name, n_nodes=self.n_nodes, n_segments=self.n_segments))
+
+    def __repr__(self):
+        """
+        Returns the printable string for this object
+        """
+        return str('Model: Name: {name}, Nodes: {n_nodes}, Segments: {n_segments}'.format(
             name=self._name, n_nodes=self.n_nodes, n_segments=self.n_segments))
 
     def _generate_connectivity_matrix2D(self):

@@ -113,25 +113,20 @@ class Model2D(Model):
     """Subclass of the 'Model' class. It is intended to be used for the 2-dimensional
     models of frame structures."""
 
-    def __init__(self, name, dimensionality):
+    def __init__(self, name):
         """TODO: to be defined1. """
+        dimensionality = '2D'
         Model.__init__(self, name, dimensionality)
 
-    def Node(self, position):
+    def Node(self, x, y):
         """2D implementation of the Node.
 
         :*kwargs: TODO
         :returns: instance of Node
 
         """
-        # chack that the position has only two members (2D point)
-        if len(position) != 2:
-            print("| --> ERROR: to create a node in a 2D model you have to pass _only_ two"
-                  " coordinates.")
-            return None
-
         # A coordinate z=0 is passed to initiate the Node Instance
-        node = Node(position=(*position, 0), number=self.n_nodes)
+        node = Node(x=x, y=y, z=0., number=self.n_nodes)
         self.nodes[node.number] = node
         self.n_nodes += 1
 
@@ -155,18 +150,19 @@ class Model3D(Model):
     """Subclass of the 'Model' class. It is intended to be used for the 3-dimensional
     models of frame structures."""
 
-    def __init__(self, name, dimensionality):
+    def __init__(self, name, dimensionality='3D'):
         """TODO: to be defined1. """
+        dimensionality = '3D'
         Model.__init__(self, name, dimensionality)
 
-    def Node(self, position):
+    def Node(self, x, y, z):
         """3D implementation of the Node.
 
         :*kwargs: TODO
         :returns: instance of Node
 
         """
-        node = Node3D(position=position, number=self.n_nodes)
+        node = Node(x=x, y=y, z=z, number=self.n_nodes)
         self.nodes[node.number] = node
         self.n_nodes += 1
 
@@ -188,13 +184,13 @@ class Model3D(Model):
 class Node(np.ndarray):
 
     """3-dimensional implementation of Nodes"""
-    def __new__(cls, position, number):
+    def __new__(cls, x, y, z, number):
         # A z-coordinate is incorporated if only two are given
-        obj = np.asarray(position).view(cls)
+        obj = np.asarray([x, y, z]).view(cls)
         obj.number = number
-        obj.x = position[0]
-        obj.y = position[1]
-        obj.z = position[2]
+        obj.x = x
+        obj.y = y
+        obj.z = z
 
         return obj
 
@@ -237,8 +233,9 @@ class Segment(object):
         self._alpha = np.arctan2(delta_y, delta_x)
         # Local coordinate system
         self._localCSys = Local_Csys_two_points(point1=node1, point2=node2, type='cartesian')
-
-        # Director cosines
+        # Section
+        self._beam_section = None
+        # Directive cosines
         delta = node2 - node1
         cx = delta[0] / self._length
         cy = delta[1] / self._length
@@ -287,14 +284,18 @@ class Segment2D(Segment):
         # Define status of each degree of freedom, for each node
         # 1: free; 0: restrained
         # - Node 1
-        dof1 = 1 # trans x
-        dof2 = 1 # trans y
-        dof6 = 1 # rot z
+        self.dof1 = 1 # trans x
+        self.dof2 = 1 # trans y
+        self.dof6 = 1 # rot z
 
         # Node 2
-        dof7 = 1  # trans x
-        dof8 = 1  # trans y
-        dof12 = 1 # rot z
+        self.dof7 = 1  # trans x
+        self.dof8 = 1  # trans y
+        self.dof12 = 1 # rot z
+
+        # Release rotation on the ends of the segment
+        self.release_node_i = False # first node
+        self.release_node_j = False # second node
 
         # Transformation matrix
         #T = self._localCSys.calc_tranformation_matrix(self._length, cx, cy, cz)
@@ -316,20 +317,20 @@ class Segment3D(Segment):
         # Define status of each degree of freedom, for each node
         # 1: free; 0: restrained
         # - Node 1
-        dof1 = 1 # trans x
-        dof2 = 1 # trans y
-        dof3 = 1 # trans z
-        dof4 = 1 # rot x
-        dof5 = 1 # rot y
-        dof6 = 1 # rot z
+        self.dof1 = 1 # trans x
+        self.dof2 = 1 # trans y
+        self.dof3 = 1 # trans z
+        self.dof4 = 1 # rot x
+        self.dof5 = 1 # rot y
+        self.dof6 = 1 # rot z
 
         # Node 2
-        dof7 = 1  # trans x
-        dof8 = 1  # trans y
-        dof9 = 1  # trans z
-        dof10 = 1 # rot x
-        dof11 = 1 # rot y
-        dof12 = 1 # rot z
+        self.dof7 = 1  # trans x
+        self.dof8 = 1  # trans y
+        self.dof9 = 1  # trans z
+        self.dof10 = 1 # rot x
+        self.dof11 = 1 # rot y
+        self.dof12 = 1 # rot z
 
         # Transformation matrix
         #T = self._localCSys.calc_tranformation_matrix(self._length, cx, cy, cz)

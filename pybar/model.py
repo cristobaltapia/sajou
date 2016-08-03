@@ -7,7 +7,6 @@ Includes all the necessary objects to create the model.
 """
 
 class Model(object):
-
     """Defines a model object"""
 
     def __init__(self, name, dimensionality):
@@ -113,7 +112,6 @@ class Model(object):
         return conn_matrix
 
 class Model2D(Model):
-
     """Subclass of the 'Model' class. It is intended to be used for the 2-dimensional
     models of frame structures."""
 
@@ -150,7 +148,6 @@ class Model2D(Model):
         return line
 
 class Model3D(Model):
-
     """Subclass of the 'Model' class. It is intended to be used for the 3-dimensional
     models of frame structures."""
 
@@ -186,7 +183,6 @@ class Model3D(Model):
         return line
 
 class Node(np.ndarray):
-
     """3-dimensional implementation of Nodes"""
     def __new__(cls, x, y, z, number):
         # A z-coordinate is incorporated if only two are given
@@ -225,7 +221,6 @@ class Node(np.ndarray):
         return 'Node {number}: ({x},{y},{z})'.format(number=self.number, x=self.x, y=self.y, z=self.z)
 
 class Segment(object):
-
     """Line objects, joining two nodes"""
 
     def __init__(self, node1, node2, number):
@@ -246,12 +241,7 @@ class Segment(object):
         node1.append_segment(self, 1)
         node2.append_segment(self, 2)
         # Calculate the length of the element
-        delta_x = node2.x - node1.x
-        delta_y = node2.y - node1.y
-        delta_z = node2.z - node1.z
-        self._length = np.sqrt(delta_x**2 + delta_y**2 + delta_z**2)
-        # calculate angle that the line forms with the horizontal
-        self._alpha = np.arctan2(delta_y, delta_x)
+        self._length = np.linalg.norm(node2-node1)
         # Local coordinate system
         self._localCSys = Local_Csys_two_points(point1=node1, point2=node2, type='cartesian')
         # Section
@@ -290,7 +280,6 @@ class Segment(object):
         return 'Segment {number}'.format(number=self.number)
 
 class Segment2D(Segment):
-
     """Line objects, joining two nodes"""
 
     def __init__(self, node1, node2, number):
@@ -302,24 +291,22 @@ class Segment2D(Segment):
 
         """
         Segment.__init__(self, node1, node2, number)
-        # Define status of each degree of freedom, for each node
-        # 1: free; 0: restrained
+        # displacement/rotation of each degree of freedom, for each node
         # - Node 1
-        self.dof1 = 1 # trans x
-        self.dof2 = 1 # trans y
-        self.dof6 = 1 # rot z
+        self.dof1 = 0. # trans x
+        self.dof2 = 0. # trans y
+        self.dof6 = 0. # rot z
 
         # Node 2
-        self.dof7 = 1  # trans x
-        self.dof8 = 1  # trans y
-        self.dof12 = 1 # rot z
+        self.dof7 = 0.  # trans x
+        self.dof8 = 0.  # trans y
+        self.dof12 = 0. # rot z
 
         # Release rotation on the ends of the segment
         self.release_node_1 = False # first node
         self.release_node_2 = False # second node
 
 class Segment3D(Segment):
-
     """Line objects, joining two nodes"""
 
     def __init__(self, node1, node2, number):
@@ -331,30 +318,24 @@ class Segment3D(Segment):
 
         """
         Segment.__init__(self, node1, node2, number)
-        # Define status of each degree of freedom, for each node
-        # 1: free; 0: restrained
+        # displacement/rotation of each degree of freedom, for each node
         # - Node 1
-        self.dof1 = 1 # trans x
-        self.dof2 = 1 # trans y
-        self.dof3 = 1 # trans z
-        self.dof4 = 1 # rot x
-        self.dof5 = 1 # rot y
-        self.dof6 = 1 # rot z
+        self.dof1 = 0. # trans x
+        self.dof2 = 0. # trans y
+        self.dof3 = 0. # trans z
+        self.dof4 = 0. # rot x
+        self.dof5 = 0. # rot y
+        self.dof6 = 0. # rot z
 
         # Node 2
-        self.dof7 = 1  # trans x
-        self.dof8 = 1  # trans y
-        self.dof9 = 1  # trans z
-        self.dof10 = 1 # rot x
-        self.dof11 = 1 # rot y
-        self.dof12 = 1 # rot z
-
-        # Transformation matrix
-        #T = self._localCSys.calc_tranformation_matrix(self._length, cx, cy, cz)
-        #self.tranformation_matrix = T
+        self.dof7 = 0.  # trans x
+        self.dof8 = 0.  # trans y
+        self.dof9 = 0.  # trans z
+        self.dof10 = 0. # rot x
+        self.dof11 = 0. # rot y
+        self.dof12 = 0. # rot z
 
 class Material(object):
-
     """Material properties"""
 
     # TODO: create function to print information of the material
@@ -385,7 +366,6 @@ class Material(object):
         return 'Material: {name}'.format(name=self._name)
 
 class BeamSection(object):
-
     """Defines a beam section"""
 
     def __init__(self, name, material, data, type='rectangular'):

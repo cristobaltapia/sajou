@@ -19,11 +19,12 @@ class Model(object):
         self._name = name
         self._dimensionality = dimensionality
         self.nodes = dict()
-        self.segments = dict()
+        self.beams = dict()
         self.beam_sections = dict()
         self.materials = dict()
         self.n_nodes = 0
-        self.n_segments = 0
+        self.n_beams = 0
+        self.n_materials = 0
         self._connectivity = None
 
     def Material(self, name, data, type='isotropic'):
@@ -39,6 +40,7 @@ class Model(object):
         # Add the material to the dictionary of materials in the current
         # model
         self.materials[name] = material
+        self.n_materials += 1
 
         return material
 
@@ -71,15 +73,15 @@ class Model(object):
         """
         Printable string
         """
-        return str('Model: Name: {name}, Nodes: {n_nodes}, Segments: {n_segments}'.format(
-            name=self._name, n_nodes=self.n_nodes, n_segments=self.n_segments))
+        return str('Model: Name: {name}, Nodes: {n_nodes}, Beams: {n_beams}'.format(
+            name=self._name, n_nodes=self.n_nodes, n_beams=self.n_beams))
 
     def __repr__(self):
         """
         Returns the printable string for this object
         """
-        return str('Model: Name: {name}, Nodes: {n_nodes}, Segments: {n_segments}'.format(
-            name=self._name, n_nodes=self.n_nodes, n_segments=self.n_segments))
+        return str('Model: Name: {name}, Nodes: {n_nodes}, Beams: {n_beams}'.format(
+            name=self._name, n_nodes=self.n_nodes, n_beams=self.n_beams))
 
     def _generate_connectivity_matrix2D(self):
         """Generates the connectivity matrix for the model
@@ -97,11 +99,11 @@ class Model(object):
                   9     | 3  |  4
 
         """
-        # Connectivity matrix for the segments
-        conn_matrix = np.zeros((len(self.segments), 3))
+        # Connectivity matrix for the Beams
+        conn_matrix = np.zeros((len(self.beams), 3))
         #
         count = 0
-        for num, curr_line in self.segments.items():
+        for num, curr_line in self.beams.items():
             conn_matrix[count, 0] = curr_line.number
             conn_matrix[count, 1] = curr_line._node1.number
             conn_matrix[count, 2] = curr_line._node2.number
@@ -134,16 +136,16 @@ class Model2D(Model):
 
         return node
 
-    def Segment(self, node1, node2):
+    def Beam(self, node1, node2):
         """Define a line between two nodes.
 
         :node1: first node
         :node2: second node
 
         """
-        line = Segment2D(node1=node1, node2=node2, number=self.n_segments)
-        self.segments[line.number] = line
-        self.n_segments += 1
+        line = Beam2D(node1=node1, node2=node2, number=self.n_beams)
+        self.beams[line.number] = line
+        self.n_beams += 1
 
         return line
 
@@ -169,16 +171,16 @@ class Model3D(Model):
 
         return node
 
-    def Segment(self, node1, node2):
+    def Beam(self, node1, node2):
         """Define a line between two nodes.
 
         :node1: first node
         :node2: second node
 
         """
-        line = Segment3D(node1=node1, node2=node2, number=self.n_segments)
-        self.segments[line.number] = line
-        self.n_segments += 1
+        line = Beam3D(node1=node1, node2=node2, number=self.n_beams)
+        self.beams[line.number] = line
+        self.n_beams += 1
 
         return line
 
@@ -192,21 +194,21 @@ class Node(np.ndarray):
         obj.y = y
         obj.z = z
 
-        # dictionary containing the segments that use this node
-        obj.segments = dict()
+        # dictionary containing the beams that use this node
+        obj.beams = dict()
 
         return obj
 
-    def append_segment(self, segment, node):
-        """Appends the information of the segment that uses the node and the corresponding
+    def append_beam(self, beam, node):
+        """Appends the information of the beam that uses the node and the corresponding
         denomintaion: node 1 or 2
 
-        :segment: Segment instance
+        :beam: Beam instance
         :node: '1' or '2'
         :returns: nothing FIXME
 
         """
-        self.segments[segment.number] = node
+        self.beams[beam.number] = node
 
     def __repr__(self):
         """
@@ -220,7 +222,7 @@ class Node(np.ndarray):
         """
         return 'Node {number}: ({x},{y},{z})'.format(number=self.number, x=self.x, y=self.y, z=self.z)
 
-class Segment(object):
+class Beam(object):
     """Line objects, joining two nodes"""
 
     def __init__(self, node1, node2, number):
@@ -238,8 +240,8 @@ class Segment(object):
         # TODO: check that the number is not in use
         self.number = number
         #
-        node1.append_segment(self, 1)
-        node2.append_segment(self, 2)
+        node1.append_beam(self, 1)
+        node2.append_beam(self, 2)
         # Calculate the length of the element
         self._length = np.linalg.norm(node2-node1)
         # Local coordinate system
@@ -256,7 +258,7 @@ class Segment(object):
         self.transformation_matrix = self._localCSys.calc_tranformation_matrix(self._length, cx, cy, cz)
 
     def assign_section(self, beam_section):
-        """Assign a beam section instance to the segment
+        """Assign a beam section instance to the beam
 
         :beam_section: a BeamSection instance
         :returns: self
@@ -270,16 +272,16 @@ class Segment(object):
         """
         Returns the printable string for this object
         """
-        return 'Segment {number}: (N{n1}, N{n2})'.format(number=self.number,
+        return 'Beam {number}: (N{n1}, N{n2})'.format(number=self.number,
                 n1=self._node1.number, n2=self._node2.number)
 
     def __repr__(self):
         """
         Returns the printable string for this object
         """
-        return 'Segment {number}'.format(number=self.number)
+        return 'Beam {number}'.format(number=self.number)
 
-class Segment2D(Segment):
+class Beam2D(Beam):
     """Line objects, joining two nodes"""
 
     def __init__(self, node1, node2, number):
@@ -290,7 +292,7 @@ class Segment2D(Segment):
         :number: number of the line
 
         """
-        Segment.__init__(self, node1, node2, number)
+        Beam.__init__(self, node1, node2, number)
         # displacement/rotation of each degree of freedom, for each node
         # - Node 1
         self.dof1 = 0. # trans x
@@ -302,11 +304,11 @@ class Segment2D(Segment):
         self.dof8 = 0.  # trans y
         self.dof12 = 0. # rot z
 
-        # Release rotation on the ends of the segment
+        # Release rotation on the ends of the beam
         self.release_node_1 = False # first node
         self.release_node_2 = False # second node
 
-class Segment3D(Segment):
+class Beamt3D(Beam):
     """Line objects, joining two nodes"""
 
     def __init__(self, node1, node2, number):
@@ -317,7 +319,7 @@ class Segment3D(Segment):
         :number: number of the line
 
         """
-        Segment.__init__(self, node1, node2, number)
+        Beam.__init__(self, node1, node2, number)
         # displacement/rotation of each degree of freedom, for each node
         # - Node 1
         self.dof1 = 0. # trans x
@@ -385,8 +387,32 @@ class BeamSection(object):
         self._material = material
         self._data = data
         self._type = type
+        self._area = 0
+        self._Iz = 0
+        self._Iy = 0
+        self._Jx = 0
+        self.compute_properties()
+
+    def print_properties(self):
+        """Prints the properties of the BeamSection instance
+        :returns: TODO
+
+        """
+        if self._type == 'rectangular':
+            props = {'width':self._data[0], 'height':self._data[1]}
+        else:
+            props = 'undefined'
+
+        return 'Properties: ' + str(props)
+
+    def compute_properties(self):
+        """Compute all the mechanical properties for the given section
+        :returns: TODO
+
+        """
+        # Calculate the area
         self._area = self.calc_area()
-        self._I33, self._I22 = self.calc_inertia()
+        self._Iz, self._Iy = self.calc_inertia()
 
     def calc_area(self):
         """Calculate the area of the section
@@ -406,7 +432,7 @@ class BeamSection(object):
 
     def calc_inertia(self):
         """Calculate the moment of inertia of the beam section
-        :returns: TODO
+        :returns: Iz, Iy
 
         """
         type = self._type
@@ -414,9 +440,9 @@ class BeamSection(object):
         if type == 'rectangular':
             width = self._data[0]
             height = self._data[1]
-            I_33 = width * height**3 / 12.
-            I_22 = height * width**3 / 12.
-            return I_33, I_22
+            I_z = width * height**3 / 12.
+            I_y = height * width**3 / 12.
+            return I_z, I_y
 
     def __str__(self):
         """

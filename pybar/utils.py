@@ -76,9 +76,8 @@ class Local_Csys_two_points(CoordSys):
         :type: TODO
 
         """
-        CoordSys.__init__(self)
+        CoordSys.__init__(self, type=type)
 
-        self._type = type
         self._point1 = point1
         self._point2 = point2
         ############################################################
@@ -88,18 +87,43 @@ class Local_Csys_two_points(CoordSys):
         # - Convert to numpy arrays
         p1 = np.array(point1)
         p2 = np.array(point2)
+        # dist
+        d = (p2 - p1)
+        dist = np.linalg.norm(d)
+        v1 = d / dist
+
         # vector in z-direction
-        vz = np.array([0,0,1])
-        # Vector in the principal direction (between the two points)
-        v1 = p2 - p1
+        if d[2] == 0:
+            vz = np.array([0, 0, -1])
+        elif d[1] == 0:
+            vz = np.array([0, 1, 0])
+        elif d[0] == 0:
+            vz = np.array([1, 0, 0])
+        else:
+            vz = np.array([0, 0, -1])
+
         # cross product to obtain v3
         v2 = np.cross(v1, vz)
         # vector in the 2nd direction
         v3 = np.cross(v1, v2)
+        # store in the instance
+        self.coord_system = np.array((v1,v2,v3)).T
         # create matrix
         transformation_matrix = np.vstack((v1/np.linalg.norm(v1), v2/np.linalg.norm(v2), v3/np.linalg.norm(v3))).T
 
         self._v1 = transformation_matrix[0,:]
         self._v2 = transformation_matrix[1,:]
         self._v3 = transformation_matrix[2,:]
+
+    def __str__(self):
+        """
+        Returns the printable string for this object
+        """
+        return 'Coordinate System: \n {coord}'.format(coord=self.coord_system)
+
+    def __repr__(self):
+        """
+        Returns the printable string for this object
+        """
+        return 'Coordinate System: \n {coord}'.format(coord=self.coord_system)
 

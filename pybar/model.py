@@ -99,18 +99,18 @@ class Model(object):
 
         """
         # Connectivity matrix for the segments
-        conn_lines = np.zeros((len(self.segments), 3))
+        conn_matrix = np.zeros((len(self.segments), 3))
         #
         count = 0
         for num, curr_line in self.segments.items():
-            conn_lines[count, 0] = curr_line.number
-            conn_lines[count, 1] = curr_line._node1.number
-            conn_lines[count, 2] = curr_line._node2.number
+            conn_matrix[count, 0] = curr_line.number
+            conn_matrix[count, 1] = curr_line._node1.number
+            conn_matrix[count, 2] = curr_line._node2.number
             count += 1
 
-        self._connectivity = conn_lines
+        self._connectivity = conn_matrix
 
-        return conn_lines
+        return conn_matrix
 
 class Model2D(Model):
 
@@ -196,7 +196,21 @@ class Node(np.ndarray):
         obj.y = y
         obj.z = z
 
+        # dictionary containing the segments that use this node
+        obj.segments = dict()
+
         return obj
+
+    def append_segment(self, segment, node):
+        """Appends the information of the segment that uses the node and the corresponding
+        denomintaion: node 1 or 2
+
+        :segment: Segment instance
+        :node: '1' or '2'
+        :returns: nothing FIXME
+
+        """
+        self.segments[segment.number] = node
 
     def __repr__(self):
         """
@@ -228,6 +242,9 @@ class Segment(object):
         self._node2 = node2
         # TODO: check that the number is not in use
         self.number = number
+        #
+        node1.append_segment(self, 1)
+        node2.append_segment(self, 2)
         # Calculate the length of the element
         delta_x = node2.x - node1.x
         delta_y = node2.y - node1.y
@@ -246,8 +263,7 @@ class Segment(object):
         cz = delta[2] / self._length
 
         # Transformation matrix
-        T = self._localCSys.calc_tranformation_matrix(self._length, cx, cy, cz)
-        self.transformation_matrix = T
+        self.transformation_matrix = self._localCSys.calc_tranformation_matrix(self._length, cx, cy, cz)
 
     def assign_section(self, beam_section):
         """Assign a beam section instance to the segment
@@ -299,12 +315,8 @@ class Segment2D(Segment):
         self.dof12 = 1 # rot z
 
         # Release rotation on the ends of the segment
-        self.release_node_i = False # first node
-        self.release_node_j = False # second node
-
-        # Transformation matrix
-        #T = self._localCSys.calc_tranformation_matrix(self._length, cx, cy, cz)
-        #self.tranformation_matrix = T
+        self.release_node_1 = False # first node
+        self.release_node_2 = False # second node
 
 class Segment3D(Segment):
 

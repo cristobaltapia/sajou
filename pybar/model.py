@@ -517,6 +517,8 @@ class BeamSection(object):
             width = self._data[0]
             height = self._data[1]
             return width * height
+        elif type == 'general':
+            return self._data[0]
 
         elif type == 'circular':
             radius = self._adta[0]
@@ -535,6 +537,8 @@ class BeamSection(object):
             I_z = width * height**3 / 12.
             I_y = height * width**3 / 12.
             return I_z, I_y
+        elif type == 'general':
+            return self._data[1]
 
     def __str__(self):
         """

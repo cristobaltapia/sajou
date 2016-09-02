@@ -27,6 +27,7 @@ class Model(object):
         self.n_beams = 0
         self.n_materials = 0
         self._connectivity = None
+        self._K = None
 
     def Material(self, name, data, type='isotropic'):
         """Function used to create a Material instance in the model
@@ -84,9 +85,9 @@ class Model(object):
         return str('Model: Name: {name}, Nodes: {n_nodes}, Beams: {n_beams}'.format(
             name=self._name, n_nodes=self.n_nodes, n_beams=self.n_beams))
 
-    def _generate_connectivity_matrix2D(self):
-        """Generates the connectivity matrix for the model
-        :returns: TODO
+    def _generate_connectivity_table2D(self):
+        """Generates the connectivity table for the model
+        :returns: numpy array
 
 
                 element | N1 | N2
@@ -114,7 +115,7 @@ class Model(object):
 
         return conn_matrix
 
-    def _generate_connectivity_matrix2D_a(self):
+    def _generate_connectivity_matrix2D(self):
         """Generates the connectivity matrix 'a' (also known as incidence matrix or locator) such that,
 
             v = a*V
@@ -125,7 +126,7 @@ class Model(object):
             "V" contains the global displacements of all DOF's
             "a" is the incidence matrix
 
-        :returns: a numpy array
+        :returns: numpy array
 
         """
         # Get the total DOF per node of each element and add it
@@ -134,11 +135,11 @@ class Model(object):
         for keys, elem in self.beams.items():
             n_v += elem._dof_per_node * elem._n_nodes
 
-        # Total number of 'system displacements'
-        n_v_sys = self.n_nodes * self.beams[0]._dof_per_node
+        # Total number of DOFs
+        num_dof = self.n_nodes * self.beams[0]._dof_per_node
         
         # create a zero matrix with the adequate size
-        connectivity = np.zeros([n_v, n_v_sys])
+        connectivity = np.zeros([n_v, num_dof])
         # Assemble the connectivity matrix
         for n_elem, elem in self.beams.items():
             n_dof = elem._dof_per_node
@@ -155,6 +156,35 @@ class Model(object):
 
         return connectivity
 
+    def _assemble_global_K(self):
+        """Assembles the global stiffness matrix using the addition method
+        :returns: numpy array
+
+        """
+        # FIXME: generalize the assembly of the stiffness matrix for
+        # other elements, too
+        connect_table = self._generate_connectivity_table2D()
+        # Prealocate the matrix
+        num_dof = self.n_nodes * self.beams[0]._dof_per_node
+        n_dof = self.beams[0]._dof_per_node
+        #
+        K = np.zeros([num_dof, num_dof])
+        # Fill the global stiffness matrix
+        for n_elem in self.beams:
+            n1 = connect_table[n_elem, 1]
+            n2 = connect_table[n_elem, 2]
+            self.beams[n_elem].assembleK()
+            #
+            i1 = n1*n_dof
+            i2 = n1*n_dof + n_dof
+            K[i1:i2,i1:i2] = self.beams[n_elem]._Ke[0:n_dof,0:n_dof]
+            j1 = n2*n_dof
+            j2 = n2*n_dof + n_dof
+            K[j1:j2,j1:j2] = self.beams[n_elem]._Ke[n_dof:,n_dof:]
+
+        self._K = K
+
+        return K
 
 
 class Model2D(Model):

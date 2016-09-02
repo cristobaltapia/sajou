@@ -85,6 +85,36 @@ class Model(object):
             name=self._name, n_nodes=self.n_nodes, n_beams=self.n_beams))
 
     def _generate_connectivity_matrix2D(self):
+        """Generates the connectivity matrix for the model
+        :returns: TODO
+
+
+                element | N1 | N2
+                ------------------
+        row -->   0     | 0  |  1
+                  1     | 1  |  2
+                  2     | 0  |  3
+                  .       .     .
+                  .       .     .
+                  .       .     .
+                  9     | 3  |  4
+
+        """
+        # Connectivity matrix for the Beams
+        conn_matrix = np.zeros((len(self.beams), 3))
+        #
+        count = 0
+        for num, curr_line in self.beams.items():
+            conn_matrix[count, 0] = curr_line.number
+            conn_matrix[count, 1] = curr_line._node1.number
+            conn_matrix[count, 2] = curr_line._node2.number
+            count += 1
+
+        self._connectivity = conn_matrix
+
+        return conn_matrix
+
+    def _generate_connectivity_matrix2D_a(self):
         """Generates the connectivity matrix 'a' (also known as incidence matrix or locator) such that,
 
             v = a*V
@@ -124,6 +154,7 @@ class Model(object):
         self._connectivity = connectivity
 
         return connectivity
+
 
 
 class Model2D(Model):

@@ -2,6 +2,7 @@
 # encoding: utf-8
 import numpy as np
 from .utils import Local_Csys_two_points
+from .stiffness import assemble_Ke_2D
 """
 Includes all the necessary objects to create the model.
 """
@@ -84,34 +85,46 @@ class Model(object):
             name=self._name, n_nodes=self.n_nodes, n_beams=self.n_beams))
 
     def _generate_connectivity_matrix2D(self):
-        """Generates the connectivity matrix for the model
-        :returns: TODO
+        """Generates the connectivity matrix 'a' (also known as incidence matrix or locator) such that,
 
+            v = a*V
 
-                element | N1 | N2
-                ------------------
-        row -->   0     | 0  |  1
-                  1     | 1  |  2
-                  2     | 0  |  3
-                  .       .     .
-                  .       .     .
-                  .       .     .
-                  9     | 3  |  4
+            where "v" correspond to the vector containing displacements at the same node
+            from different elements
+            
+            "V" contains the global displacements of all DOF's
+            "a" is the incidence matrix
+
+        :returns: a numpy array
 
         """
-        # Connectivity matrix for the Beams
-        conn_matrix = np.zeros((len(self.beams), 3))
-        #
-        count = 0
-        for num, curr_line in self.beams.items():
-            conn_matrix[count, 0] = curr_line.number
-            conn_matrix[count, 1] = curr_line._node1.number
-            conn_matrix[count, 2] = curr_line._node2.number
-            count += 1
+        # Get the total DOF per node of each element and add it
+        n_v = 0
+        # FIXME: generalize for different types of elements
+        for keys, elem in self.beams.items():
+            n_v += elem._dof_per_node * elem._n_nodes
 
-        self._connectivity = conn_matrix
+        # Total number of 'system displacements'
+        n_v_sys = self.n_nodes * self.beams[0]._dof_per_node
+        
+        # create a zero matrix with the adequate size
+        connectivity = np.zeros([n_v, n_v_sys])
+        # Assemble the connectivity matrix
+        for n_elem, elem in self.beams.items():
+            n_dof = elem._dof_per_node
+            n_nodes = elem._n_nodes
+            for ix, node in enumerate(elem._nodes):
+                n_node = node.number
+                i1 = n_elem*n_dof*n_nodes + ix * n_dof
+                i2 = n_elem*n_dof*n_nodes + ix * n_dof + n_dof
+                j1 = n_node * n_dof
+                j2 = n_node * n_dof + n_dof
+                connectivity[i1:i2,j1:j2] = np.eye(n_dof)
 
-        return conn_matrix
+        self._connectivity = connectivity
+
+        return connectivity
+
 
 class Model2D(Model):
     """Subclass of the 'Model' class. It is intended to be used for the 2-dimensional
@@ -237,6 +250,7 @@ class Beam(object):
         # TODO: accept tuples with coordinates also
         self._node1 = node1
         self._node2 = node2
+        self._nodes = [self._node1, self._node2]
         # TODO: check that the number is not in use
         self.number = number
         #
@@ -256,6 +270,8 @@ class Beam(object):
 
         # Transformation matrix
         self.transformation_matrix = self._localCSys.calc_tranformation_matrix(self._length, cx, cy, cz)
+
+        self._Ke = None
 
     def assign_section(self, beam_section):
         """Assign a beam section instance to the beam
@@ -293,6 +309,10 @@ class Beam2D(Beam):
 
         """
         Beam.__init__(self, node1, node2, number)
+        # Number of nodes of the element
+        self._n_nodes = 2
+        # Number of DOF per node
+        self._dof_per_node = 3
         # displacement/rotation of each degree of freedom, for each node
         # - Node 1
         self.dof1 = 0. # trans x
@@ -307,6 +327,17 @@ class Beam2D(Beam):
         # Release rotation on the ends of the beam
         self.release_node_1 = False # first node
         self.release_node_2 = False # second node
+
+    def assembleK(self):
+        """Assembles the stiffnes matrix for the element
+        :returns: stiffness matrix in global coordinates
+
+        """
+        Ke = assemble_Ke_2D(self)
+
+        self._Ke = Ke
+
+        return Ke
 
 class Beamt3D(Beam):
     """Line objects, joining two nodes"""

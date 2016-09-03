@@ -3,6 +3,7 @@
 import numpy as np
 from .utils import Local_Csys_two_points
 from .stiffness import assemble_Ke_2D
+from .solvers import StaticSolver
 """
 Includes all the necessary objects to create the model.
 """
@@ -32,6 +33,8 @@ class Model(object):
         self._V = None # global displacement matrix
         # Number of dof per node. Initialized in the respective models
         self.n_dof_per_node = None
+        # Specify dofs that are not active due to border conditions
+        self._dof_restraied = []
 
     def Material(self, name, data, type='isotropic'):
         """Function used to create a Material instance in the model
@@ -193,8 +196,8 @@ class Model(object):
 
         return K
 
-    def _generate_load_matrix(self):
-        """This function generates the global load matrix P
+    def _generate_loading_vector(self):
+        """This function generates the global matrix of applied forces P
         :returns: numpy array
 
         """
@@ -210,6 +213,30 @@ class Model(object):
         self._P = P
 
         return P
+
+    def _generate_displacement_vector(self):
+        """This function generates the global displacement matrix V, containing the border
+        conditions applied to each dof.
+
+        :returns: numpy array
+
+        """
+        # Initialize a zero vector of the size of the total number of
+        # dof
+        V = np.zeros(self.n_nodes*self.n_dof_per_node)
+        # Assign the values corresponding to the loads in each dof
+        for ix, node_i in self.nodes.items():
+            for dof, val in node_i._BC.items():
+                # Compute index corresponding to the current dof
+                ind = int(ix*self.n_dof_per_node + dof)
+                # Add value to the vector
+                V[ind] = val
+                # Add to the list of restrained DOFs
+                self._dof_restraied.append(ind)
+
+        self._V = V
+
+        return V
 
     def BC(self, node, type='displacement', coord_system='global', **kwargs):
         """Introduces a border condition to the node.
@@ -304,6 +331,17 @@ class Model(object):
                     node.set_Load(dof=dof, val=curr_force)
 
         return None
+
+    def solve(self, type='static'):
+        """Solve the system
+
+        :returns: vector with displacements
+
+        """
+        stat_solver = StaticSolver(model=self)
+        v = stat_solver.solve()
+
+        return v
 
 class Model2D(Model):
     """Subclass of the 'Model' class. It is intended to be used for the 2-dimensional

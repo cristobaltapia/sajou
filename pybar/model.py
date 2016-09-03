@@ -27,7 +27,9 @@ class Model(object):
         self.n_beams = 0
         self.n_materials = 0
         self._connectivity = None
-        self._K = None
+        self._K = None # global stiffness matrix
+        self._P = None # load matrix
+        self._V = None # global displacement matrix
         # Number of dof per node. Initialized in the respective models
         self.n_dof_per_node = None
 
@@ -141,7 +143,7 @@ class Model(object):
         num_dof = self.n_nodes * self.beams[0]._dof_per_node
         
         # DOF per node
-        n_dof = self.n_dof
+        n_dof = self.n_dof_per_node
 
         # create a zero matrix with the adequate size
         connectivity = np.zeros([n_v, num_dof])
@@ -190,6 +192,24 @@ class Model(object):
         self._K = K
 
         return K
+
+    def _generate_load_matrix(self):
+        """This function generates the global load matrix P
+        :returns: numpy array
+
+        """
+        # Initialize a zero vector of the size of the total number of
+        # dof
+        P = np.zeros(self.n_nodes*self.n_dof_per_node)
+        # Assign the values corresponding to the loads in each dof
+        for ix, node_i in self.nodes.items():
+            for dof, val in node_i._Loads.items():
+                ind = ix*self.n_dof_per_node + dof
+                P[ind] = val
+
+        self._P = P
+
+        return P
 
     def BC(self, node, type='displacement', coord_system='global', **kwargs):
         """Introduces a border condition to the node.

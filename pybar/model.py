@@ -238,7 +238,52 @@ class Model(object):
 
         return None
 
+    # FIXME: there has to give a 'Load' class to handle the different
+    # type of loads.
+    def Load(self, node, coord_system='global', **kwargs):
+        """Introduces a Load in the given direction according to the selected coordinate
+        system at the specified node.
+
+        :node: a Node instance
+        :**kwargs: optional arguments. The BC is defined for the different degree of
+            freedom available to the node.
+
+            fi : force on the i-th direction in the specified dof
+            mi : moment on the i-th direction in the specified dof
+
+            For Beam2D elements:
+                - f1, f2, m3
+            For Beam3D elements:
+                - f1, f2, f3, m1, m2, m3
+            ...
+        :returns: TODO
+
+        """
+        # FIXME: currently only in global coordintaes. Implement
+        # transformation in other coordinate systems.
+
+        # Get the BC applied
+        f1 = kwargs.get('f1', None)
+        f2 = kwargs.get('f2', None)
+        f3 = kwargs.get('f3', None)
+        m1 = kwargs.get('m1', None)
+        m2 = kwargs.get('m2', None)
+        m3 = kwargs.get('m3', None)
         
+        # For the case of the 2D model
+        if self.n_dof_per_node == 3:
+            list_dof = [f1, f2, m3]
+            for dof, curr_force in enumerate(list_dof):
+                if curr_force is not None:
+                    node.set_Load(dof=dof, val=curr_force)
+        # For the case of the 3D model
+        elif self.n_dof_per_node == 6:
+            list_dof = [f1, f2, f3, m1, m2, m3]
+            for dof, curr_force in enumerate(list_dof):
+                if curr_force is not None:
+                    node.set_Load(dof=dof, val=curr_force)
+
+        return None
 
 class Model2D(Model):
     """Subclass of the 'Model' class. It is intended to be used for the 2-dimensional
@@ -327,20 +372,24 @@ class Node(np.ndarray):
 
         # Border conditions on the DOF:
         # The border conditions are defined in this dictionary.
-        # The keys corespond to the dof restrained and the value to the
+        # The keys correspond to the dof restrained and the value to the
         # border condition applied. The convention used ist that each
-        # key value is associated with the coresponding DOF, i.e. in a
-        # 2D model the key value '0' is associated with a transaltion in
+        # key value is associated with the corresponding DOF, i.e. in a
+        # 2D model the key value '0' is associated with a translation in
         # the first (x) direction, while a key value '2' is associated
         # with a rotation around the third (z)-axis.
         # Only global coordinates are allowed here. For use local
         # coordinate system or another coordinate system the BC have
-        # to be transformed accordinlgy first.
-        # The function set_BC() is used to tdo this.
-        #
-        # Example: node._BC[1] = 0.0
+        # to be transformed accordingly first.
+        # The function set_BC() is used to do this.
         #
         obj._BC = dict()
+        # Forces (moments) on the node
+        # The forces on the node are defined analogously as for the
+        # application of border conditions. The function used to apply
+        # the loads is set_Load().
+        #
+        obj._Loads = dict()
 
         # dictionary containing the beams that use this node
         obj.beams = dict()
@@ -356,6 +405,18 @@ class Node(np.ndarray):
 
         """
         self._BC[dof] = val
+
+        return 1
+
+    def set_Load(self, dof, val):
+        """Adds a Load to the specified dof of the Node.
+
+        :dof: specified degree of freedom
+        :val: value given
+        :returns: TODO
+
+        """
+        self._Loads[dof] = val
 
         return 1
 

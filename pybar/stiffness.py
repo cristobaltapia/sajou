@@ -37,19 +37,20 @@ def assemble_Ke_2D(element, second_order=False):
     k[0,0] = k[3,3] = EA / L
     k[1,1] = k[4,4] = 12. * EI / L**3
     k[2,2] = k[5,5] = 4. * EI / L
-    k[2,1] = k[1,2] = -6 * EI / L**2
+    k[2,1] = k[1,2] = 6 * EI / L**2
     k[3,0] = k[0,3] = - EA / L
     k[4,1] = k[1,4] = -12. * EI / L**3
-    k[4,2] = k[2,4] = 6. * EI / L**2
-    k[5,1] = k[1,5] = -6. * EI / L**2
+    k[4,2] = k[2,4] = -6. * EI / L**2
+    k[5,1] = k[1,5] = 6. * EI / L**2
     k[5,2] = k[2,5] = 2. * EI / L
-    k[5,4] = k[4,5] = 6. * EI / L**2
+    k[5,4] = k[4,5] = -6. * EI / L**2
+
     # transform to global coordinates
-    T = element.transformation_matrix
+    #T = element.transformation_matrix
 
-    Ke = np.dot(T.T, np.dot(k,T))
+    #Ke = np.dot(T.T, np.dot(k,T))
 
-    return Ke
+    return k
 
 def assemble_Ke_3D(element, second_order=False):
     """This function assembles the stiffness matrix for one individual element. Optionally

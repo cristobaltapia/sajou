@@ -34,7 +34,7 @@ class CoordSys(object):
         """
         pass
 
-    def calc_tranformation_matrix(self, length, cx, cy, cz):
+    def calc_transformation_matrix(self, length, cx, cy, cz):
         """Calculates the transformation matrix for the current instance of local system
         :returns: TODO
 

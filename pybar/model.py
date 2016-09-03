@@ -176,6 +176,7 @@ class Model(object):
         connect_table = self._generate_connectivity_table2D()
         # Prealocate the matrix
         num_dof = self.n_nodes * self.n_dof_per_node
+        # number of dof per node
         n_dof = self.n_dof_per_node
         #
         K = np.zeros([num_dof, num_dof])
@@ -187,10 +188,10 @@ class Model(object):
             #
             i1 = int(n_dof*n1)
             i2 = int(n_dof*(n1 + 1))
-            K[i1:i2,i1:i2] = self.beams[n_elem]._Ke[0:n_dof,0:n_dof]
+            K[i1:i2,i1:i2] += self.beams[n_elem]._Ke[0:n_dof,0:n_dof]
             j1 = int(n_dof*n2)
             j2 = int(n_dof*(n2 + 1))
-            K[j1:j2,j1:j2] = self.beams[n_elem]._Ke[n_dof:,n_dof:]
+            K[j1:j2,j1:j2] += self.beams[n_elem]._Ke[n_dof:,n_dof:]
 
         self._K = K
 
@@ -339,9 +340,9 @@ class Model(object):
 
         """
         stat_solver = StaticSolver(model=self)
-        v = stat_solver.solve()
+        res = stat_solver.solve()
 
-        return v
+        return res
 
 class Model2D(Model):
     """Subclass of the 'Model' class. It is intended to be used for the 2-dimensional
@@ -559,7 +560,7 @@ class Beam(object):
         cz = delta[2] / self._length
 
         # Transformation matrix
-        self.transformation_matrix = self._localCSys.calc_tranformation_matrix(self._length, cx, cy, cz)
+        self.transformation_matrix = self._localCSys.calc_transformation_matrix(self._length, cx, cy, cz)
 
         self._Ke = None
 
@@ -618,12 +619,21 @@ class Beam2D(Beam):
         self.release_node_1 = False # first node
         self.release_node_2 = False # second node
 
+        self._Ke = None
+
     def assembleK(self):
         """Assembles the stiffnes matrix for the element
         :returns: stiffness matrix in global coordinates
 
         """
         Ke = assemble_Ke_2D(self)
+
+        self._Ke_local = Ke
+
+        # transform to global coordinates
+        Trans = self.transformation_matrix
+
+        Ke = np.dot(Trans.T, np.dot(Ke, Trans))
 
         self._Ke = Ke
 
@@ -767,7 +777,7 @@ class BeamSection(object):
             I_y = height * width**3 / 12.
             return I_z, I_y
         elif type == 'general':
-            return self._data[1]
+            return self._data[1] , 0
 
     def __str__(self):
         """

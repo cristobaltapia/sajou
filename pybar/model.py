@@ -28,6 +28,8 @@ class Model(object):
         self.n_materials = 0
         self._connectivity = None
         self._K = None
+        # Number of dof per node. Initialized in the respective models
+        self.n_dof_per_node = None
 
     def Material(self, name, data, type='isotropic'):
         """Function used to create a Material instance in the model
@@ -131,18 +133,21 @@ class Model(object):
         """
         # Get the total DOF per node of each element and add it
         n_v = 0
-        # FIXME: generalize for different types of elements
+        #
         for keys, elem in self.beams.items():
             n_v += elem._dof_per_node * elem._n_nodes
 
         # Total number of DOFs
         num_dof = self.n_nodes * self.beams[0]._dof_per_node
         
+        # DOF per node
+        n_dof = self.n_dof
+
         # create a zero matrix with the adequate size
         connectivity = np.zeros([n_v, num_dof])
+
         # Assemble the connectivity matrix
         for n_elem, elem in self.beams.items():
-            n_dof = elem._dof_per_node
             n_nodes = elem._n_nodes
             for ix, node in enumerate(elem._nodes):
                 n_node = node.number
@@ -165,8 +170,8 @@ class Model(object):
         # other elements, too
         connect_table = self._generate_connectivity_table2D()
         # Prealocate the matrix
-        num_dof = self.n_nodes * self.beams[0]._dof_per_node
-        n_dof = self.beams[0]._dof_per_node
+        num_dof = self.n_nodes * self.n_dof_per_node
+        n_dof = self.n_dof_per_node
         #
         K = np.zeros([num_dof, num_dof])
         # Fill the global stiffness matrix
@@ -175,17 +180,65 @@ class Model(object):
             n2 = connect_table[n_elem, 2]
             self.beams[n_elem].assembleK()
             #
-            i1 = n1*n_dof
-            i2 = n1*n_dof + n_dof
+            i1 = int(n_dof*n1)
+            i2 = int(n_dof*(n1 + 1))
             K[i1:i2,i1:i2] = self.beams[n_elem]._Ke[0:n_dof,0:n_dof]
-            j1 = n2*n_dof
-            j2 = n2*n_dof + n_dof
+            j1 = int(n_dof*n2)
+            j2 = int(n_dof*(n2 + 1))
             K[j1:j2,j1:j2] = self.beams[n_elem]._Ke[n_dof:,n_dof:]
 
         self._K = K
 
         return K
 
+    def BC(self, node, type='displacement', coord_system='global', **kwargs):
+        """Introduces a border condition to the node.
+
+        :node: a Node instance
+        :type: type of border condition
+            - Options: - 'displacement'
+                       - ...
+        :**kwargs: optional arguments. The BC is defined for the different degree of
+            freedom available to the node.
+
+            vi : translation of the i-th direction in the specified dof
+            ri : rotation of the i-th direction in the specified dof
+
+            For Beam2D elements:
+                - v1, v2, r3
+            For Beam3D elements:
+                - v1, v2, v3, r1, r2, r3
+            ...
+        :returns: TODO
+
+        """
+        # FIXME: currently only in global coordintaes. Implement
+        # transformation in other coordinate systems.
+
+        # Get the BC applied
+        v1 = kwargs.get('v1', None)
+        v2 = kwargs.get('v2', None)
+        v3 = kwargs.get('v3', None)
+        r1 = kwargs.get('r1', None)
+        r2 = kwargs.get('r2', None)
+        r3 = kwargs.get('r3', None)
+        
+        # For the case of the 2D model
+        if self.n_dof_per_node == 3:
+            list_dof = [v1, v2, r3]
+            for dof, curr_bc in enumerate(list_dof):
+                if curr_bc is not None:
+                    node.set_BC(dof=dof, val=curr_bc)
+        # For the case of the 3D model
+        elif self.n_dof_per_node == 6:
+            list_dof = [v1, v2, v3, r1, r2, r3]
+            for dof, curr_bc in enumerate(list_dof):
+                if curr_bc is not None:
+                    node.set_BC(dof=dof, val=curr_bc)
+
+        return None
+
+        
 
 class Model2D(Model):
     """Subclass of the 'Model' class. It is intended to be used for the 2-dimensional
@@ -195,6 +248,7 @@ class Model2D(Model):
         """TODO: to be defined1. """
         dimensionality = '2D'
         Model.__init__(self, name, dimensionality)
+        self.n_dof_per_node = 3 # dof per node
 
     def Node(self, x, y):
         """2D implementation of the Node.
@@ -204,7 +258,7 @@ class Model2D(Model):
 
         """
         # A coordinate z=0 is passed to initiate the Node Instance
-        node = Node(x=x, y=y, z=0., number=self.n_nodes)
+        node = Node2D(x=x, y=y, z=0.0, number=self.n_nodes)
         self.nodes[node.number] = node
         self.n_nodes += 1
 
@@ -231,6 +285,7 @@ class Model3D(Model):
         """TODO: to be defined1. """
         dimensionality = '3D'
         Model.__init__(self, name, dimensionality)
+        self.n_dof_per_node = 6 # dof per node
 
     def Node(self, x, y, z):
         """3D implementation of the Node.
@@ -267,11 +322,42 @@ class Node(np.ndarray):
         obj.x = x
         obj.y = y
         obj.z = z
+        # number of degree of freedom of the node
+        obj.n_dof = None
+
+        # Border conditions on the DOF:
+        # The border conditions are defined in this dictionary.
+        # The keys corespond to the dof restrained and the value to the
+        # border condition applied. The convention used ist that each
+        # key value is associated with the coresponding DOF, i.e. in a
+        # 2D model the key value '0' is associated with a transaltion in
+        # the first (x) direction, while a key value '2' is associated
+        # with a rotation around the third (z)-axis.
+        # Only global coordinates are allowed here. For use local
+        # coordinate system or another coordinate system the BC have
+        # to be transformed accordinlgy first.
+        # The function set_BC() is used to tdo this.
+        #
+        # Example: node._BC[1] = 0.0
+        #
+        obj._BC = dict()
 
         # dictionary containing the beams that use this node
         obj.beams = dict()
 
         return obj
+
+    def set_BC(self, dof, val):
+        """Adds a BC to the specified dof of the Node.
+
+        :dof: specified degree of freedom
+        :val: value given
+        :returns: TODO
+
+        """
+        self._BC[dof] = val
+
+        return 1
 
     def append_beam(self, beam, node):
         """Appends the information of the beam that uses the node and the corresponding
@@ -295,6 +381,30 @@ class Node(np.ndarray):
         Returns the printable string for this object
         """
         return 'Node {number}: ({x},{y},{z})'.format(number=self.number, x=self.x, y=self.y, z=self.z)
+
+class Node2D(Node):
+    """2-dimensional implementation of Nodes"""
+    def __init__(self, x, y, z, number):
+        """ Initializes a Node2D instance
+        """
+        #Node.__init__(self, x=x, y=y, z=0.0, number=number)
+        # Numbe od DOF per node:
+        # Translation in x, translation in y, rotation in z
+        self.n_dof = 3
+
+        return None
+
+    def __repr__(self):
+        """
+        Returns the printable string for this object
+        """
+        return 'Node2D {number}'.format(number=self.number)
+
+    def __str__(self):
+        """
+        Returns the printable string for this object
+        """
+        return 'Node2D {number}: ({x},{y},{z})'.format(number=self.number, x=self.x, y=self.y, z=self.z)
 
 class Beam(object):
     """Line objects, joining two nodes"""
@@ -378,12 +488,12 @@ class Beam2D(Beam):
         # - Node 1
         self.dof1 = 0. # trans x
         self.dof2 = 0. # trans y
-        self.dof6 = 0. # rot z
+        self.dof3 = 0. # rot z
 
         # Node 2
-        self.dof7 = 0.  # trans x
-        self.dof8 = 0.  # trans y
-        self.dof12 = 0. # rot z
+        self.dof4 = 0. # trans x
+        self.dof5 = 0. # trans y
+        self.dof6 = 0. # rot z
 
         # Release rotation on the ends of the beam
         self.release_node_1 = False # first node

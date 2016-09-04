@@ -188,10 +188,12 @@ class Model(object):
             #
             i1 = int(n_dof*n1)
             i2 = int(n_dof*(n1 + 1))
-            K[i1:i2,i1:i2] += self.beams[n_elem]._Ke[0:n_dof,0:n_dof]
             j1 = int(n_dof*n2)
             j2 = int(n_dof*(n2 + 1))
+            K[i1:i2,i1:i2] += self.beams[n_elem]._Ke[0:n_dof,0:n_dof]
             K[j1:j2,j1:j2] += self.beams[n_elem]._Ke[n_dof:,n_dof:]
+            K[j1:j2,i1:i2] += self.beams[n_elem]._Ke[n_dof:,0:n_dof]
+            K[i1:i2,j1:j2] += self.beams[n_elem]._Ke[0:n_dof,n_dof:]
 
         self._K = K
 

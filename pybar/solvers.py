@@ -44,7 +44,6 @@ class StaticSolver(Solver):
         bc_ind = self._model._dof_restraied
         K_red = np.delete(K, bc_ind, axis=0)
         K_red = np.delete(K_red, bc_ind, axis=1)
-        print(K_red)
         # reduce the loading vector, by taking out the unknown loading
         # reactions
         P_red = np.delete(P, bc_ind, axis=0)

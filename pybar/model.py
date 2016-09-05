@@ -335,17 +335,6 @@ class Model(object):
 
         return None
 
-    def solve(self, type='static'):
-        """Solve the system
-
-        :returns: vector with displacements
-
-        """
-        stat_solver = StaticSolver(model=self)
-        res = stat_solver.solve()
-
-        return res
-
 class Model2D(Model):
     """Subclass of the 'Model' class. It is intended to be used for the 2-dimensional
     models of frame structures."""
@@ -633,9 +622,9 @@ class Beam2D(Beam):
         self._Ke_local = Ke
 
         # transform to global coordinates
-        Trans = self.transformation_matrix
+        T = self.transformation_matrix
 
-        Ke = np.dot(Trans.T, np.dot(Ke, Trans))
+        Ke = np.dot(T.T, np.dot(Ke, T))
 
         self._Ke = Ke
 

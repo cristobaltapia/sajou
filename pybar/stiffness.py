@@ -109,7 +109,7 @@ def assemble_Ke_3D(element, second_order=False):
     k[11,5] = k[5,11] = (2.-Ksy)*E*Iz / ( Le*(1.+Ksy) );
 
     # transform to global coordinates
-    T = element._localCSys.tranformation_matrix
+    T = element._localCSys.transformation_matrix
 
 
     return k

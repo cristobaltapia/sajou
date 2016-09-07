@@ -75,10 +75,21 @@ class StaticSolver(Solver):
         V[free_ind] = V_res
 
         P_react = np.dot(K, V)[bc_ind]
+        # Make dictionary with nodes and respective node reactions
+        for curr_dof in bc_ind:
+            pass
 
-        result = Result()
+        # Copy the data of the model
+        model_data = self._model.export_model_data()
+        # Create results object
+        result = Result(model=model_data)
         result._V = V
-        result._R = P_react
+
+        for ix, index_r in enumerate(bc_ind):
+            node_i, dof_i = self._model.get_node_and_dof(index_r)
+            # Add the reactions to the dictionary of reactions of the
+            # corresponding node
+            node_i.reactions[dof_i] = P_react[ix]
 
         self.postprocess(result)
 
@@ -172,15 +183,16 @@ class Result(object):
 
     """An object to store the data obtained from the solving process"""
 
-    def __init__(self):
+    def __init__(self, model):
         """TODO: to be defined1. """
         self._V = None # displacement results
-        self._R = None # nodal reactions
         self.end_forces = dict() # end forces of elements
         self.internal_forces = dict() # internal forces of elements
         # maximum absolut value of the different member forces in the
         # model
         self._max_member_force = dict()
+        # Data of the model associated with the results
+        self._model = model
 
 
 

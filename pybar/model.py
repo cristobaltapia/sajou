@@ -129,7 +129,7 @@ class Model(object):
 
             where "v" correspond to the vector containing displacements at the same node
             from different elements
-            
+
             "V" contains the global displacements of all DOF's
             "a" is the incidence matrix
 
@@ -144,7 +144,7 @@ class Model(object):
 
         # Total number of DOFs
         num_dof = self.n_nodes * self.beams[0]._dof_per_node
-        
+
         # DOF per node
         n_dof = self.n_dof_per_node
 
@@ -272,7 +272,7 @@ class Model(object):
         r1 = kwargs.get('r1', None)
         r2 = kwargs.get('r2', None)
         r3 = kwargs.get('r3', None)
-        
+
         # For the case of the 2D model
         if self.n_dof_per_node == 3:
             list_dof = [v1, v2, r3]
@@ -319,7 +319,7 @@ class Model(object):
         m1 = kwargs.get('m1', None)
         m2 = kwargs.get('m2', None)
         m3 = kwargs.get('m3', None)
-        
+
         # For the case of the 2D model
         if self.n_dof_per_node == 3:
             list_dof = [f1, f2, m3]
@@ -334,6 +334,33 @@ class Model(object):
                     node.set_Load(dof=dof, val=curr_force)
 
         return None
+
+    def export_model_data(self):
+        """Export all the data of the model. This means the nodes, elements,
+        border conditions and forces are exported to a ModelData object.
+        :returns: TODO
+
+        """
+        model_data = ModelData(self)
+
+        return model_data
+
+    def get_node_and_dof(self, dof):
+        """Returns the node and element dof (number of the dof in a specific element)
+        corresponding to the global dof given.
+
+        :dof: global DOF (integer)
+        :returns: node, int
+
+        """
+        # Get the node
+        n_node = dof // self.n_dof_per_node
+        node = self.nodes[n_node]
+        # Get the intra-element dof
+        n_dof = dof - (n_node * self.n_dof_per_node)
+
+        return node, n_dof
+
 
 class Model2D(Model):
     """Subclass of the 'Model' class. It is intended to be used for the 2-dimensional
@@ -440,6 +467,9 @@ class Node(np.ndarray):
         # the loads is set_Load().
         #
         obj._Loads = dict()
+        # Similar with the reactions. These are, of course, added after the
+        # solution is found.
+        obj.reactions = dict()
 
         # dictionary containing the beams that use this node
         obj.beams = dict()
@@ -782,4 +812,30 @@ class BeamSection(object):
         """
         return 'Beam Section: {name}, type: {t}'.format(name=self._name, t=self._type)
 
+class ModelData(object):
+
+    """Object to store the data of a model object. It is used to pass it to the results object"""
+
+    def __init__(self, model):
+        """Initializes the ModelData instance
+
+        :model: a Model instance
+
+        """
+        from copy import copy
+
+        self._name = model._name
+        self._dimensionality = model._dimensionality
+        self.nodes = copy(model.nodes)
+        self.beams = copy(model.beams)
+        self.beam_sections = copy(model.beam_sections)
+        self.materials = copy(model.materials)
+        self.n_nodes = model.n_nodes
+        self.n_beams = model.n_beams
+        self.n_materials = model.n_materials
+        self._connectivity = copy(model._connectivity)
+        # Number of dof per node. Initialized in the respective models
+        self.n_dof_per_node = model.n_dof_per_node
+        # Specify dofs that are not active due to border conditions
+        self._dof_restraied = copy(model._dof_restraied)
 

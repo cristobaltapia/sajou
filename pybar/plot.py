@@ -8,12 +8,13 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Polygon
 from matplotlib.axes import Axes
 from matplotlib.path import Path
+import seaborn.apionly as sns
 
 class Display(object):
 
     """Display class"""
 
-    def __init__(self, model, width, height, theme='dark'):
+    def __init__(self, width, height, theme='dark'):
         """TODO: to be defined1.
 
         :width: width of the window in pixels
@@ -21,7 +22,6 @@ class Display(object):
         :theme: TODO
 
         """
-        self._model = model
         self._width = width
         self._height = height
         self._theme = theme
@@ -36,25 +36,28 @@ class Display(object):
                 }
         # Color configurations
         if theme == 'dark':
+            palette = sns.color_palette('bright')
             self.draw_config = {
-                    'force': {'color':'green'},
-                    'background': {'color':'black'},
+                    'force': {'color':palette[1]},
+                    'reaction': {'color':'yellow'},
+                    'background': {'color':"#12191f"},
                     'grid': {'color':'white'},
-                    'element': {'color':'yellow', 'linewidth':1},
-                    'support': {'markeredgecolor':'cyan',
+                    'element': {'color':palette[4], 'linewidth':1},
+                    'support': {'markeredgecolor':palette[5],
                                 'markerfacecolor':'None',
                                 'ms':25},
-                    'node': {'color':'yellow'},
+                    'node': {'color':palette[4]},
                     'member force positive': {'edgecolor':'white',
-                                              'facecolor':'blue',
+                                              'facecolor':palette[0],
                                               'alpha':0.5},
                     'member force negative': {'edgecolor':'white',
-                                              'facecolor':'red',
+                                              'facecolor':palette[2],
                                               'alpha':0.5},
                     }
         elif theme == 'publication':
             self.draw_config = {
                     'force': {'color':'black'},
+                    'reaction': {'color':'black'},
                     'background': {'color':'white'},
                     'grid': {'color':'black'},
                     'element': {'color':'black', 'linewidth':2},
@@ -70,25 +73,46 @@ class Display(object):
                                               'facecolor':'None',
                                               'alpha':0.5},
                     }
-        else:
+        elif theme == 'light':
+            palette = sns.color_palette('dark')
             self.draw_config = {
-                    'force': {'color':'red'},
-                    'background': {'color':'white'},
+                    'force': {'color':palette[1]},
+                    'reaction': {'color':palette[3]},
+                    'background': {'color':"#dee5ec"},
                     'grid': {'color':'black'},
-                    'element': {'color':'orange', 'linewidth':1},
-                    'support': {'markeredgecolor':'cyan',
+                    'element': {'color':palette[4], 'linewidth':1},
+                    'support': {'markeredgecolor':palette[5],
                                 'markerfacecolor':'None',
                                 'ms':25},
-                    'node': {'color':'orange'},
+                    'node': {'color':palette[4]},
                     'member force positive': {'edgecolor':'black',
-                                              'facecolor':'blue',
+                                              'facecolor':palette[0],
                                               'alpha':0.5},
                     'member force negative': {'edgecolor':'black',
-                                              'facecolor':'red',
+                                              'facecolor':palette[2],
+                                              'alpha':0.5},
+                    }
+        else:
+            palette = sns.color_palette('dark')
+            self.draw_config = {
+                    'force': {'color':palette[1]},
+                    'reaction': {'color':palette[3]},
+                    'background': {'color':"#dee5ec"},
+                    'grid': {'color':'black'},
+                    'element': {'color':palette[4], 'linewidth':1},
+                    'support': {'markeredgecolor':palette[5],
+                                'markerfacecolor':'None',
+                                'ms':25},
+                    'node': {'color':palette[4]},
+                    'member force positive': {'edgecolor':'black',
+                                              'facecolor':palette[0],
+                                              'alpha':0.5},
+                    'member force negative': {'edgecolor':'black',
+                                              'facecolor':palette[2],
                                               'alpha':0.5},
                     }
 
-    def plot_geometry(self, ax):
+    def plot_geometry(self, model, ax):
         """Plots the geometry of the model passed
 
         :model: TODO
@@ -107,17 +131,15 @@ class Display(object):
         ax.set_axis_bgcolor(background_options['color'])
         ax.grid(True, **grid_options)
 
-        model = self._model
-        nodes = model.nodes
-        if self.display_config['nodes'] == True:
-            for num, node in nodes.items():
-                ax.scatter(node.x, node.y, marker='o', **node_options)
-
         for num, elem in model.beams.items():
             n1 = elem._node1
             n2 = elem._node2
             ax.plot([n1.x, n2.x], [n1.y, n2.y], **elem_options)
 
+        nodes = model.nodes
+        if self.display_config['nodes'] == True:
+            for num, node in nodes.items():
+                ax.scatter(node.x, node.y, marker='o', **node_options)
 
         # Plot forces if requiered
         if self.display_config['forces']==True:
@@ -162,9 +184,10 @@ class Display(object):
         """
         member_force_options_pos = self.draw_config['member force positive']
         member_force_options_neg = self.draw_config['member force negative']
-        model = self._model
+        model = result._model
         # First plot the geometry
-        ax = self.plot_geometry(ax)
+        ax = self.plot_geometry(model, ax)
+
         # auxiliary axes
         fig_aux = plt.figure()
         ax_aux = fig_aux.add_subplot(111)
@@ -207,6 +230,13 @@ class Display(object):
                 poly_neg = Polygon(rot_neg, True, **member_force_options_neg)
                 ax.add_patch(poly_neg)
 
+        # Plot reaction forces
+        if self.display_config['reactions']==True:
+            for ix, node_i in model.nodes.items():
+                for dof, val in node_i.reactions.items():
+                    ax = self.plot_nodal_reaction(ax, dof, at=node_i, val=val)
+
+        # close the auxiliary figure
         plt.close(fig_aux)
 
         return ax
@@ -289,11 +319,45 @@ class Display(object):
 
         return ax
 
+    def plot_nodal_reaction(self, ax, dof, at, val):
+        """Plot the nodal reactions of the system
+
+        :ax: matplotlib axis
+        :dof: Degree of freedom to which the force is being applied
+        :at: node at which the load is applied
+        :val: value of the reaction
+        :returns: TODO
+
+        """
+        # Get the draw options for the forces
+        force_options = self.draw_config['reaction']
+
+        # Force in x direction
+        if dof==0:
+            if val < 0:
+                halign = 'left'
+            else:
+                halign = 'right'
+
+            ax.annotate('{f:.2E}'.format(f=abs(val)), xy=(at.x, at.y),
+                xytext=(-np.sign(val)*50,0), color=force_options['color'], ha=halign,
+                va='center',
+                textcoords='offset points',
+                arrowprops = dict(arrowstyle='->', color=force_options['color'], lw=2.5 ))
+        # Force in y direction
+        elif dof==1:
+            ax.annotate('{f:.2E}'.format(f=abs(val)), xy=(at.x, at.y),
+                xytext=(0,-np.sign(val)*50), color=force_options['color'], ha='center',
+                va='center',
+                textcoords='offset points',
+                arrowprops = dict(arrowstyle='->', color=force_options['color'], lw=2.5 ))
+
+        return ax
 ############################################################
 # define markers for the supports
 ############################################################
 # rolling x
-x = [0, 1,  -1, 0, -1.2, 1.2]
+x = [0,  1, -1, 0, -1.2,  1.2]
 y = [0, -1, -1, 0, -1.5, -1.5]
 xy = list(zip(x, y))
 codes = [Path.MOVETO, Path.LINETO, Path.LINETO, Path.LINETO,
@@ -301,14 +365,14 @@ codes = [Path.MOVETO, Path.LINETO, Path.LINETO, Path.LINETO,
 roll_x = Path(xy, codes)
 # rolling y
 x = [0, -1, -1, 0, -1.5, -1.5]
-y = [0, 1,  -1, 0, 1.2, -1.2]
+y = [0,  1, -1, 0,  1.2, -1.2]
 xy = list(zip(x, y))
 codes = [Path.MOVETO, Path.LINETO, Path.LINETO, Path.LINETO,
         Path.MOVETO, Path.LINETO]
 roll_y = Path(xy, codes)
 # pinned
-x = [0, 1,  -1, 0, -1.2, 1.2, -1.2, -0.8, -0.8, -0.4, -0.4, 0,  0,    0.4, 0.4,  0.8, 0.8,  1.2]
-y = [0, -1, -1, 0, -1,   -1,   -1.5, -1,   -1.5, -1,   -1.5, -1, -1.5, -1,  -1.5, -1,  -1.5, -1]
+x = [0,  1, -1, 0, -1.2, 1.2, -1.2, -0.8, -0.8, -0.4, -0.4,  0,    0, 0.4,  0.4, 0.8,  0.8, 1.2]
+y = [0, -1, -1, 0,   -1,  -1, -1.5,   -1, -1.5,   -1, -1.5, -1, -1.5,  -1, -1.5,  -1, -1.5,  -1]
 xy = list(zip(x, y))
 codes = [Path.MOVETO, Path.LINETO, Path.LINETO, Path.LINETO,
         Path.MOVETO, Path.LINETO,
@@ -317,8 +381,8 @@ codes = [Path.MOVETO, Path.LINETO, Path.LINETO, Path.LINETO,
         Path.MOVETO, Path.LINETO, Path.MOVETO, Path.LINETO ]
 pinned = Path(xy, codes)
 # encastrated
-x = [-1, 1, 1,  -1, -1, -1.2, -0.8, -0.8, -0.4, -0.4, 0,  0,    0.4, 0.4,  0.8, 0.8,  1.2]
-y = [0,  0, -1, -1, 0,  -1.5, -1,   -1.5, -1,   -1.5, -1, -1.5, -1,  -1.5, -1,  -1.5, -1]
+x = [-1, 1,  1, -1, -1, -1.2, -0.8, -0.8, -0.4, -0.4,  0,    0, 0.4,  0.4, 0.8,  0.8, 1.2]
+y = [ 0, 0, -1, -1,  0, -1.5,   -1, -1.5,   -1, -1.5, -1, -1.5,  -1, -1.5,  -1, -1.5,  -1]
 xy = list(zip(x, y))
 codes = [Path.MOVETO, Path.LINETO, Path.LINETO, Path.LINETO,
         Path.LINETO,
@@ -327,22 +391,22 @@ codes = [Path.MOVETO, Path.LINETO, Path.LINETO, Path.LINETO,
         Path.MOVETO, Path.LINETO, Path.MOVETO, Path.LINETO ]
 encas = Path(xy, codes)
 # no rotation and no displacement in y
-x = [-1, 1, 1,  -1, -1, -1.2, 1.2]
-y = [0,  0, -1, -1, 0,  -1.5, -1.5]
+x = [-1, 1,  1, -1, -1, -1.2,  1.2]
+y = [ 0, 0, -1, -1,  0, -1.5, -1.5]
 xy = list(zip(x, y))
 codes = [Path.MOVETO, Path.LINETO, Path.LINETO, Path.LINETO,
         Path.LINETO, Path.MOVETO, Path.LINETO]
 disp_x = Path(xy, codes)
 # no rotation and no displacement in x
-x = [0, 0,  -1, -1, 0, -1.5, -1.5]
-y = [1, -1, -1, 1,  1, 1.2,  -1.2]
+x = [0,  0, -1, -1, 0, -1.5, -1.5]
+y = [1, -1, -1,  1, 1,  1.2, -1.2]
 xy = list(zip(x, y))
 codes = [Path.MOVETO, Path.LINETO, Path.LINETO, Path.LINETO,
         Path.LINETO, Path.MOVETO, Path.LINETO]
 disp_y = Path(xy, codes)
 # only rotation constrained
-x = [-0.5, 0.5, -0.5, 0.5]
-y = [-0.5, 0.5, 0.5, -0.5]
+x = [-0.5, 0.5, -0.5,  0.5]
+y = [-0.5, 0.5,  0.5, -0.5]
 xy = list(zip(x, y))
 codes = [Path.MOVETO, Path.LINETO, Path.MOVETO, Path.LINETO]
 rot_z = Path(xy, codes)

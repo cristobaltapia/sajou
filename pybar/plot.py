@@ -109,8 +109,9 @@ class Display(object):
 
         model = self._model
         nodes = model.nodes
-        for num, node in nodes.items():
-            ax.scatter(node.x, node.y, marker='o', **node_options)
+        if self.display_config['nodes'] == True:
+            for num, node in nodes.items():
+                ax.scatter(node.x, node.y, marker='o', **node_options)
 
         for num, elem in model.beams.items():
             n1 = elem._node1

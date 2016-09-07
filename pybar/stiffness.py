@@ -22,7 +22,7 @@ def assemble_Ke_2D(element, second_order=False):
     EI = element._beam_section._Iz * E
     # Length of the element
     L = element._length
-    # Take account of the second order effects
+    # TODO: Take account of the second order effects
     if second_order:
         G = element._material.G
         Ksy = 12.*E*Iz / (G*Asy*L*L)

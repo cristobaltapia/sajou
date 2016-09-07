@@ -75,9 +75,6 @@ class StaticSolver(Solver):
         V[free_ind] = V_res
 
         P_react = np.dot(K, V)[bc_ind]
-        # Make dictionary with nodes and respective node reactions
-        for curr_dof in bc_ind:
-            pass
 
         # Copy the data of the model
         model_data = self._model.export_model_data()
@@ -85,6 +82,7 @@ class StaticSolver(Solver):
         result = Result(model=model_data)
         result._V = V
 
+        # Make dictionary with nodes and respective node reactions
         for ix, index_r in enumerate(bc_ind):
             node_i, dof_i = self._model.get_node_and_dof(index_r)
             # Add the reactions to the dictionary of reactions of the

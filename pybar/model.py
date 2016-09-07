@@ -361,6 +361,19 @@ class Model(object):
 
         return node, n_dof
 
+    def add_hinge(self, node):
+        """Add hinge to the specified node. Also supports list of nodes
+
+        :node: Node instance or list of node instances
+        :returns: TODO
+
+        """
+        #FIXME: not yet implemented!
+        if isinstance(node, list):
+            for node_i in node:
+                node_i.add_hinge()
+        else:
+            node.add_hinge()
 
 class Model2D(Model):
     """Subclass of the 'Model' class. It is intended to be used for the 2-dimensional
@@ -473,6 +486,8 @@ class Node(np.ndarray):
 
         # dictionary containing the beams that use this node
         obj.beams = dict()
+        #
+        obj._hinge = False
 
         return obj
 
@@ -499,6 +514,13 @@ class Node(np.ndarray):
         self._Loads[dof] = val
 
         return 1
+
+    def add_hinge(self):
+        """Method to add a hinge at the instance of the node
+        :returns: TODO
+
+        """
+        self._hinge = True
 
     def append_beam(self, beam, node):
         """Appends the information of the beam that uses the node and the corresponding

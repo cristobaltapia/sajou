@@ -61,7 +61,7 @@ class Display(object):
                     'support': {'markeredgecolor':'black',
                                 'markerfacecolor':'None',
                                 'markeredgewidth':2,
-                                'ms':25},
+                                'ms':35},
                     'node': {'color':'black'},
                     'member force positive': {'edgecolor':'black',
                                               'facecolor':'None',

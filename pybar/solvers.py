@@ -38,8 +38,8 @@ class StaticSolver(Solver):
     """Linear Static solver used to solve the most typical problems"""
 
     def __init__(self, model, **kwargs):
-        """Initialize the solver instance 
-        
+        """Initialize the solver instance
+
         Optional parameters:
         nlg: boolean, consider geometrical nonlinearities (Default False)
 
@@ -108,6 +108,11 @@ class StaticSolver(Solver):
         """
         # First calculate end forces on each member
         end_forces = self._calc_end_forces(result)
+
+        max_N = 0.
+        max_V = 0.
+        max_M = 0.
+
         # FIXME: still need to include distributed loads, etc
         for num, elem in self._model.beams.items():
             x_axis = np.linspace(0,1,11) * elem._length
@@ -120,6 +125,14 @@ class StaticSolver(Solver):
             # Add to the results
             res = {'axial':axial, 'shear':shear, 'moment':moment, 'x':x_axis}
             result.internal_forces[num] = res
+            # maximum absolute values
+            max_N = max([max(abs(axial)), max_N])
+            max_V = max([max(abs(shear)), max_V])
+            max_M = max([max(abs(moment)), max_M])
+
+        result._max_member_force['axial'] = max_N
+        result._max_member_force['shear'] = max_V
+        result._max_member_force['moment'] = max_M
 
         return result.internal_forces
 
@@ -153,8 +166,8 @@ class StaticSolver(Solver):
             result.end_forces[num] = P_i_local
 
         return result.end_forces
-        
-        
+
+
 class Result(object):
 
     """An object to store the data obtained from the solving process"""
@@ -165,6 +178,9 @@ class Result(object):
         self._R = None # nodal reactions
         self.end_forces = dict() # end forces of elements
         self.internal_forces = dict() # internal forces of elements
+        # maximum absolut value of the different member forces in the
+        # model
+        self._max_member_force = dict()
 
 
 

@@ -45,14 +45,14 @@ class Display(object):
                                 'markerfacecolor':'None',
                                 'ms':25},
                     'node': {'color':'yellow'},
-                    'member force positive': {'edgecolor':'black',
+                    'member force positive': {'edgecolor':'white',
                                               'facecolor':'blue',
                                               'alpha':0.5},
-                    'member force negative': {'edgecolor':'black',
-                                              'facecolor':'blue',
+                    'member force negative': {'edgecolor':'white',
+                                              'facecolor':'red',
                                               'alpha':0.5},
                     }
-        if theme == 'publication':
+        elif theme == 'publication':
             self.draw_config = {
                     'force': {'color':'black'},
                     'background': {'color':'white'},
@@ -84,7 +84,7 @@ class Display(object):
                                               'facecolor':'blue',
                                               'alpha':0.5},
                     'member force negative': {'edgecolor':'black',
-                                              'facecolor':'blue',
+                                              'facecolor':'red',
                                               'alpha':0.5},
                     }
 
@@ -143,13 +143,18 @@ class Display(object):
 
         return ax
 
-    def plot_internal_forces(self, ax, result, component, scale):
+    def plot_internal_forces(self, ax, result, component, scale=1):
         """Plot the diagrams of internal forces
 
-        :res: three options:
+        :ax: matplotlib axis
+        :result: Result object
+        :component: internal force
             - 'axial'
-            - 'moment'
             - 'shear'
+            - 'moment'
+        :scale: scale for the member forces (the member forces are already
+        automatically scaled to fit in the display. This is a scale factor
+        that multiplies that automatically calulated factor)
 
         :returns: matplotlib axis
 
@@ -162,6 +167,11 @@ class Display(object):
         # auxiliary axes
         fig_aux = plt.figure()
         ax_aux = fig_aux.add_subplot(111)
+        # Determine automatic scaling factor
+        x_range = ax.get_xlim()[1] - ax.get_xlim()[0]
+        y_range = ax.get_ylim()[1] - ax.get_ylim()[0]
+        min_range = min([x_range, y_range])
+        scale_auto = 0.2*min_range/result._max_member_force[component]
         # Plot the specified diagram
         # Transform the results from the local coordinates to global
         # coordinates
@@ -170,7 +180,7 @@ class Display(object):
             T = elem.transformation_matrix[0:2,0:2]
             # Get the specified member forces
             x_axis = result.internal_forces[num]['x']
-            d = result.internal_forces[num][component]*scale
+            d = result.internal_forces[num][component]*scale_auto*scale
 
             # Positive values
             d_pos = ax_aux.fill_between(x_axis, d, 0, where=d>0, interpolate=True)

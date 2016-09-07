@@ -203,63 +203,6 @@ class Display(object):
                 markeredgecolor=color_s,
                 ms=s_size,
                 )
-        ############################################################
-        # define markers for the supports
-        ############################################################
-        # rolling x
-        x = [0, 1,  -1, 0, -1.2, 1.2]
-        y = [0, -1, -1, 0, -1.5, -1.5]
-        xy = list(zip(x, y))
-        codes = [Path.MOVETO, Path.LINETO, Path.LINETO, Path.LINETO,
-                Path.MOVETO, Path.LINETO]
-        roll_x = Path(xy, codes)
-        # rolling y
-        x = [0, -1, -1, 0, -1.5, -1.5]
-        y = [0, 1,  -1, 0, 1.2, -1.2]
-        xy = list(zip(x, y))
-        codes = [Path.MOVETO, Path.LINETO, Path.LINETO, Path.LINETO,
-                Path.MOVETO, Path.LINETO]
-        roll_y = Path(xy, codes)
-        # pinned
-        x = [0, 1,  -1, 0, -1.2, 1.2, -1.2, -0.8, -0.8, -0.4, -0.4, 0,  0,    0.4, 0.4,  0.8, 0.8,  1.2]
-        y = [0, -1, -1, 0, -1,   -1,   -1.5, -1,   -1.5, -1,   -1.5, -1, -1.5, -1,  -1.5, -1,  -1.5, -1]
-        xy = list(zip(x, y))
-        codes = [Path.MOVETO, Path.LINETO, Path.LINETO, Path.LINETO,
-                Path.MOVETO, Path.LINETO,
-                Path.MOVETO, Path.LINETO, Path.MOVETO, Path.LINETO,
-                Path.MOVETO, Path.LINETO, Path.MOVETO, Path.LINETO,
-                Path.MOVETO, Path.LINETO, Path.MOVETO, Path.LINETO ]
-        pinned = Path(xy, codes)
-        # encastrated
-        x = [-1, 1, 1,  -1, -1, -1.2, -0.8, -0.8, -0.4, -0.4, 0,  0,    0.4, 0.4,  0.8, 0.8,  1.2]
-        y = [0,  0, -1, -1, 0,  -1.5, -1,   -1.5, -1,   -1.5, -1, -1.5, -1,  -1.5, -1,  -1.5, -1]
-        xy = list(zip(x, y))
-        codes = [Path.MOVETO, Path.LINETO, Path.LINETO, Path.LINETO,
-                Path.LINETO,
-                Path.MOVETO, Path.LINETO, Path.MOVETO, Path.LINETO,
-                Path.MOVETO, Path.LINETO, Path.MOVETO, Path.LINETO,
-                Path.MOVETO, Path.LINETO, Path.MOVETO, Path.LINETO ]
-        encas = Path(xy, codes)
-        # no rotation and no displacement in y
-        x = [-1, 1, 1,  -1, -1, -1.2, 1.2]
-        y = [0,  0, -1, -1, 0,  -1.5, -1.5]
-        xy = list(zip(x, y))
-        codes = [Path.MOVETO, Path.LINETO, Path.LINETO, Path.LINETO,
-                Path.LINETO, Path.MOVETO, Path.LINETO]
-        disp_x = Path(xy, codes)
-        # no rotation and no displacement in x
-        x = [0, 0,  -1, -1, 0, -1.5, -1.5]
-        y = [1, -1, -1, 1,  1, 1.2,  -1.2]
-        xy = list(zip(x, y))
-        codes = [Path.MOVETO, Path.LINETO, Path.LINETO, Path.LINETO,
-                Path.LINETO, Path.MOVETO, Path.LINETO]
-        disp_y = Path(xy, codes)
-        # only rotation constrained
-        x = [-0.5, 0.5, -0.5, 0.5]
-        y = [-0.5, 0.5, 0.5, -0.5]
-        xy = list(zip(x, y))
-        codes = [Path.MOVETO, Path.LINETO, Path.MOVETO, Path.LINETO]
-        rot_z = Path(xy, codes)
 
         if len(dof) == 1:
             # rolling support free in 'y'
@@ -288,3 +231,62 @@ class Display(object):
             ax.plot([at.x],[at.y], marker=encas, **marker_options)
 
         return ax
+
+############################################################
+# define markers for the supports
+############################################################
+# rolling x
+x = [0, 1,  -1, 0, -1.2, 1.2]
+y = [0, -1, -1, 0, -1.5, -1.5]
+xy = list(zip(x, y))
+codes = [Path.MOVETO, Path.LINETO, Path.LINETO, Path.LINETO,
+        Path.MOVETO, Path.LINETO]
+roll_x = Path(xy, codes)
+# rolling y
+x = [0, -1, -1, 0, -1.5, -1.5]
+y = [0, 1,  -1, 0, 1.2, -1.2]
+xy = list(zip(x, y))
+codes = [Path.MOVETO, Path.LINETO, Path.LINETO, Path.LINETO,
+        Path.MOVETO, Path.LINETO]
+roll_y = Path(xy, codes)
+# pinned
+x = [0, 1,  -1, 0, -1.2, 1.2, -1.2, -0.8, -0.8, -0.4, -0.4, 0,  0,    0.4, 0.4,  0.8, 0.8,  1.2]
+y = [0, -1, -1, 0, -1,   -1,   -1.5, -1,   -1.5, -1,   -1.5, -1, -1.5, -1,  -1.5, -1,  -1.5, -1]
+xy = list(zip(x, y))
+codes = [Path.MOVETO, Path.LINETO, Path.LINETO, Path.LINETO,
+        Path.MOVETO, Path.LINETO,
+        Path.MOVETO, Path.LINETO, Path.MOVETO, Path.LINETO,
+        Path.MOVETO, Path.LINETO, Path.MOVETO, Path.LINETO,
+        Path.MOVETO, Path.LINETO, Path.MOVETO, Path.LINETO ]
+pinned = Path(xy, codes)
+# encastrated
+x = [-1, 1, 1,  -1, -1, -1.2, -0.8, -0.8, -0.4, -0.4, 0,  0,    0.4, 0.4,  0.8, 0.8,  1.2]
+y = [0,  0, -1, -1, 0,  -1.5, -1,   -1.5, -1,   -1.5, -1, -1.5, -1,  -1.5, -1,  -1.5, -1]
+xy = list(zip(x, y))
+codes = [Path.MOVETO, Path.LINETO, Path.LINETO, Path.LINETO,
+        Path.LINETO,
+        Path.MOVETO, Path.LINETO, Path.MOVETO, Path.LINETO,
+        Path.MOVETO, Path.LINETO, Path.MOVETO, Path.LINETO,
+        Path.MOVETO, Path.LINETO, Path.MOVETO, Path.LINETO ]
+encas = Path(xy, codes)
+# no rotation and no displacement in y
+x = [-1, 1, 1,  -1, -1, -1.2, 1.2]
+y = [0,  0, -1, -1, 0,  -1.5, -1.5]
+xy = list(zip(x, y))
+codes = [Path.MOVETO, Path.LINETO, Path.LINETO, Path.LINETO,
+        Path.LINETO, Path.MOVETO, Path.LINETO]
+disp_x = Path(xy, codes)
+# no rotation and no displacement in x
+x = [0, 0,  -1, -1, 0, -1.5, -1.5]
+y = [1, -1, -1, 1,  1, 1.2,  -1.2]
+xy = list(zip(x, y))
+codes = [Path.MOVETO, Path.LINETO, Path.LINETO, Path.LINETO,
+        Path.LINETO, Path.MOVETO, Path.LINETO]
+disp_y = Path(xy, codes)
+# only rotation constrained
+x = [-0.5, 0.5, -0.5, 0.5]
+y = [-0.5, 0.5, 0.5, -0.5]
+xy = list(zip(x, y))
+codes = [Path.MOVETO, Path.LINETO, Path.MOVETO, Path.LINETO]
+rot_z = Path(xy, codes)
+############################################################

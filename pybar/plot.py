@@ -36,24 +36,56 @@ class Display(object):
                 }
         # Color configurations
         if theme == 'dark':
-            self.color_config = {
-                    'force color': 'green',
-                    'background': 'black',
-                    'grid color': 'white',
-                    'element color': 'yellow',
-                    'support color': 'cyan',
-                    'node color': 'yellow',
-                    'member force border': 'white',
+            self.draw_config = {
+                    'force': {'color':'green'},
+                    'background': {'color':'black'},
+                    'grid': {'color':'white'},
+                    'element': {'color':'yellow', 'linewidth':1},
+                    'support': {'markeredgecolor':'cyan',
+                                'markerfacecolor':'None',
+                                'ms':25},
+                    'node': {'color':'yellow'},
+                    'member force positive': {'edgecolor':'black',
+                                              'facecolor':'blue',
+                                              'alpha':0.5},
+                    'member force negative': {'edgecolor':'black',
+                                              'facecolor':'blue',
+                                              'alpha':0.5},
+                    }
+        if theme == 'publication':
+            self.draw_config = {
+                    'force': {'color':'black'},
+                    'background': {'color':'white'},
+                    'grid': {'color':'black'},
+                    'element': {'color':'black', 'linewidth':2},
+                    'support': {'markeredgecolor':'black',
+                                'markerfacecolor':'None',
+                                'markeredgewidth':2,
+                                'ms':25},
+                    'node': {'color':'black'},
+                    'member force positive': {'edgecolor':'black',
+                                              'facecolor':'None',
+                                              'alpha':0.5},
+                    'member force negative': {'edgecolor':'black',
+                                              'facecolor':'None',
+                                              'alpha':0.5},
                     }
         else:
-            self.color_config = {
-                    'force color': 'green',
-                    'background': 'white',
-                    'grid color': 'black',
-                    'element color': 'blue',
-                    'support color': 'red',
-                    'node color': 'blue',
-                    'member force border': 'black',
+            self.draw_config = {
+                    'force': {'color':'red'},
+                    'background': {'color':'white'},
+                    'grid': {'color':'black'},
+                    'element': {'color':'orange', 'linewidth':1},
+                    'support': {'markeredgecolor':'cyan',
+                                'markerfacecolor':'None',
+                                'ms':25},
+                    'node': {'color':'orange'},
+                    'member force positive': {'edgecolor':'black',
+                                              'facecolor':'blue',
+                                              'alpha':0.5},
+                    'member force negative': {'edgecolor':'black',
+                                              'facecolor':'blue',
+                                              'alpha':0.5},
                     }
 
     def plot_geometry(self, ax):
@@ -64,48 +96,33 @@ class Display(object):
         :returns: TODO
 
         """
-        color_n = self.color_config['node color']
-        color_e = self.color_config['element color']
-        color_b = self.color_config['background']
-        color_g = self.color_config['grid color']
-        color_f = self.color_config['force color']
-        color_s = self.color_config['support color']
+        node_options = self.draw_config['node']
+        elem_options = self.draw_config['element']
+        background_options = self.draw_config['background']
+        grid_options = self.draw_config['grid']
+        force_options = self.draw_config['force']
+        support_options = self.draw_config['support']
 
         # set background color
-        ax.set_axis_bgcolor(color_b)
-        ax.grid(True, color=color_g)
+        ax.set_axis_bgcolor(background_options['color'])
+        ax.grid(True, **grid_options)
 
         model = self._model
         nodes = model.nodes
         for num, node in nodes.items():
-            ax.scatter(node.x, node.y, marker='o', color=color_n)
+            ax.scatter(node.x, node.y, marker='o', **node_options)
 
         for num, elem in model.beams.items():
             n1 = elem._node1
             n2 = elem._node2
-            ax.plot([n1.x, n2.x], [n1.y, n2.y], color=color_e)
+            ax.plot([n1.x, n2.x], [n1.y, n2.y], **elem_options)
+
 
         # Plot forces if requiered
         if self.display_config['forces']==True:
             for ix, node_i in model.nodes.items():
                 for dof, val in node_i._Loads.items():
-                    if dof==0:
-                        if val < 0:
-                            halign = 'left'
-                        else:
-                            halign = 'right'
-
-                        ax.annotate('{f:.2E}'.format(f=abs(val)), xy=(node_i.x,node_i.y),
-                                xytext=(-np.sign(val)*50,0), color=color_f, ha=halign,
-                                va='center',
-                                textcoords='offset points',
-                                arrowprops = dict(arrowstyle='->', color=color_f, lw=2.5 ))
-                    elif dof==1:
-                        ax.annotate('{f:.2E}'.format(f=abs(val)), xy=(node_i.x,node_i.y),
-                                xytext=(0,-np.sign(val)*50), color=color_f, ha='center',
-                                va='center',
-                                textcoords='offset points',
-                                arrowprops = dict(arrowstyle='->', color=color_f, lw=2.5 ))
+                    ax = self.plot_nodal_force(ax, dof, at=node_i, val=val)
 
         # Plot supports
         if self.display_config['supports']==True:
@@ -137,7 +154,8 @@ class Display(object):
         :returns: matplotlib axis
 
         """
-        color_mf = self.color_config['member force border']
+        member_force_options_pos = self.draw_config['member force positive']
+        member_force_options_neg = self.draw_config['member force negative']
         model = self._model
         # First plot the geometry
         ax = self.plot_geometry(ax)
@@ -167,8 +185,7 @@ class Display(object):
                 rot_pos = np.dot(curr_pol.vertices, T)
                 rot_pos[:,0] += elem._node1.x
                 rot_pos[:,1] += elem._node1.y
-                poly_pos = Polygon(rot_pos, True, facecolor='blue',
-                        edgecolor=color_mf, alpha=0.5)
+                poly_pos = Polygon(rot_pos, True, **member_force_options_pos)
                 ax.add_patch(poly_pos)
 
             # negative part
@@ -176,8 +193,7 @@ class Display(object):
                 rot_neg = np.dot(curr_pol.vertices, T)
                 rot_neg[:,0] += elem._node1.x
                 rot_neg[:,1] += elem._node1.y
-                poly_neg = Polygon(rot_neg, True, facecolor='red',
-                        edgecolor=color_mf, alpha=0.5)
+                poly_neg = Polygon(rot_neg, True, **member_force_options_neg)
                 ax.add_patch(poly_neg)
 
         plt.close(fig_aux)
@@ -193,42 +209,72 @@ class Display(object):
         :returns: matplotlib Axis object
 
         """
-        color_s = self.color_config['support color']
+        support_options = self.draw_config['support']
         s_size = 25
         # transform to list
         dof = list(dof)
         #
-        marker_options = dict(
-                markerfacecolor='none',
-                markeredgecolor=color_s,
-                ms=s_size,
-                )
 
         if len(dof) == 1:
             # rolling support free in 'y'
             if dof[0] == 0:
-                ax.plot([at.x],[at.y], marker=roll_y, **marker_options)
+                ax.plot([at.x],[at.y], marker=roll_y, **support_options)
             # rolling support free in 'x'
             elif dof[0] == 1:
-                ax.plot([at.x],[at.y], marker=roll_x, **marker_options)
+                ax.plot([at.x],[at.y], marker=roll_x, **support_options)
             # only rotation constrained
             elif dof[0] == 2:
-                ax.plot([at.x],[at.y], marker=rot_z, **marker_options)
+                ax.plot([at.x],[at.y], marker=rot_z, **support_options)
         #
         if len(dof) == 2:
             # pinned support
             if np.all([0, 1] == np.sort(dof)):
-                ax.plot([at.x],[at.y], marker=pinned, **marker_options)
+                ax.plot([at.x],[at.y], marker=pinned, **support_options)
             # 
             elif np.all([0, 2] == np.sort(dof)):
-                ax.plot([at.x],[at.y], marker=disp_y, **marker_options)
+                ax.plot([at.x],[at.y], marker=disp_y, **support_options)
             #
             elif np.all([1, 2] == np.sort(dof)):
-                ax.plot([at.x],[at.y], marker=disp_x, **marker_options)
+                ax.plot([at.x],[at.y], marker=disp_x, **support_options)
         #
         if len(dof) == 3:
             # Encastrated
-            ax.plot([at.x],[at.y], marker=encas, **marker_options)
+            ax.plot([at.x],[at.y], marker=encas, **support_options)
+
+        return ax
+
+    def plot_nodal_force(self, ax, dof, at, val):
+        """TODO: Docstring for plot_forces.
+
+        :ax: matplotlib axis
+        :dof: Degree of freedom to which the force is being applied
+        :at: node at which the load is applied
+        :val: value of the force
+        :returns: TODO
+
+        """
+        # Get the draw options for the forces
+        force_options = self.draw_config['force']
+
+        # Force in x direction
+        if dof==0:
+            if val < 0:
+                halign = 'left'
+            else:
+                halign = 'right'
+
+            ax.annotate('{f:.2E}'.format(f=abs(val)), xy=(at.x, at.y),
+                xytext=(-np.sign(val)*50,0), color=force_options['color'], ha=halign,
+                va='center',
+                textcoords='offset points',
+                arrowprops = dict(arrowstyle='->', color=force_options['color'], lw=2.5 ))
+        # Force in y direction
+        elif dof==1:
+            ax.annotate('{f:.2E}'.format(f=abs(val)), xy=(at.x, at.y),
+                xytext=(0,-np.sign(val)*50), color=force_options['color'], ha='center',
+                va='center',
+                textcoords='offset points',
+                arrowprops = dict(arrowstyle='->', color=force_options['color'], lw=2.5 ))
 
         return ax
 

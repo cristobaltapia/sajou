@@ -319,6 +319,19 @@ class Display(object):
                 va='center',
                 textcoords='offset points',
                 arrowprops = dict(arrowstyle='->', color=force_options['color'], lw=2.5 ))
+        # Moment
+        elif dof==2:
+            ax.annotate('{f:.2E}'.format(f=abs(val)), xy=(at.x, at.y),
+                xytext=(20,20), color=force_options['color'], ha='left',
+                va='center',
+                textcoords='offset points')
+            if np.sign(val) >= 0.:
+                ax.plot([at.x],[at.y], marker=marker_moment_pos, markeredgecolor=force_options['color'],
+                        markerfacecolor='None', ms=40, markeredgewidth=2)
+            else:
+                ax.plot([at.x],[at.y], marker=marker_moment_neg, markeredgecolor=force_options['color'],
+                        markerfacecolor='None', ms=40, markeredgewidth=2)
+
 
         return ax
 
@@ -354,8 +367,66 @@ class Display(object):
                 va='center',
                 textcoords='offset points',
                 arrowprops = dict(arrowstyle='->', color=force_options['color'], lw=2.5 ))
+        # Moment
+        elif dof==2:
+            ax.annotate('{f:.2E}'.format(f=abs(val)), xy=(at.x, at.y),
+                xytext=(20,20), color=force_options['color'], ha='left',
+                va='center',
+                textcoords='offset points')
+            if np.sign(val) >= 0.:
+                ax.plot([at.x],[at.y], marker=marker_moment_pos, markeredgecolor=force_options['color'],
+                        markerfacecolor='None', ms=40, markeredgewidth=2)
+            else:
+                ax.plot([at.x],[at.y], marker=marker_moment_neg, markeredgecolor=force_options['color'],
+                        markerfacecolor='None', ms=40, markeredgewidth=2)
 
         return ax
+
+############################################################
+# define markers for the moment application
+############################################################
+#
+marker_moment_pos = Path.arc(theta1=-45., theta2=135.)
+verts_m = marker_moment_pos.vertices
+codes_m = marker_moment_pos.codes
+arrow_head_s = 0.4
+# get angle on the tip (approx.)
+ang_aux_pos = np.arctan2((verts_m[-1,1]-verts_m[-3,1]), (verts_m[-1,0]-verts_m[-3,0]))
+ang_aux_neg = np.arctan2((verts_m[0,1]-verts_m[2,1]), (verts_m[0,0]-verts_m[2,0]))
+# Positive Moment
+ang_arrow = np.deg2rad(25.)
+ang_p1 = ang_aux_pos - np.pi + ang_arrow
+ang_p2 = ang_aux_pos - np.pi - ang_arrow
+# Position of the tip of the arrow
+tip_pos = verts_m[-1,:]
+# Position of the first line of the arrow
+p1 = tip_pos + arrow_head_s*np.array([np.cos(ang_p1), np.sin(ang_p1)])
+# Position of the second line of the arrow
+p2 = tip_pos + arrow_head_s*np.array([np.cos(ang_p2), np.sin(ang_p2)])
+# Add to the vertices and code
+aux = np.array([p1, tip_pos, p2])
+verts_mp = np.vstack((verts_m, aux))
+aux_code = np.array([1,2,2])
+codes_mp = np.hstack((codes_m, aux_code))
+# Create path
+marker_moment_pos = Path(verts_mp, codes_mp)
+
+# Negative Moment
+ang_p1 = ang_aux_neg - np.pi + ang_arrow
+ang_p2 = ang_aux_neg - np.pi - ang_arrow
+# Position of the tip of the arrow
+tip_neg = verts_m[0,:]
+# Position of the first line of the arrow
+p1 = tip_neg + arrow_head_s*np.array([np.cos(ang_p1), np.sin(ang_p1)])
+# Position of the second line of the arrow
+p2 = tip_neg + arrow_head_s*np.array([np.cos(ang_p2), np.sin(ang_p2)])
+# Add to the vertices and code
+aux = np.array([p1, tip_neg, p2])
+verts_mn = np.vstack((verts_m, aux))
+aux_code = np.array([1,2,2])
+codes_mn = np.hstack((codes_m, aux_code))
+marker_moment_neg = Path(verts_mn, codes_mn)
+############################################################
 
 ############################################################
 # define markers for the supports

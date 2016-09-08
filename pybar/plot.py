@@ -14,12 +14,15 @@ class Display(object):
 
     """Display class"""
 
-    def __init__(self, width, height, theme='dark'):
+    def __init__(self, width, height, theme='dark', backend='matplotlib'):
         """TODO: to be defined1.
 
         :width: width of the window in pixels
         :height: height of the window in pixels
         :theme: TODO
+        :backend: backend used to display the results
+            - 'matplotlib'
+            - 'mayavi' (not implemented yet)
 
         """
         self._width = width
@@ -194,8 +197,8 @@ class Display(object):
         # Determine automatic scaling factor
         x_range = ax.get_xlim()[1] - ax.get_xlim()[0]
         y_range = ax.get_ylim()[1] - ax.get_ylim()[0]
-        min_range = min([x_range, y_range])
-        scale_auto = 0.2*min_range/result._max_member_force[component]
+        max_range = max([x_range, y_range])
+        scale_auto = 0.2*max_range/result._max_member_force[component]
         # Plot the specified diagram
         # Transform the results from the local coordinates to global
         # coordinates
@@ -353,6 +356,7 @@ class Display(object):
                 arrowprops = dict(arrowstyle='->', color=force_options['color'], lw=2.5 ))
 
         return ax
+
 ############################################################
 # define markers for the supports
 ############################################################

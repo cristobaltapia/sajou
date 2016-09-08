@@ -34,7 +34,7 @@ class Model(object):
         # Number of dof per node. Initialized in the respective models
         self.n_dof_per_node = None
         # Specify dofs that are not active due to border conditions
-        self._dof_restraied = []
+        self._dof_dirichlet = []
 
     def Material(self, name, data, type='isotropic'):
         """Function used to create a Material instance in the model
@@ -195,8 +195,6 @@ class Model(object):
             K[j1:j2,i1:i2] += self.beams[n_elem]._Ke[n_dof:,0:n_dof]
             K[i1:i2,j1:j2] += self.beams[n_elem]._Ke[0:n_dof,n_dof:]
 
-        self._K = K
-
         return K
 
     def _generate_loading_vector(self):
@@ -235,7 +233,7 @@ class Model(object):
                 # Add value to the vector
                 V[ind] = val
                 # Add to the list of restrained DOFs
-                self._dof_restraied.append(ind)
+                self._dof_dirichlet.append(ind)
 
         self._V = V
 
@@ -279,6 +277,7 @@ class Model(object):
             for dof, curr_bc in enumerate(list_dof):
                 if curr_bc is not None:
                     node.set_BC(dof=dof, val=curr_bc)
+
         # For the case of the 3D model
         elif self.n_dof_per_node == 6:
             list_dof = [v1, v2, v3, r1, r2, r3]
@@ -859,5 +858,5 @@ class ModelData(object):
         # Number of dof per node. Initialized in the respective models
         self.n_dof_per_node = model.n_dof_per_node
         # Specify dofs that are not active due to border conditions
-        self._dof_restraied = copy(model._dof_restraied)
+        self._dof_dirichlet = copy(model._dof_dirichlet)
 

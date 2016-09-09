@@ -22,6 +22,7 @@ class Display(object):
         :theme: TODO
         :backend: backend used to display the results
             - 'matplotlib'
+            - 'python-occ' (not implemented yet)
             - 'mayavi' (not implemented yet)
 
         """
@@ -209,11 +210,14 @@ class Display(object):
             x_axis = result.internal_forces[num]['x']
             d = result.internal_forces[num][component]*scale_auto*scale
 
+            # Results are mutiplied by -1 to represent them in the convention
+            # where positive moments are drawn 'below' the beam element.
+            d = -d
             # Positive values
-            d_pos = ax_aux.fill_between(x_axis, d, 0, where=d>0, interpolate=True)
+            d_pos = ax_aux.fill_between(x_axis, d, 0, where=d<0, interpolate=True)
             d_pos = d_pos.get_paths()
             # Negative values
-            d_neg = ax_aux.fill_between(x_axis, d, 0, where=d<0, interpolate=True)
+            d_neg = ax_aux.fill_between(x_axis, d, 0, where=d>0, interpolate=True)
             d_neg = d_neg.get_paths()
 
             # Plot the patches

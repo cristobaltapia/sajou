@@ -156,7 +156,7 @@ class StaticSolver(Solver):
     def _calc_end_forces(self, result):
         """Calculates the internal forces of beam elements
 
-        :result: TODO
+        :result: Result object
         :returns: TODO
 
         """
@@ -164,11 +164,13 @@ class StaticSolver(Solver):
         for num, elem in self._model.beams.items():
             # Get the transformation matrix for the element
             T = elem.transformation_matrix
-            # Get the stiffness matrix of the element
+            # Get the stiffness matrix of the element in global coordinates
             Ke = elem._Ke
-            # Get the displacements of the corresponding DOFs
+            # Get the displacements of the corresponding DOFs in global coordinates
             dof_pn = elem._dof_per_node
             v_i = np.zeros(dof_pn*elem._n_nodes)
+            # Assemble matrix with element nodal displacements of the current
+            # beam element
             for n_node, node in enumerate(elem._nodes):
                 i1 = n_node*dof_pn
                 i2 = dof_pn*(n_node+1)
@@ -176,10 +178,12 @@ class StaticSolver(Solver):
                 j2 = dof_pn*(1+node.number)
                 v_i[i1:i2] = result._V[j1:j2]
 
+            # Get the End Forces of the element in global coordinates
             P_i = np.dot(Ke, v_i)
-
+            # Transform End Forces to local coordinates
             P_i_local = np.dot(T, P_i)
-
+            # Add End Forces to the dictionary of End Forces of the result object
+            # for the current beam element
             result.end_forces[num] = P_i_local
 
         return result.end_forces

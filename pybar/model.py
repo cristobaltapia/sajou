@@ -2,7 +2,6 @@
 # encoding: utf-8
 import numpy as np
 from .utils import Local_Csys_two_points
-from .stiffness import assemble_Ke_2D
 from .solvers import StaticSolver
 from .elements import Beam2D, Beam3D
 """

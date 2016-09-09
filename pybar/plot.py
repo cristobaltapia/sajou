@@ -336,6 +336,179 @@ class Display(object):
                 ax.plot([at.x],[at.y], marker=marker_moment_neg, markeredgecolor=force_options['color'],
                         markerfacecolor='None', ms=40, markeredgewidth=2)
 
+        return ax
+
+    def plot_nodal_reaction(self, ax, dof, at, val):
+        """Plot the nodal reactions of the system
+
+        :ax: matplotlib axis
+        :dof: Degree of freedom to which the force is being applied
+        :at: node at which the load is applied
+        :val: value of the reaction
+        :returns: TODO
+
+        """
+        # Get the draw options for the forces
+        force_options = self.draw_config['reaction']
+
+        # Force in x direction
+        if dof==0:
+            if val < 0:
+                halign = 'left'
+            else:
+                halign = 'right'
+
+            ax.annotate('{f:.2E}'.format(f=abs(val)), xy=(at.x, at.y),
+                xytext=(-np.sign(val)*50,0), color=force_options['color'], ha=halign,
+                va='center',
+                textcoords='offset points',
+                arrowprops = dict(arrowstyle='->', color=force_options['color'], lw=2.5 ))
+        # Force in y direction
+        elif dof==1:
+            ax.annotate('{f:.2E}'.format(f=abs(val)), xy=(at.x, at.y),
+                xytext=(0,-np.sign(val)*50), color=force_options['color'], ha='center',
+                va='center',
+                textcoords='offset points',
+                arrowprops = dict(arrowstyle='->', color=force_options['color'], lw=2.5 ))
+        # Moment
+        elif dof==2:
+            ax.annotate('{f:.2E}'.format(f=abs(val)), xy=(at.x, at.y),
+                xytext=(20,20), color=force_options['color'], ha='left',
+                va='center',
+                textcoords='offset points')
+            if np.sign(val) >= 0.:
+                ax.plot([at.x],[at.y], marker=marker_moment_pos, markeredgecolor=force_options['color'],
+                        markerfacecolor='None', ms=40, markeredgewidth=2)
+            else:
+                ax.plot([at.x],[at.y], marker=marker_moment_neg, markeredgecolor=force_options['color'],
+                        markerfacecolor='None', ms=40, markeredgewidth=2)
+
+        return ax
+
+class DisplaySym(Display):
+
+    """Symbolic display"""
+
+    def __init__(self, width, height, theme='dark', backend='matplotlib'):
+        """TODO: to be defined1. """
+        Display.__init__(self, width, height, theme)
+
+    def plot_internal_forces(self, ax, result, component, scale=1):
+        """Plot the diagrams of internal forces
+
+        :ax: matplotlib axis
+        :result: Result object
+        :component: internal force
+            - 'axial'
+            - 'shear'
+            - 'moment'
+        :scale: scale for the member forces (the member forces are already
+        automatically scaled to fit in the display. This is a scale factor
+        that multiplies that automatically calulated factor)
+
+        :returns: matplotlib axis
+
+        """
+        member_force_options_pos = self.draw_config['member force positive']
+        member_force_options_neg = self.draw_config['member force negative']
+        model = result._model
+        # First plot the geometry
+        ax = self.plot_geometry(model, ax)
+
+        # auxiliary axes
+        fig_aux = plt.figure()
+        ax_aux = fig_aux.add_subplot(111)
+        # Determine automatic scaling factor
+        x_range = ax.get_xlim()[1] - ax.get_xlim()[0]
+        y_range = ax.get_ylim()[1] - ax.get_ylim()[0]
+        max_range = max([x_range, y_range])
+        scale_auto = 0.2*max_range/result._max_member_force[component]
+        # Plot the specified diagram
+        # Transform the results from the local coordinates to global
+        # coordinates
+        for num, elem in model.beams.items():
+            # Get the transformation matrix
+            T = elem.transformation_matrix[0:2,0:2]
+            # Get the specified member forces
+            x_axis = result.internal_forces[num]['x']
+            d = result.internal_forces[num][component]*scale_auto*scale
+
+            # Results are mutiplied by -1 to represent them in the convention
+            # where positive moments are drawn 'below' the beam element.
+            d = -d
+            # Positive values
+            d_pos = ax_aux.fill_between(x_axis, d, 0, where=d<0, interpolate=True)
+            d_pos = d_pos.get_paths()
+            # Negative values
+            d_neg = ax_aux.fill_between(x_axis, d, 0, where=d>0, interpolate=True)
+            d_neg = d_neg.get_paths()
+
+            # Plot the patches
+            # positive part
+            for curr_pol in d_pos:
+                rot_pos = np.dot(curr_pol.vertices, T)
+                rot_pos[:,0] += elem._node1.x
+                rot_pos[:,1] += elem._node1.y
+                poly_pos = Polygon(rot_pos, True, **member_force_options_pos)
+                ax.add_patch(poly_pos)
+
+            # negative part
+            for curr_pol in d_neg:
+                rot_neg = np.dot(curr_pol.vertices, T)
+                rot_neg[:,0] += elem._node1.x
+                rot_neg[:,1] += elem._node1.y
+                poly_neg = Polygon(rot_neg, True, **member_force_options_neg)
+                ax.add_patch(poly_neg)
+
+        # Plot reaction forces
+        if self.display_config['reactions']==True:
+            for ix, node_i in model.nodes.items():
+                for dof, val in node_i.reactions.items():
+                    ax = self.plot_nodal_reaction(ax, dof, at=node_i, val=val)
+
+        # close the auxiliary figure
+        plt.close(fig_aux)
+
+        return ax
+
+    def plot_nodal_force(self, ax, dof, at, val):
+        """TODO: Docstring for plot_forces.
+
+        :ax: matplotlib axis
+        :dof: Degree of freedom to which the force is being applied
+        :at: node at which the load is applied
+        :val: value of the force
+        :returns: TODO
+
+        """
+        # Get the draw options for the forces
+        force_options = self.draw_config['force']
+
+        # Force in x direction
+        if dof==0:
+            halign = 'left'
+            # Handles the symbolic case
+            ax.annotate('{f}'.format(f=val), xy=(at.x, at.y),
+                xytext=(-50,0), color=force_options['color'], ha=halign,
+                va='center',
+                textcoords='offset points',
+                arrowprops = dict(arrowstyle='->', color=force_options['color'], lw=2.5 ))
+        # Force in y direction
+        elif dof==1:
+            ax.annotate('{f}'.format(f=-val), xy=(at.x, at.y),
+                xytext=(0,50), color=force_options['color'], ha='center',
+                va='center',
+                textcoords='offset points',
+                arrowprops = dict(arrowstyle='->', color=force_options['color'], lw=2.5 ))
+        # Moment
+        elif dof==2:
+            ax.annotate('{f}'.format(f=val), xy=(at.x, at.y),
+                xytext=(20,20), color=force_options['color'], ha='left',
+                va='center',
+                textcoords='offset points')
+            ax.plot([at.x],[at.y], marker=marker_moment_pos, markeredgecolor=force_options['color'],
+                    markerfacecolor='None', ms=40, markeredgewidth=2)
+
 
         return ax
 

@@ -106,7 +106,7 @@ class Beam2D(Beam):
         it can take the shear effect into account (second order effect).
 
         :element: segment instance
-        :seecond_order: boolean
+        :second_order: boolean
         :returns: local stiffness matrix
 
         """
@@ -131,11 +131,11 @@ class Beam2D(Beam):
         k = np.zeros((6,6))
 
         k[0,0] = k[3,3] = EA / L
-        k[1,1] = k[4,4] = 12. * EI / L**3
+        k[1,1] = k[4,4] = 12. * EI / (L*L*L)
         k[2,2] = k[5,5] = 4. * EI / L
         k[2,1] = k[1,2] = 6 * EI / L**2
         k[3,0] = k[0,3] = - EA / L
-        k[4,1] = k[1,4] = -12. * EI / L**3
+        k[4,1] = k[1,4] = -12. * EI / (L*L*L)
         k[4,2] = k[2,4] = -6. * EI / L**2
         k[5,1] = k[1,5] = 6. * EI / L**2
         k[5,2] = k[2,5] = 2. * EI / L

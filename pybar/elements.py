@@ -101,11 +101,10 @@ class Beam2D(Beam):
 
         self._Ke = None
 
-    def assembleK(self, second_order=False):
+    def assemble_K(self, second_order=False):
         """This function assembles the stiffness matrix for one individual element. Optionally
         it can take the shear effect into account (second order effect).
 
-        :element: segment instance
         :second_order: boolean
         :returns: local stiffness matrix
 
@@ -156,6 +155,54 @@ class Beam2D(Beam):
 
         return k
 
+    def assemble_sym_K(self):
+        """This function assembles the stiffness matrix for one individual element. Optionally
+        it can take the shear effect into account (second order effect).
+
+        :returns: local stiffness matrix
+
+        """
+        from sympy.matrices import Matrix, zeros
+        # Modulus of elasticity
+        E = self._beam_section._material._data[0]
+        # Area of the section
+        EA = self._beam_section._area * E
+        # Inertias
+        EI = self._beam_section._Iz * E
+        # Length of the element
+        L = self._length
+
+        # Initialize stiffness matrix
+        k = zeros(6,6)
+
+        k[0,0] = k[3,3] = EA / L
+        k[1,1] = k[4,4] = 12. * EI / (L*L*L)
+        k[2,2] = k[5,5] = 4. * EI / L
+        k[2,1] = k[1,2] = 6 * EI / L**2
+        k[3,0] = k[0,3] = - EA / L
+        k[4,1] = k[1,4] = -12. * EI / (L*L*L)
+        k[4,2] = k[2,4] = -6. * EI / L**2
+        k[5,1] = k[1,5] = 6. * EI / L**2
+        k[5,2] = k[2,5] = 2. * EI / L
+        k[5,4] = k[4,5] = -6. * EI / L**2
+
+        # transform to global coordinates
+        #T = element.transformation_matrix
+
+        #Ke = np.dot(T.T, np.dot(k,T))
+        self._Ke_local = k
+
+        # transform to global coordinates
+        T = Matrix(self.transformation_matrix)
+
+        aux = k.multiply(T)
+        TT = T.T
+        Ke = TT.multiply(aux)
+
+        self._Ke = Ke
+
+        return k
+
 class Beam3D(Beam):
     """Beam object, joining two nodes"""
 
@@ -185,7 +232,7 @@ class Beam3D(Beam):
         self.dof11 = 0. # rot y
         self.dof12 = 0. # rot z
 
-    def assemble_Ke_3D(self, second_order=False):
+    def assemble_K(self, second_order=False):
         """This function assembles the stiffness matrix for one individual element. Optionally
         it can take the shear effect into account (second order effect).
 

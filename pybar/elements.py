@@ -127,12 +127,12 @@ class Beam2D(Beam):
             Ksz = 0.0
 
         # Initialize stiffness matrix
-        k = np.zeros((6,6))
+        k = np.zeros((6,6), dtype=np.float64)
 
         k[0,0] = k[3,3] = EA / L
         k[1,1] = k[4,4] = 12. * EI / (L*L*L)
         k[2,2] = k[5,5] = 4. * EI / L
-        k[2,1] = k[1,2] = 6 * EI / L**2
+        k[2,1] = k[1,2] = 6. * EI / L**2
         k[3,0] = k[0,3] = - EA / L
         k[4,1] = k[1,4] = -12. * EI / (L*L*L)
         k[4,2] = k[2,4] = -6. * EI / L**2

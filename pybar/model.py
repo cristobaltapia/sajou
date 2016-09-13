@@ -179,7 +179,7 @@ class Model(object):
         # number of dof per node
         n_dof = self.n_dof_per_node
         #
-        K = np.zeros([num_dof, num_dof])
+        K = np.zeros([num_dof, num_dof], dtype=np.float64)
         # Fill the global stiffness matrix
         for n_elem in self.beams:
             n1 = connect_table[n_elem, 1]
@@ -204,7 +204,7 @@ class Model(object):
         """
         # Initialize a zero vector of the size of the total number of
         # dof
-        P = np.zeros(self.n_nodes*self.n_dof_per_node)
+        P = np.zeros(self.n_nodes*self.n_dof_per_node, dtype=np.float64)
         # Assign the values corresponding to the loads in each dof
         for ix, node_i in self.nodes.items():
             for dof, val in node_i._Loads.items():
@@ -224,7 +224,7 @@ class Model(object):
         """
         # Initialize a zero vector of the size of the total number of
         # dof
-        V = np.zeros(self.n_nodes*self.n_dof_per_node)
+        V = np.zeros(self.n_nodes*self.n_dof_per_node, dtype=np.float64)
         # Assign the values corresponding to the loads in each dof
         for ix, node_i in self.nodes.items():
             for dof, val in node_i._BC.items():
@@ -566,7 +566,7 @@ class Node(np.ndarray):
     """3-dimensional implementation of Nodes"""
     def __new__(cls, x, y, z, number):
         # A z-coordinate is incorporated if only two are given
-        obj = np.asarray([x, y, z]).view(cls)
+        obj = np.asarray([x, y, z], dtype=np.float64).view(cls)
         obj.number = number
         obj.x = x
         obj.y = y

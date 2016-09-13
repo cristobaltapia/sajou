@@ -85,8 +85,8 @@ class Local_Csys_two_points(CoordSys):
         ############################################################
         # FIXME: no need to transform to np array
         # - Convert to numpy arrays
-        p1 = np.array(point1)
-        p2 = np.array(point2)
+        p1 = np.array(point1, dtype=np.float64)
+        p2 = np.array(point2, dtype=np.float64)
         # dist
         d = (p2 - p1)
         dist = np.linalg.norm(d)
@@ -94,20 +94,20 @@ class Local_Csys_two_points(CoordSys):
 
         # vector in z-direction
         if d[2] == 0:
-            vz = np.array([0, 0, -1])
+            vz = np.array([0, 0, -1], dtype=np.float64)
         elif d[1] == 0:
-            vz = np.array([0, 1, 0])
+            vz = np.array([0, 1, 0], dtype=np.float64)
         elif d[0] == 0:
-            vz = np.array([1, 0, 0])
+            vz = np.array([1, 0, 0], dtype=np.float64)
         else:
-            vz = np.array([0, 0, -1])
+            vz = np.array([0, 0, -1], dtype=np.float64)
 
         # cross product to obtain v3
         v2 = np.cross(v1, vz)
         # vector in the 2nd direction
         v3 = np.cross(v1, v2)
         # store in the instance
-        self.coord_system = np.array((v1,v2,v3)).T
+        self.coord_system = np.array((v1,v2,v3), dtype=np.float64).T
         # create matrix
         transformation_matrix = np.vstack((v1/np.linalg.norm(v1), v2/np.linalg.norm(v2), v3/np.linalg.norm(v3))).T
 

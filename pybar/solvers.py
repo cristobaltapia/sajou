@@ -64,15 +64,19 @@ class StaticSolver(Solver):
         P_dirich = np.dot(K[dirich_ind,:], V)
         P_new = P[:]
         P_new[dirich_ind] = P[dirich_ind] - P_dirich
+
         # Matrix to multiply the global stiffness matrix and put zeros on the
         # rows and columns corresponding to the Dirichlet BC.
-        T = np.eye(len(K))
+        #T = np.eye(len(K))
         # Put a zero on the respective Dirichlet DOF
-        for index in dirich_ind:
-            T[index,index] = 0.
+        #for index in dirich_ind:
+        #    T[index,index] = 0.
 
         # Generate the new augumented stiffness matrix
-        K_new = np.dot(T, K)
+        #K_new = np.dot(T, K)
+        K_new = np.copy(K)
+        K_new[dirich_ind,:] = 0.
+        K_new[:,dirich_ind] = 0.
 
         for index in dirich_ind:
             K_new[index,index] = 1.

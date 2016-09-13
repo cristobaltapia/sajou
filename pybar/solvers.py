@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import numpy as np
-from numpy.linalg import solve as np_solve
+from scipy.linalg import lu_factor, lu_solve
 #import scipy as sp
 """ This module contains the different solvers used by the program.
 """
@@ -78,8 +78,10 @@ class StaticSolver(Solver):
             K_new[index,index] = 1.
             P_new[index] = V[index]
 
+        # LU decomposition
+        LU, piv = lu_factor(K_new)
         # Solve the augumented system
-        V_res = np_solve(K_new, P_new)
+        V_res = lu_solve((LU, piv), P_new, trans=0)
 
         # Obtained reactions at the DOF constrained with Dirichlet BCs
         P_react = np.dot(K, V_res)[dirich_ind]

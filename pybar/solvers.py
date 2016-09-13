@@ -342,6 +342,7 @@ class SymbolicSolver(Solver):
             Ke = elem._Ke
             # Get the displacements of the corresponding DOFs in global coordinates
             dof_pn = elem._dof_per_node
+            # Initialize matrix for the results
             v_i = zeros(dof_pn*elem._n_nodes, 1)
             # Assemble matrix with element nodal displacements of the current
             # beam element

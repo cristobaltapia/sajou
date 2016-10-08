@@ -226,7 +226,6 @@ class Beam2D(Beam):
         self._loads.append(dist_load)
 
         return 1
-        
 
 class Beam3D(Beam):
     """Beam object, joining two nodes"""

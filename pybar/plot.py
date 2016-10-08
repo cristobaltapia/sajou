@@ -150,6 +150,8 @@ class Display(object):
             for ix, node_i in model.nodes.items():
                 for dof, val in node_i._Loads.items():
                     ax = self.plot_nodal_force(ax, dof, at=node_i, val=val)
+            # Plot element Loads
+            ax = self.plot_element_loads(ax, model)
 
         # Plot supports
         if self.display_config['supports']==True:
@@ -170,8 +172,77 @@ class Display(object):
 
         return ax
 
+    def plot_element_loads(self, ax, model):
+        """Plot the element loads.
+        Element loads like uniformly distributed loads are drawn accordinlgy.
+
+        :ax: TODO
+        :result: TODO
+        :returns: TODO
+
+        """
+        elems_with_loads = {ix: elem for ix, elem in model.beams.items() 
+                if elem._loads != []}
+
+        # A loop is done for each element that contains an element load
+        for ix, elem in elems_with_loads.items():
+            # Plot each element load
+            for load_i in elem._loads:
+                # Different plot function is applied for the different
+                # element loadins
+                if load_i._type == 'Distributed Load':
+                    ax = self.plot_distributed_load(ax, model, elem, load_i)
+                # TODO: the other types
+
+        return ax
+
+    def plot_distributed_load(self, ax, model, element, load):
+        """Plot a distributed load at the corresponding element.
+
+        :ax: TODO
+        :model: TODO
+        :element:
+        :load: TODO
+        :returns: TODO
+
+        """
+        size = 500.
+        # If it is a uniformly distributed load:
+        if load.is_uniform == True:
+            if load._direction == 'z':
+                #
+                n1 = element._node1
+                n2 = element._node2
+                # Number of arrows
+                n_arrows = (element._length*2)//size
+                # Generate points on the element line
+                nx_e = np.linspace(n1.x, n2.x, n_arrows)
+                ny_e = np.linspace(n1.y, n2.y, n_arrows)
+                # Offset from the position of the nodes...
+                # FIXME: ... according to the system coordinate chosen
+                T = element.transformation_matrix
+                offset = np.dot(T.T, np.array([0,1,0, 0,1,0]) * size)
+                n1_o = np.array(n1[:]) + offset[:3]
+                n2_o = np.array(n2[:]) + offset[3:]
+                # Generate points for the arrows with offset
+                nx = np.linspace(n1_o[0], n2_o[0], n_arrows)
+                ny = np.linspace(n1_o[1], n2_o[1], n_arrows)
+                ax.plot(nx, ny, color='r')
+                # Plot arrows
+                for arr_i in range(len(nx)):
+                    ax.arrow(nx[arr_i], ny[arr_i], nx_e[arr_i]-nx[arr_i],
+                             ny_e[arr_i]-ny[arr_i], color='r', head_width=size*0.1,
+                             head_length=size*0.1, length_includes_head=True)
+
+            elif load._direction == 'x':
+                pass # TODO
+        # Linearly varying distributed load
+        else:
+            pass
+        return ax
+
     def plot_internal_forces(self, ax, result, component, scale=1):
-        """Plot the diagrams of internal forces
+        """Plot the diagrams of internal forces.
 
         :ax: matplotlib axis
         :result: Result object
@@ -663,3 +734,4 @@ xy = list(zip(x, y))
 codes = [Path.MOVETO, Path.LINETO, Path.MOVETO, Path.LINETO]
 rot_z = Path(xy, codes)
 ############################################################
+

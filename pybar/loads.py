@@ -11,6 +11,7 @@ class Load(object):
 
     def __init__(self):
         """Initialize the Load instance"""
+        self._type = ''
         
 
 class DistributedLoad(Load):
@@ -41,10 +42,12 @@ class DistributedLoad(Load):
         self._p2 = p2
         self._direction = direction
         self._coord_system = coord_system
+        self._type = 'Distributed Load'
+        self.is_uniform = True
 
-        # Detect if is a uniformly distributed load or not
-        if p2 == None:
-            is_uniform = True
+        # Detect if distribution is a varying distributed load or not
+        if p2 != None:
+            self.is_uniform = False
 
         # Initialize transfer matrix
         # FIXME: make this dependant from the specific element.
@@ -52,7 +55,7 @@ class DistributedLoad(Load):
         # Calculate the transfer matrix for the axial load
         # (direction='x')
         if direction == 'x':
-            if is_uniform:
+            if self.is_uniform:
                 tr[0] = p1 * elem._length * 0.5
                 tr[3] = p1 * elem._length * 0.5
             else:
@@ -60,7 +63,7 @@ class DistributedLoad(Load):
                 tr[3] = elem._length * (p1 + 2.*p2) / 6.
 
         elif direction == 'z':
-            if is_uniform:
+            if self.is_uniform:
                 tr[1] = -p1 * elem._length * 0.5
                 tr[2] = p1 * elem._length / 12.
                 tr[4] = -p1 * elem._length * 0.5

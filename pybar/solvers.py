@@ -56,6 +56,8 @@ class StaticSolver(Solver):
         K = self._model._assemble_global_K()
         # Assemble the vector of applied loads
         P = self._model._generate_loading_vector()
+        # Assemble the vector of applied element loads
+        P_e = self._model._generate_element_loading_vector()
         # Apply Dirichlet boundary conditions
         # Get the dof corresponding to Dirichlet border conditions
         dirich_ind = self._model._dof_dirichlet
@@ -64,6 +66,8 @@ class StaticSolver(Solver):
         P_dirich = np.dot(K[dirich_ind,:], V)
         P_new = P[:]
         P_new[dirich_ind] = P[dirich_ind] - P_dirich
+        # Add the element loads to the global loading vector
+        P_new += P_e
 
         # Matrix to multiply the global stiffness matrix and put zeros on the
         # rows and columns corresponding to the Dirichlet BC.
@@ -88,7 +92,8 @@ class StaticSolver(Solver):
         V_res = lu_solve((LU, piv), P_new, trans=0)
 
         # Obtain reactions at the DOF constrained with Dirichlet BCs
-        P_react = np.dot(K, V_res)[dirich_ind]
+        # (Take the element loads into account with 'P_e')
+        P_react = np.dot(K, V_res)[dirich_ind] - P_e[dirich_ind]
 
         # Copy the data of the model
         model_data = self._model.export_model_data()

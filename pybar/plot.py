@@ -209,7 +209,7 @@ class Display(object):
         size = 500.
         # If it is a uniformly distributed load:
         if load.is_uniform == True:
-            if load._direction == 'z':
+            if load._direction == 'z' and load._coord_system == 'local':
                 #
                 n1 = element._node1
                 n2 = element._node2
@@ -221,7 +221,37 @@ class Display(object):
                 # Offset from the position of the nodes...
                 # FIXME: ... according to the system coordinate chosen
                 T = element.transformation_matrix
-                offset = np.dot(T.T, np.array([0,1,0, 0,1,0]) * size)
+                sign_p = np.sign(load._p1)
+                offset = np.dot(T.T, np.array([0,-1,0, 0,-1,0]) * sign_p * size)
+                n1_o = np.array(n1[:]) + offset[:3]
+                n2_o = np.array(n2[:]) + offset[3:]
+                # Generate points for the arrows with offset
+                nx = np.linspace(n1_o[0], n2_o[0], n_arrows)
+                ny = np.linspace(n1_o[1], n2_o[1], n_arrows)
+                ax.plot(nx, ny, color='y')
+                # Plot arrows
+                for arr_i in range(len(nx)):
+                    # annotate() is used instead of arrow() because the style
+                    # of the arrows is better
+                    ax.annotate('',
+                            xy=(nx_e[arr_i], ny_e[arr_i]),
+                            xytext=(nx[arr_i], ny[arr_i]),
+                            arrowprops=dict(arrowstyle='->', color='y'))
+
+            elif load._direction == 'x' and load._coord_system == 'local':
+                #
+                n1 = element._node1
+                n2 = element._node2
+                # Number of arrows
+                n_arrows = (element._length*2)//size
+                # Generate points on the element line
+                nx_e = np.linspace(n1.x, n2.x, n_arrows)
+                ny_e = np.linspace(n1.y, n2.y, n_arrows)
+                # Offset from the position of the nodes...
+                # FIXME: ... according to the system coordinate chosen
+                T = element.transformation_matrix
+                sign_p = np.sign(load._p1)
+                offset = np.dot(T.T, np.array([-1,0,0, -1,0,0]) * sign_p * size*0.4)
                 n1_o = np.array(n1[:]) + offset[:3]
                 n2_o = np.array(n2[:]) + offset[3:]
                 # Generate points for the arrows with offset
@@ -230,12 +260,13 @@ class Display(object):
                 ax.plot(nx, ny, color='r')
                 # Plot arrows
                 for arr_i in range(len(nx)):
-                    ax.arrow(nx[arr_i], ny[arr_i], nx_e[arr_i]-nx[arr_i],
-                             ny_e[arr_i]-ny[arr_i], color='r', head_width=size*0.1,
-                             head_length=size*0.1, length_includes_head=True)
+                    # annotate() is used instead of arrow() because the style
+                    # of the arrows is better
+                    ax.annotate('',
+                                xy=(nx_e[arr_i], ny_e[arr_i]),
+                                xytext=(nx[arr_i], ny[arr_i]),
+                                arrowprops=dict(arrowstyle='->', color='y'))
 
-            elif load._direction == 'x':
-                pass # TODO
         # Linearly varying distributed load
         else:
             pass

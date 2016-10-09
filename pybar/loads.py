@@ -64,19 +64,38 @@ class DistributedLoad(Load):
 
         elif direction == 'z':
             if self.is_uniform:
-                tr[1] = -p1 * elem._length * 0.5
-                tr[2] = p1 * elem._length / 12.
-                tr[4] = -p1 * elem._length * 0.5
-                tr[5] = -p1 * elem._length / 12.
+                tr[1] = p1 * elem._length * 0.5
+                tr[2] = -p1 * elem._length / 12.
+                tr[4] = p1 * elem._length * 0.5
+                tr[5] = p1 * elem._length / 12.
             else:
-                tr[1] = -elem._length * (7.*p1 + 3*p2) / 20.
-                tr[2] = elem._length**2 * (p1/20. + p2/30.)
-                tr[4] = -elem._length * (3.*p1 + 7*p2) / 20.
-                tr[5] = -elem._length**2 * (p1/30. + p2/20.)
+                tr[1] = elem._length * (7.*p1 + 3*p2) / 20.
+                tr[2] = -elem._length**2 * (p1/20. + p2/30.)
+                tr[4] = elem._length * (3.*p1 + 7*p2) / 20.
+                tr[5] = elem._length**2 * (p1/30. + p2/20.)
 
         self._transfer_matrix = tr
         # Calculate the transfer matrix in global coordinates, using the
         # transformation matrix
         T = elem.transformation_matrix
         self._transfer_matrix_global = np.dot(T.T, tr)
+
+class DistributedMoment(Load):
+
+    """Docstring for DistributedMoment. """
+
+    def __init__(self, elem, m1, m2=None):
+        """TODO: to be defined1.
+
+        :elem: TODO
+        :m1: TODO
+        :m2: TODO
+
+        """
+        Load.__init__(self)
+
+        self._elem = elem
+        self._m1 = m1
+        self._m2 = m2
+        
 

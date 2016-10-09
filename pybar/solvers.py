@@ -144,15 +144,26 @@ class StaticSolver(Solver):
         max_V = 0.
         max_M = 0.
 
-        # FIXME: still need to include distributed loads, etc
         for num, elem in self._model.beams.items():
+            # Points where data is going to be extracted
             x_axis = np.linspace(0,1,11) * elem._length
-            # Calculate axial force on the member (a function is returned)
-            axial = np.ones(len(x_axis)) * -end_forces[num][0]
+            axial = np.zeros(len(x_axis))
+            shear = np.zeros(len(x_axis))
+            moment = np.zeros(len(x_axis))
+            # Take account for element loads (distributed, etc)
+            # FIXME: still need to include distributed loads, etc
+            if len(elem._loads) > 0:
+                for load in elem._loads:
+                    axial += self.calc_axial_force_with_member_load(elem, load, x_axis)
+                    shear += self.calc_shear_force_with_member_load(elem, load, x_axis)
+                    moment += self.calc_moment_with_member_load(elem, load, x_axis)
+
+            # Calculate axial force on the member
+            axial += np.ones(len(x_axis)) * end_forces[num][0]
             # Calculate shear force on the member
-            shear = np.ones(len(x_axis)) * -end_forces[num][1]
+            shear += np.ones(len(x_axis)) * end_forces[num][1]
             # Calculate moment on the member
-            moment = -shear*x_axis - end_forces[num][2]
+            moment +=  end_forces[num][1]*x_axis - end_forces[num][2]
             # Add to the results
             res = {'axial':axial, 'shear':shear, 'moment':moment, 'x':x_axis}
             result.internal_forces[num] = res
@@ -168,12 +179,14 @@ class StaticSolver(Solver):
         return result.internal_forces
 
     def _calc_end_forces(self, result):
-        """Calculates the internal forces of beam elements
+        """Calculate the internal forces of beam elements
 
         :result: Result object
         :returns: TODO
 
         """
+        # Assemble the vector of applied element loads
+        P_e = self._model._generate_element_loading_vector()
         # calculate for each element
         for num, elem in self._model.beams.items():
             # Get the transformation matrix for the element
@@ -193,7 +206,7 @@ class StaticSolver(Solver):
                 v_i[i1:i2] = result._V[j1:j2]
 
             # Get the End Forces of the element in global coordinates
-            P_i = np.dot(Ke, v_i)
+            P_i = np.dot(Ke, v_i) - P_e
             # Transform End Forces to local coordinates
             P_i_local = np.dot(T, P_i)
             # Add End Forces to the dictionary of End Forces of the result object
@@ -201,6 +214,62 @@ class StaticSolver(Solver):
             result.end_forces[num] = P_i_local
 
         return result.end_forces
+
+    def calc_axial_force_with_member_load(self, element, load, x):
+        """Calculate the axial force in the given element.
+        :returns: TODO
+        
+        :element:
+        :load:
+        :x:
+
+        returns:
+        """
+        if load._direction == 'x' and load._coord_system == 'local':
+            p1 = load._p1
+            return x * p1
+        # TODO: case with global coord system
+        else:
+            axial = np.zeros(len(x))
+            return axial
+        
+    def calc_shear_force_with_member_load(self, element, load, x):
+        """Calculate the shear force in the given element.
+        :returns: TODO
+        
+        :element:
+        :load:
+        :x:
+
+        returns:
+        """
+        if load._direction == 'z' and load._coord_system == 'local':
+            p1 = load._p1
+            return x * p1
+        # TODO: case with global coord system
+        else:
+            axial = np.zeros(len(x))
+            return axial
+        
+    def calc_moment_with_member_load(self, element, load, x):
+        """Calculate the shear force in the given element.
+        :returns: TODO
+        
+        :element:
+        :load:
+        :x:
+
+        returns:
+        """
+        # TODO: linearly varying distributed load
+        if load._direction == 'z' and load._coord_system == 'local':
+            p1 = load._p1
+            return x**2 * 0.5 * p1
+        # TODO: case with global coord system
+        else:
+            axial = np.zeros(len(x))
+            return axial
+        
 
 class SymbolicSolver(Solver):
 
@@ -373,7 +442,6 @@ class SymbolicSolver(Solver):
             result.end_forces[num] = P_i_local
 
         return result.end_forces
-
 
 class Result(object):
 

@@ -186,6 +186,8 @@ class StaticSolver(Solver):
 
         """
         # Assemble the vector of applied element loads
+        # FIXME: only take the contribution of the analyzed beam element
+        # and not the cotiguous too
         P_e = self._model._generate_element_loading_vector()
         # calculate for each element
         for num, elem in self._model.beams.items():
@@ -196,6 +198,7 @@ class StaticSolver(Solver):
             # Get the displacements of the corresponding DOFs in global coordinates
             dof_pn = elem._dof_per_node
             v_i = np.zeros(dof_pn*elem._n_nodes)
+            P_e_i = np.zeros(dof_pn*elem._n_nodes)
             # Assemble matrix with element nodal displacements of the current
             # beam element
             for n_node, node in enumerate(elem._nodes):
@@ -204,9 +207,12 @@ class StaticSolver(Solver):
                 j1 = node.number*dof_pn
                 j2 = dof_pn*(1+node.number)
                 v_i[i1:i2] = result._V[j1:j2]
+                # FIXME:
+                if len(elem._loads) > 0:
+                    P_e_i[i1:i2] = P_e[j1:j2]
 
             # Get the End Forces of the element in global coordinates
-            P_i = np.dot(Ke, v_i) - P_e
+            P_i = np.dot(Ke, v_i) - P_e_i
             # Transform End Forces to local coordinates
             P_i_local = np.dot(T, P_i)
             # Add End Forces to the dictionary of End Forces of the result object

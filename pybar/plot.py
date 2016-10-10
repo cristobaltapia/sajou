@@ -206,6 +206,9 @@ class Display(object):
         :returns: TODO
 
         """
+        # Get the draw options for the forces
+        force_options = self.draw_config['force']
+        #
         size = 500.
         # If it is a uniformly distributed load:
         if load.is_uniform == True:
@@ -228,7 +231,7 @@ class Display(object):
                 # Generate points for the arrows with offset
                 nx = np.linspace(n1_o[0], n2_o[0], n_arrows)
                 ny = np.linspace(n1_o[1], n2_o[1], n_arrows)
-                ax.plot(nx, ny, color='y')
+                ax.plot(nx, ny, color=force_options['color'])
                 # Plot arrows
                 for arr_i in range(len(nx)):
                     # annotate() is used instead of arrow() because the style
@@ -236,7 +239,7 @@ class Display(object):
                     ax.annotate('',
                             xy=(nx_e[arr_i], ny_e[arr_i]),
                             xytext=(nx[arr_i], ny[arr_i]),
-                            arrowprops=dict(arrowstyle='->', color='y'))
+                            arrowprops=dict(arrowstyle='->', color=force_options['color']))
 
             elif load._direction == 'x' and load._coord_system == 'local':
                 #
@@ -264,7 +267,7 @@ class Display(object):
                     ax.annotate('',
                                 xy=(nx_e[arr_i], ny_e[arr_i]),
                                 xytext=(nx[arr_i], ny[arr_i]),
-                                arrowprops=dict(arrowstyle='->', color='y'))
+                                arrowprops=dict(arrowstyle='->', color=force_options['color']))
 
         # Linearly varying distributed load
         else:

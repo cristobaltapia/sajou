@@ -159,7 +159,7 @@ class StaticSolver(Solver):
                     moment += self.calc_moment_with_member_load(elem, load, x_axis)
 
             # Calculate axial force on the member
-            axial += np.ones(len(x_axis)) * end_forces[num][0]
+            axial -= np.ones(len(x_axis)) * end_forces[num][0]
             # Calculate shear force on the member
             shear += np.ones(len(x_axis)) * end_forces[num][1]
             # Calculate moment on the member
@@ -224,7 +224,7 @@ class StaticSolver(Solver):
     def calc_axial_force_with_member_load(self, element, load, x):
         """Calculate the axial force in the given element.
         :returns: TODO
-        
+
         :element:
         :load:
         :x:
@@ -233,16 +233,16 @@ class StaticSolver(Solver):
         """
         if load._direction == 'x' and load._coord_system == 'local':
             p1 = load._p1
-            return x * p1
+            return -x * p1
         # TODO: case with global coord system
         else:
             axial = np.zeros(len(x))
             return axial
-        
+
     def calc_shear_force_with_member_load(self, element, load, x):
         """Calculate the shear force in the given element.
         :returns: TODO
-        
+
         :element:
         :load:
         :x:
@@ -256,11 +256,11 @@ class StaticSolver(Solver):
         else:
             axial = np.zeros(len(x))
             return axial
-        
+
     def calc_moment_with_member_load(self, element, load, x):
         """Calculate the shear force in the given element.
         :returns: TODO
-        
+
         :element:
         :load:
         :x:
@@ -275,7 +275,7 @@ class StaticSolver(Solver):
         else:
             axial = np.zeros(len(x))
             return axial
-        
+
 
 class SymbolicSolver(Solver):
 

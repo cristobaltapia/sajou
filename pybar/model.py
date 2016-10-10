@@ -109,7 +109,7 @@ class Model(object):
 
         """
         # Connectivity matrix for the Beams
-        conn_matrix = np.zeros((len(self.beams), 3))
+        conn_matrix = np.zeros((len(self.beams), 3), dtype=np.float64)
         #
         count = 0
         for num, curr_line in self.beams.items():
@@ -149,7 +149,7 @@ class Model(object):
         n_dof = self.n_dof_per_node
 
         # create a zero matrix with the adequate size
-        connectivity = np.zeros([n_v, num_dof])
+        connectivity = np.zeros([n_v, num_dof], dtype=np.float64)
 
         # Assemble the connectivity matrix
         for n_elem, elem in self.beams.items():
@@ -160,7 +160,7 @@ class Model(object):
                 i2 = n_elem*n_dof*n_nodes + ix * n_dof + n_dof
                 j1 = n_node * n_dof
                 j2 = n_node * n_dof + n_dof
-                connectivity[i1:i2,j1:j2] = np.eye(n_dof)
+                connectivity[i1:i2,j1:j2] = np.eye(n_dof, dtype=np.float64)
 
         self._connectivity = connectivity
 

@@ -257,7 +257,6 @@ class Display(object):
                 # Generate points for the arrows with offset
                 nx = np.linspace(n1_o[0], n2_o[0], n_arrows)
                 ny = np.linspace(n1_o[1], n2_o[1], n_arrows)
-                ax.plot(nx, ny, color='r')
                 # Plot arrows
                 for arr_i in range(len(nx)):
                     # annotate() is used instead of arrow() because the style

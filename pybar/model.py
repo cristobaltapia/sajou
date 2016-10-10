@@ -167,7 +167,7 @@ class Model(object):
         return connectivity
 
     def _assemble_global_K(self):
-        """Assembles the global stiffness matrix using the addition method
+        """Assemble the global stiffness matrix using the addition method.
         :returns: numpy array
 
         """
@@ -198,7 +198,7 @@ class Model(object):
         return K
 
     def _generate_loading_vector(self):
-        """This function generates the global matrix of applied forces P
+        """Generate the global matrix of applied forces P.
         :returns: numpy array
 
         """
@@ -210,6 +210,36 @@ class Model(object):
             for dof, val in node_i._Loads.items():
                 ind = ix*self.n_dof_per_node + dof
                 P[ind] = val
+
+        self._P = P
+
+        return P
+
+    def _generate_element_loading_vector(self):
+        """Generate the global element vector of forces.
+        :returns: numpy array
+
+        """
+        # Initialize a zero vector of the size of the total number of
+        # DOF
+        P = np.zeros(self.n_nodes*self.n_dof_per_node, dtype=np.float64)
+        # Add loads applied to the elements (distributed loads)
+        for ix, elem in self.beams.items():
+            if len(elem._loads) > 0:
+                # Get the correct indices
+                # First node:
+                n1 = elem._node1.number
+                # DOFs coresponding to the node 1
+                ind1 = n1*self.n_dof_per_node
+                # Second node:
+                n2 = elem._node2.number
+                # DOFs coresponding to the node 1
+                ind2 = n2*self.n_dof_per_node
+
+            for elem_load in elem._loads:
+                #
+                transfer = elem_load._transfer_matrix_global
+                P[[ind1, ind1+1, ind1+2, ind2, ind2+1, ind2+2]] += transfer
 
         self._P = P
 

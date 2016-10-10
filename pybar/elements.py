@@ -4,6 +4,7 @@
 This module contains the different elements used and all its methods.
 """
 import numpy as np
+from . import loads
 from .utils import Local_Csys_two_points
 
 class Beam(object):
@@ -84,6 +85,7 @@ class Beam2D(Beam):
         self._n_nodes = 2
         # Number of DOF per node
         self._dof_per_node = 3
+
         # displacement/rotation of each degree of freedom, for each node
         # - Node 1
         self.dof1 = 0. # trans x
@@ -98,6 +100,9 @@ class Beam2D(Beam):
         # Release rotation on the ends of the beam
         self.release_node_1 = False # first node
         self.release_node_2 = False # second node
+
+        # Loads applied to the frame element
+        self._loads = []
 
         self._Ke = None
 
@@ -202,6 +207,25 @@ class Beam2D(Beam):
         self._Ke = Ke
 
         return k
+
+    def distributed_load(self, p1, p2=None, direction='z', coord_system='local'):
+        """Assign a DistributedLoad object to the frame current element.
+
+        :p1: TODO
+        :p2: TODO
+        :direction: TODO
+        :coord_system: TODO
+        :returns: TODO
+
+        """
+        dist_load = loads.DistributedLoad(elem=self, p1=p1, p2=p2,
+                direction=direction, coord_system=coord_system)
+
+        # Add this DistributedLoad instance to the list of loads of the
+        # element
+        self._loads.append(dist_load)
+
+        return 1
 
 class Beam3D(Beam):
     """Beam object, joining two nodes"""

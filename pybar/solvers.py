@@ -100,7 +100,7 @@ class StaticSolver(Solver):
 
         # Create results object
         result = Result(model=model_data)
-        result._V = V_res
+        result.displacements = V_res
 
         # Make dictionary with nodes and respective node reactions
         for ix, index_r in enumerate(dirich_ind):
@@ -114,15 +114,18 @@ class StaticSolver(Solver):
         return result
 
     def postprocess(self, result):
-        """Calculates the specified results given in the 'output' variable
+        """Calculate the specified results given in the 'output' variable
 
         :result: TODO
         :returns: TODO
 
         """
         for curr_output in self._output_request:
-            if curr_output == 'internal forces':
+            if curr_output == 'forces':
+                self._calc_end_forces(result)
+            elif curr_output == 'internal forces':
                 self._calc_internal_forces(result)
+            # FIXME: not sure if put this here
             elif curr_output == 'stresses':
                 self._calc_stresses(result)
             else:
@@ -206,7 +209,7 @@ class StaticSolver(Solver):
                 i2 = dof_pn*(n_node+1)
                 j1 = node.number*dof_pn
                 j2 = dof_pn*(1+node.number)
-                v_i[i1:i2] = result._V[j1:j2]
+                v_i[i1:i2] = result.displacements[j1:j2]
                 # FIXME:
                 if len(elem._loads) > 0:
                     P_e_i[i1:i2] = P_e[j1:j2]
@@ -455,7 +458,7 @@ class Result(object):
 
     def __init__(self, model):
         """TODO: to be defined1. """
-        self._V = None # displacement results
+        self.displacements = None # displacement results
         self.end_forces = dict() # end forces of elements
         self.internal_forces = dict() # internal forces of elements
         # maximum absolut value of the different member forces in the
@@ -463,6 +466,4 @@ class Result(object):
         self._max_member_force = dict()
         # Data of the model associated with the results
         self._model = model
-
-
 

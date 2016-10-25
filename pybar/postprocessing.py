@@ -129,7 +129,12 @@ class Postprocess(object):
             return -x * p1
         # TODO: case with global coord system
         else:
-            axial = np.zeros(len(x))
+            # Initialize moment
+            try:
+                axial = np.zeros(len(x_l))
+            except:
+                axial = 0.
+
             return axial
 
     def calc_shear_force_with_member_load(self, element, load, x):
@@ -147,8 +152,13 @@ class Postprocess(object):
             return x * p1
         # TODO: case with global coord system
         else:
-            axial = np.zeros(len(x))
-            return axial
+            # Initialize moment
+            try:
+                shear = np.zeros(len(x_l))
+            except:
+                shear = 0.
+
+            return shear
 
     def calc_moment_with_member_load(self, element, load, x):
         """Calculate the shear force in the given element.
@@ -166,8 +176,13 @@ class Postprocess(object):
             return x**2 * 0.5 * p1
         # TODO: case with global coord system
         else:
-            axial = np.zeros(len(x))
-            return axial
+            # Initialize moment
+            try:
+                moment = np.zeros(len(x_l))
+            except:
+                moment = 0.
+
+            return moment
 
     def calc_all_internal_forces(self, n=11):
         """Compute the internal forces at every element of the model.

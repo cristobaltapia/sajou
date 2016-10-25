@@ -50,6 +50,70 @@ class Postprocess(object):
 
         return moment
 
+    def calc_shear_at(self, pos, element, unit_length=False):
+        """Calculate the shear force of element at position x.
+
+        :pos: TODO
+        :element: TODO
+        :unit_length: boolean. Defines whether the range is [0, 1] or [0, Le] (default)
+        :returns: TODO
+
+        """
+        # Decide which data to use
+        if unit_length == True:
+            x_l = pos * element._length
+        else:
+            x_l = pos
+
+        # Initialize shear force results
+        try:
+            shear = np.zeros(len(x_l))
+        except:
+            shear = 0.
+        # Calculate for every load applied
+        for load in element._loads:
+            shear += self.calc_shear_force_with_member_load(element, load, x_l)
+
+        num = element.number
+        # Get the end forces results
+        end_forces = self._result.data['end forces'] 
+        # Add effect of end forces to the total moment at position 'pos'
+        shear += end_forces[num][1]
+
+        return shear
+
+    def calc_axial_at(self, pos, element, unit_length=False):
+        """Calculate the axial force of element at position x.
+
+        :pos: TODO
+        :element: TODO
+        :unit_length: boolean. Defines whether the range is [0, 1] or [0, Le] (default)
+        :returns: TODO
+
+        """
+        # Decide which data to use
+        if unit_length == True:
+            x_l = pos * element._length
+        else:
+            x_l = pos
+
+        # Initialize shear force results
+        try:
+            axial = np.zeros(len(x_l))
+        except:
+            axial = 0.
+        # Calculate for every load applied
+        for load in element._loads:
+            axial += self.calc_axial_force_with_member_load(element, load, x_l)
+
+        num = element.number
+        # Get the end forces results
+        end_forces = self._result.data['end forces'] 
+        # Add effect of end forces to the total moment at position 'pos'
+        axial += -end_forces[num][0]
+
+        return axial
+
     def calc_axial_force_with_member_load(self, element, load, x):
         """Calculate the axial force in the given element.
         :returns: TODO
@@ -133,32 +197,34 @@ class Postprocess(object):
             # call a function to calculate the internal forces in a
             # single element
             moment = self.calc_internal_force_element(curr_element, pos, component='moment')
+            shear = self.calc_internal_force_element(curr_element, pos, component='shear')
+            axial = self.calc_internal_force_element(curr_element, pos, component='axial')
 
             # TODO: rest of the internal forces (shear and axial)
             res_moment = {'moment':{'data':moment, 'x':pos},
-                          'shear': {'data':0.,     'x':pos},
-                          'axial': {'data':0.,     'x':pos},
+                          'shear': {'data':shear,  'x':pos},
+                          'axial': {'data':axial,  'x':pos},
                           }
             #
             internal_forces[num_e] = res_moment
             # Calculate max and min
-            max_internal_force[num_e] = {'moment':max(moment),
-                                         'shear': 0.,
-                                         'axial': 0.
+            max_internal_force[num_e] = {'moment':np.max(moment),
+                                         'shear': np.max(shear),
+                                         'axial': np.max(axial)
                                          }
-            min_internal_force[num_e] = {'moemnt':max(moment),
-                                         'shear': 0.,
-                                         'axial': 0.
+            min_internal_force[num_e] = {'moemnt':np.min(moment),
+                                         'shear': np.min(shear),
+                                         'axial': np.min(axial)
                                          }
 
         # Get the maximum of the system
         max_df = pd.DataFrame(max_internal_force)
-        min_df = pd.DataFrame(max_internal_force)
-        df_aux = pd.concat([max_df, min_df], axis=1)
+        min_df = pd.DataFrame(min_internal_force)
+        df_aux = pd.concat([max_df, -min_df], axis=1)
 
         abs_max = df_aux.max(axis=1)
 
-        max_force = min(max_internal_force)
+        max_force = max(max_internal_force)
         min_force = min(min_internal_force)
         # Create dictionary with the maximum and minimum data
         min_max_internal_forces = {'min': min_internal_force,
@@ -190,9 +256,9 @@ class Postprocess(object):
         if component == 'moment':
             internal_force = self.calc_moment_at(pos, element, unit_length)
         elif component == 'shear':
-            pass
+            internal_force = self.calc_shear_at(pos, element, unit_length)
         elif component == 'axial':
-            pass
+            internal_force = self.calc_axial_at(pos, element, unit_length)
 
         return internal_force
 

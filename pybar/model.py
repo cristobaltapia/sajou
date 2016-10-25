@@ -556,6 +556,22 @@ class Model2D(Model):
 
         return line
 
+    def distributed_load(self, elements, p1, p2=None, direction='z', coord_system='local'):
+        """Add a distributed load to a list of beam elements.
+        A list of elements has to be supplied for the first variable. The rest of the
+        variables are exactly the same as in the 'distributed_load' function of the
+        corresponding elements.
+
+        :elements: list of beams elements
+        :p1: TODO
+        :p2: TODO
+        :returns: TODO
+
+        """
+        for curr_elem in elements:
+            # Add distributed load
+            curr_elem.distributed_load(p1, p2, direction, coord_system)
+
 class Model3D(Model):
     """Subclass of the 'Model' class. It is intended to be used for the 3-dimensional
     models of frame structures."""

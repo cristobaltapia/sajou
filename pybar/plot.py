@@ -304,7 +304,7 @@ class Display(object):
         y_range = ax.get_ylim()[1] - ax.get_ylim()[0]
         max_range = max([x_range, y_range])
         max_component = result.metadata['internal forces']['system abs max'][component]
-        scale_auto = 0.2*max_range / max_component
+        scale_auto = 0.2 * max_range / max_component
         # Plot the specified diagram
         # Transform the results from the local coordinates to global
         # coordinates
@@ -315,7 +315,7 @@ class Display(object):
             # caclculated
             x_axis = result.data['internal forces'][num][component]['x']
             # Get the specified member forces
-            d = result.data['internal forces'][num][component]['data'] * scale_auto*scale
+            d = result.data['internal forces'][num][component]['data'] * scale_auto * scale
 
             # Results are mutiplied by -1 to represent them in the convention
             # where positive moments are drawn 'below' the beam element.

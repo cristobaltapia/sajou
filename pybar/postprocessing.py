@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 """ Postprocessing module.
 """
+import numpy as np
+import pandas as pd
 
 class Postprocess(object):
 
@@ -16,69 +18,35 @@ class Postprocess(object):
         self._result = result
         self._model = result._model
         
-    def _calc_internal_forces(self):
-        """Calculate member forces
-
-        :result: TODO
-        :returns: TODO
-
-        """
-        # First calculate end forces on each member
-        end_forces = self._result.end_forces
-
-        max_N = 0.
-        max_V = 0.
-        max_M = 0.
-
-        for num, elem in self._model.beams.items():
-            # Points where data is going to be extracted
-            x_axis = np.linspace(0,1,11) * elem._length
-            axial = np.zeros(len(x_axis))
-            shear = np.zeros(len(x_axis))
-            moment = np.zeros(len(x_axis))
-            # Take account for element loads (distributed, etc)
-            # FIXME: still need to include distributed loads, etc
-            if len(elem._loads) > 0:
-                for load in elem._loads:
-                    axial += self.calc_axial_force_with_member_load(elem, load, x_axis)
-                    shear += self.calc_shear_force_with_member_load(elem, load, x_axis)
-                    moment += self.calc_moment_with_member_load(elem, load, x_axis)
-
-            # Calculate axial force on the member
-            axial -= np.ones(len(x_axis)) * end_forces[num][0]
-            # Calculate shear force on the member
-            shear += np.ones(len(x_axis)) * end_forces[num][1]
-            # Calculate moment on the member
-            moment +=  end_forces[num][1]*x_axis - end_forces[num][2]
-            # Add to the results
-            res = {'axial':axial, 'shear':shear, 'moment':moment, 'x':x_axis}
-            result.internal_forces[num] = res
-            # maximum absolute values
-            max_N = max([max(abs(axial)), max_N])
-            max_V = max([max(abs(shear)), max_V])
-            max_M = max([max(abs(moment)), max_M])
-
-        result._max_member_force['axial'] = max_N
-        result._max_member_force['shear'] = max_V
-        result._max_member_force['moment'] = max_M
-
-        return result.internal_forces
-
-    def calc_moment_at(self, x, element, unit_length=False):
+    def calc_moment_at(self, pos, element, unit_length=False):
         """Calculate the moment of element at position x.
 
-        :x: TODO
+        :pos: TODO
         :element: TODO
-        :unit_length: boolean. Defines whether the range is [0, L] (default) or [0, 1]
+        :unit_length: boolean. Defines whether the range is [0, 1] or [0, Le] (default)
         :returns: TODO
 
         """
-        moment = 0.
+        # Decide which data to use
+        if unit_length == True:
+            x_l = pos * element._length
+        else:
+            x_l = pos
+
+        # Initialize moment
+        try:
+            moment = np.zeros(len(x_l))
+        except:
+            moment = 0.
+        # Calculate for every load applied
         for load in element._loads:
-            moment += self.calc_moment_with_member_load(element, load, x)
+            moment += self.calc_moment_with_member_load(element, load, x_l)
 
         num = element.number
-        moment +=  self._result.end_forces[num][1]*x - self._result.end_forces[num][2]
+        # Get the end forces results
+        end_forces = self._result.data['end forces'] 
+        # Add effect of end forces to the total moment at position 'pos'
+        moment += end_forces[num][1]*x_l - end_forces[num][2]
 
         return moment
 
@@ -136,4 +104,106 @@ class Postprocess(object):
         else:
             axial = np.zeros(len(x))
             return axial
+
+    def calc_all_internal_forces(self, n=11):
+        """Compute the internal forces at every element of the model.
+        The number of points on which the internal forces are evaluated in each element
+        are set by the variable 'n' (default n=11).
+
+        :n: number of points at which the internal forces are evaluated. Must grater than
+        2 (n>=2)
+        :returns: TODO
+
+        """
+        # Initialize dictionary for the results
+        internal_forces = dict()
+        # Check the number 'n'
+        if n < 2:
+            # FIXME: throw error
+            return 0
+
+        # Initialize list with maximum values of internal forces
+        max_internal_force = dict()
+        # The same with minimum values
+        min_internal_force = dict()
+        # A loop for each element of the model is made
+        for num_e, curr_element in self._model.beams.items():
+            # define the points
+            pos = np.linspace(0, 1, n) * curr_element._length
+            # call a function to calculate the internal forces in a
+            # single element
+            moment = self.calc_internal_force_element(curr_element, pos, component='moment')
+
+            # TODO: rest of the internal forces (shear and axial)
+            res_moment = {'moment':{'data':moment, 'x':pos},
+                          'shear': {'data':0.,     'x':pos},
+                          'axial': {'data':0.,     'x':pos},
+                          }
+            #
+            internal_forces[num_e] = res_moment
+            # Calculate max and min
+            max_internal_force[num_e] = {'moment':max(moment),
+                                         'shear': 0.,
+                                         'axial': 0.
+                                         }
+            min_internal_force[num_e] = {'moemnt':max(moment),
+                                         'shear': 0.,
+                                         'axial': 0.
+                                         }
+
+        # Get the maximum of the system
+        max_df = pd.DataFrame(max_internal_force)
+        min_df = pd.DataFrame(max_internal_force)
+        df_aux = pd.concat([max_df, min_df], axis=1)
+
+        abs_max = df_aux.max(axis=1)
+
+        max_force = min(max_internal_force)
+        min_force = min(min_internal_force)
+        # Create dictionary with the maximum and minimum data
+        min_max_internal_forces = {'min': min_internal_force,
+                                   'max': max_internal_force,
+                                   'system abs max': abs_max}
+
+        # Add results to Result object
+        result = self._result
+        result.add_result('internal forces', internal_forces)
+        # Add metadata to the results object
+        result.add_metadata('internal forces', min_max_internal_forces)
+
+        return internal_forces
+
+    def calc_internal_force_element(self, element, pos, component, unit_length=False):
+        """Compute the internal forces of a given element.
+        The variable 'pos' defines te position where the internal force is calculated. It
+        can also be an array, specifying different positions at which the internal forces
+        are needed.
+
+        :element: a Beam instance
+        :pos: position of evaluation (float or array)
+        :component: TODO
+        :unit_length: bool, sets wheather the local coordinate 'x' of the beam move between [0,1]
+               or [0,Le]
+        :returns: TODO
+
+        """
+        if component == 'moment':
+            internal_force = self.calc_moment_at(pos, element, unit_length)
+        elif component == 'shear':
+            pass
+        elif component == 'axial':
+            pass
+
+        return internal_force
+
+    def calc_all_deflections(self, n=11):
+        """Compute the deflections of every element in the model.
+        The number of points at whicn the deflections are calculated is specified in the
+        variable 'n' (default n=11).
+
+        :n: number of points at which the deflections are copmuted
+        :returns: TODO
+
+        """
+        pass
 

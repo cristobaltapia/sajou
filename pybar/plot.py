@@ -303,16 +303,19 @@ class Display(object):
         x_range = ax.get_xlim()[1] - ax.get_xlim()[0]
         y_range = ax.get_ylim()[1] - ax.get_ylim()[0]
         max_range = max([x_range, y_range])
-        scale_auto = 0.2*max_range/result._max_member_force[component]
+        max_component = result.metadata['internal forces']['system abs max'][component]
+        scale_auto = 0.2*max_range / max_component
         # Plot the specified diagram
         # Transform the results from the local coordinates to global
         # coordinates
         for num, elem in model.beams.items():
             # Get the transformation matrix
             T = elem.transformation_matrix[0:2,0:2]
+            # Get the positions at which the internal forces were
+            # caclculated
+            x_axis = result.data['internal forces'][num][component]['x']
             # Get the specified member forces
-            x_axis = result.internal_forces[num]['x']
-            d = result.internal_forces[num][component]*scale_auto*scale
+            d = result.data['internal forces'][num][component]['data'] * scale_auto*scale
 
             # Results are mutiplied by -1 to represent them in the convention
             # where positive moments are drawn 'below' the beam element.
@@ -526,7 +529,8 @@ class DisplaySym(Display):
         x_range = ax.get_xlim()[1] - ax.get_xlim()[0]
         y_range = ax.get_ylim()[1] - ax.get_ylim()[0]
         max_range = max([x_range, y_range])
-        scale_auto = 0.2*max_range/result._max_member_force[component]
+        scale_auto = 0.2*max_range / result._max_member_force[component]
+
         # Plot the specified diagram
         # Transform the results from the local coordinates to global
         # coordinates

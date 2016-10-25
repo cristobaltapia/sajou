@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import numpy as np
 from scipy.linalg import lu_factor, lu_solve
+from .postprocessing import Postprocess
 #import scipy as sp
 """ This module contains the different solvers used by the program.
 """
@@ -58,6 +59,7 @@ class StaticSolver(Solver):
         P = self._model._generate_loading_vector()
         # Assemble the vector of applied element loads
         P_e = self._model._generate_element_loading_vector()
+
         # Apply Dirichlet boundary conditions
         # Get the dof corresponding to Dirichlet border conditions
         dirich_ind = self._model._dof_dirichlet
@@ -68,13 +70,6 @@ class StaticSolver(Solver):
         P_new[dirich_ind] = P[dirich_ind] - P_dirich
         # Add the element loads to the global loading vector
         P_new += P_e
-
-        # Matrix to multiply the global stiffness matrix and put zeros on the
-        # rows and columns corresponding to the Dirichlet BC.
-        #T = np.eye(len(K))
-        # Put a zero on the respective Dirichlet DOF
-        #for index in dirich_ind:
-        #    T[index,index] = 0.
 
         # Generate the new augumented stiffness matrix
         #K_new = np.dot(T, K)
@@ -88,110 +83,93 @@ class StaticSolver(Solver):
 
         # LU decomposition
         LU, piv = lu_factor(K_new)
-        # Solve the augumented system
+        # Solve the augumented system (nodal displacements are computed)
         V_res = lu_solve((LU, piv), P_new, trans=0)
 
-        # Obtain reactions at the DOF constrained with Dirichlet BCs
-        # (Take the element loads into account with 'P_e')
-        P_react = np.dot(K, V_res)[dirich_ind] - P_e[dirich_ind]
-
-        # Copy the data of the model
+        # Initialize a Result object
+        # - Copy the data of the model
         model_data = self._model.export_model_data()
-
-        # Create results object
+        # - Create Result object
         result = Result(model=model_data)
-        result.displacements = V_res
+
+        # Add nodal displacements to the result object
+        result.add_result('nodal displacements', V_res)
+
+        # Add nodal reactions to the results object
+        self.calc_nodal_reactions(result, V_res, K, P_e)
+
+        # Add end forces to the results object
+        self.calc_end_forces(result, V_res, P_e)
+
+        # Postprocess the results according to the specified in 'output'
+        # variable
+        result = self.postprocess(result)
+
+        return result
+
+    def postprocess(self, result):
+        """Postprocess the specified results given in the 'output' variable
+
+        :result: TODO
+        :returns: TODO
+
+        """
+        #
+        postp = Postprocess(result)
+        #
+        for curr_output in self._output_request:
+            if curr_output == 'internal forces':
+                # Calculate forces along the frame elements
+                postp.calc_all_internal_forces()
+            elif curr_output == 'deflections':
+                postp.calc_all_deflections()
+            # FIXME: not sure if put this here
+            elif curr_output == 'stresses':
+                postp.calc_stresses(result)
+            else:
+                print('Post-processing of '+curr_output+' not implemented yet.')
+
+        return result
+
+    def calc_nodal_reactions(self, result, nodal_displ, K, elem_load):
+        """Calculate the nodal reactions of the model.
+
+        :result: TODO
+        :nodal_displ: nodal displacements
+        :K: stiffness matrix
+        :elem_forces: element forces vector
+        :returns: TODO
+
+        """
+        # Get the positions of the Dirichlet birder conditions
+        dirich_ind = result._model._dof_dirichlet
+        # (Take the element loads into account with 'P_e')
+        nodal_react = np.dot(K, nodal_displ)[dirich_ind] - elem_load[dirich_ind]
+        # Add result to the Result object
+        result.add_result('nodal reactions', nodal_react)
 
         # Make dictionary with nodes and respective node reactions
         for ix, index_r in enumerate(dirich_ind):
             node_i, dof_i = self._model.get_node_and_dof(index_r)
             # Add the reactions to the dictionary of reactions of the
             # corresponding node
-            node_i.reactions[dof_i] = P_react[ix]
+            node_i.reactions[dof_i] = nodal_react[ix]
 
-        self.postprocess(result)
+        return nodal_react
 
-        return result
-
-    def postprocess(self, result):
-        """Calculate the specified results given in the 'output' variable
-
-        :result: TODO
-        :returns: TODO
-
-        """
-        for curr_output in self._output_request:
-            if curr_output == 'forces':
-                self._calc_end_forces(result)
-            elif curr_output == 'internal forces':
-                self._calc_internal_forces(result)
-            # FIXME: not sure if put this here
-            elif curr_output == 'stresses':
-                self._calc_stresses(result)
-            else:
-                print('Post-processing of '+curr_output+' not implemented yet.')
-
-        return result
-
-    def _calc_internal_forces(self, result):
-        """Calculate member forces
-
-        :result: TODO
-        :returns: TODO
-
-        """
-        # First calculate end forces on each member
-        end_forces = self._calc_end_forces(result)
-
-        max_N = 0.
-        max_V = 0.
-        max_M = 0.
-
-        for num, elem in self._model.beams.items():
-            # Points where data is going to be extracted
-            x_axis = np.linspace(0,1,11) * elem._length
-            axial = np.zeros(len(x_axis))
-            shear = np.zeros(len(x_axis))
-            moment = np.zeros(len(x_axis))
-            # Take account for element loads (distributed, etc)
-            # FIXME: still need to include distributed loads, etc
-            if len(elem._loads) > 0:
-                for load in elem._loads:
-                    axial += self.calc_axial_force_with_member_load(elem, load, x_axis)
-                    shear += self.calc_shear_force_with_member_load(elem, load, x_axis)
-                    moment += self.calc_moment_with_member_load(elem, load, x_axis)
-
-            # Calculate axial force on the member
-            axial -= np.ones(len(x_axis)) * end_forces[num][0]
-            # Calculate shear force on the member
-            shear += np.ones(len(x_axis)) * end_forces[num][1]
-            # Calculate moment on the member
-            moment +=  end_forces[num][1]*x_axis - end_forces[num][2]
-            # Add to the results
-            res = {'axial':axial, 'shear':shear, 'moment':moment, 'x':x_axis}
-            result.internal_forces[num] = res
-            # maximum absolute values
-            max_N = max([max(abs(axial)), max_N])
-            max_V = max([max(abs(shear)), max_V])
-            max_M = max([max(abs(moment)), max_M])
-
-        result._max_member_force['axial'] = max_N
-        result._max_member_force['shear'] = max_V
-        result._max_member_force['moment'] = max_M
-
-        return result.internal_forces
-
-    def _calc_end_forces(self, result):
+    def calc_end_forces(self, result, nodal_displ, elem_load):
         """Calculate the internal forces of beam elements
 
         :result: Result object
         :returns: TODO
 
         """
+        # Initialize dictionary with results of the end forces
+        end_forces = dict()
         # Assemble the vector of applied element loads
         # FIXME: only take the contribution of the analyzed beam element
         # and not the cotiguous too
-        P_e = self._model._generate_element_loading_vector()
+        P_e = elem_load
         # calculate for each element
         for num, elem in self._model.beams.items():
             # Get the transformation matrix for the element
@@ -200,8 +178,8 @@ class StaticSolver(Solver):
             Ke = elem._Ke
             # Get the displacements of the corresponding DOFs in global coordinates
             dof_pn = elem._dof_per_node
-            v_i = np.zeros(dof_pn*elem._n_nodes)
-            P_e_i = np.zeros(dof_pn*elem._n_nodes)
+            v_i = np.zeros(dof_pn*elem._n_nodes, dtype=np.float64)
+            P_e_i = np.zeros(dof_pn*elem._n_nodes, dtype=np.float64)
             # Assemble matrix with element nodal displacements of the current
             # beam element
             for n_node, node in enumerate(elem._nodes):
@@ -209,75 +187,23 @@ class StaticSolver(Solver):
                 i2 = dof_pn*(n_node+1)
                 j1 = node.number*dof_pn
                 j2 = dof_pn*(1+node.number)
-                v_i[i1:i2] = result.displacements[j1:j2]
+                v_i[i1:i2] = nodal_displ[j1:j2]
                 # FIXME:
                 if len(elem._loads) > 0:
                     P_e_i[i1:i2] = P_e[j1:j2]
 
             # Get the End Forces of the element in global coordinates
-            P_i = np.dot(Ke, v_i) - P_e_i
+            P_i_global = np.dot(Ke, v_i) - P_e_i
             # Transform End Forces to local coordinates
-            P_i_local = np.dot(T, P_i)
+            P_i_local = np.dot(T, P_i_global)
             # Add End Forces to the dictionary of End Forces of the result object
             # for the current beam element
-            result.end_forces[num] = P_i_local
+            end_forces[num] = P_i_local
 
-        return result.end_forces
+        # Add results to the result object
+        result.add_result('end forces', end_forces)
 
-    def calc_axial_force_with_member_load(self, element, load, x):
-        """Calculate the axial force in the given element.
-        :returns: TODO
-
-        :element:
-        :load:
-        :x:
-
-        returns:
-        """
-        if load._direction == 'x' and load._coord_system == 'local':
-            p1 = load._p1
-            return -x * p1
-        # TODO: case with global coord system
-        else:
-            axial = np.zeros(len(x))
-            return axial
-
-    def calc_shear_force_with_member_load(self, element, load, x):
-        """Calculate the shear force in the given element.
-        :returns: TODO
-
-        :element:
-        :load:
-        :x:
-
-        returns:
-        """
-        if load._direction == 'z' and load._coord_system == 'local':
-            p1 = load._p1
-            return x * p1
-        # TODO: case with global coord system
-        else:
-            axial = np.zeros(len(x))
-            return axial
-
-    def calc_moment_with_member_load(self, element, load, x):
-        """Calculate the shear force in the given element.
-        :returns: TODO
-
-        :element:
-        :load:
-        :x:
-
-        returns:
-        """
-        # TODO: linearly varying distributed load
-        if load._direction == 'z' and load._coord_system == 'local':
-            p1 = load._p1
-            return x**2 * 0.5 * p1
-        # TODO: case with global coord system
-        else:
-            axial = np.zeros(len(x))
-            return axial
+        return end_forces
 
 
 class SymbolicSolver(Solver):
@@ -458,12 +384,35 @@ class Result(object):
 
     def __init__(self, model):
         """TODO: to be defined1. """
-        self.displacements = None # displacement results
-        self.end_forces = dict() # end forces of elements
-        self.internal_forces = dict() # internal forces of elements
-        # maximum absolut value of the different member forces in the
-        # model
-        self._max_member_force = dict()
-        # Data of the model associated with the results
+        # Analyzed model
         self._model = model
+        # Initiate the container for the results
+        self.data = dict()
+        # Initialize dictionary with information of minimum and maximum
+        # values of the results, and other useful data.
+        self.metadata = dict()
+
+    def add_result(self, name, results):
+        """Add results to the results dictionary
+
+        :name: TODO
+        :results: TODO
+        :returns: TODO
+
+        """
+        self.data[name] = results
+
+        return self
+
+    def add_metadata(self, name, results):
+        """Add results to the results dictionary
+
+        :name: TODO
+        :results: TODO
+        :returns: TODO
+
+        """
+        self.metadata[name] = results
+
+        return self
 

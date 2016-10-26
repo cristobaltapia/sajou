@@ -172,6 +172,69 @@ class Display(object):
 
         return ax
 
+    def plot_deformed_geometry(self, model, result, ax, scale=1.):
+        """Plot the system in its deformed configuration.
+
+        :model: Model analyzed
+        :result:
+        :ax: matplotlib axis instance
+        :scale: scale used to plot the deformations
+        :returns: matplotlib axis
+
+        """
+        node_options = self.draw_config['node']
+        elem_options = self.draw_config['element']
+        background_options = self.draw_config['background']
+        grid_options = self.draw_config['grid']
+        force_options = self.draw_config['force']
+        support_options = self.draw_config['support']
+
+        # set background color
+        ax.set_axis_bgcolor(background_options['color'])
+        ax.grid(True, **grid_options)
+
+        # Update the positon of the nodes
+        a = res.get_array_of_nodal_displacements_as_coords()
+        b = m.get_array_of_nodes_coords()
+
+        for num, elem in model.beams.items():
+            n1 = elem._node1
+            n2 = elem._node2
+            ax.plot([n1.x, n2.x], [n1.y, n2.y], **elem_options)
+
+        nodes = model.nodes
+        if self.display_config['nodes'] == True:
+            for num, node in nodes.items():
+                ax.scatter(node.x, node.y, marker='o', **node_options)
+
+        # Plot forces if requiered
+        if self.display_config['forces']==True:
+            for ix, node_i in model.nodes.items():
+                for dof, val in node_i._Loads.items():
+                    ax = self.plot_nodal_force(ax, dof, at=node_i, val=val)
+            # Plot element Loads
+            ax = self.plot_element_loads(ax, model)
+
+        # Plot supports
+        if self.display_config['supports']==True:
+            for ix, node_i in model.nodes.items():
+                if len(node_i._BC) > 0:
+                    ax = self.plot_support(ax, dof=node_i._BC.keys(), at=node_i)
+
+        #x_min = min([n.x for ix, n in nodes.items()])
+        #x_max = max([n.x for ix, n in nodes.items()])
+        #y_min = min([n.y for ix, n in nodes.items()])
+        #y_max = max([n.y for ix, n in nodes.items()])
+        #x_range = x_max - x_min
+
+        #ax.set_xlim(xmin=x_min-0.2*x_range, xmax=x_max+0.2*x_range)
+        #ax.set_ylim(ymin=y_min-0.2*x_range, ymax=y_max+0.2*x_range)
+
+        ax.axis('equal')
+
+        return ax
+
+
     def plot_element_loads(self, ax, model):
         """Plot the element loads.
         Element loads like uniformly distributed loads are drawn accordinlgy.

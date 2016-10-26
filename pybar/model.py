@@ -5,6 +5,7 @@ Defines the model classes for 2D and 3D models.
 """
 import numpy as np
 import scipy.sparse as sparse
+import pandas as pd
 from .utils import Local_Csys_two_points
 from .solvers import StaticSolver
 from .elements import Beam2D, Beam3D
@@ -42,6 +43,8 @@ class Model(object):
         self._K = None # global stiffness matrix
         self._P = None # load matrix
         self._V = None # global displacement matrix
+        # Number of dimensions of the model
+        self.n_dimensions = None
         # Number of dof per node. Initialized in the respective models
         self.n_dof_per_node = None
         # Specify dofs that are not active due to border conditions
@@ -102,6 +105,43 @@ class Model(object):
         """
         return str('Model: Name: {name}, Nodes: {n_nodes}, Beams: {n_beams}'.format(
             name=self._name, n_nodes=self.n_nodes, n_beams=self.n_beams))
+
+    def get_dataframe_of_node_coords(self, nodes='all'):
+        """Return a pandas dataframe with coordinates of selected nodes of the model  
+
+        :nodes: list of nodes or 'all'
+        :returns: TODO
+
+        """
+        dimensions = self.n_dimensions
+        #
+        if nodes == 'all':
+            ar_coords = np.zeros((self.n_nodes, dimensions) , dtype=np.float)
+            index_nodes = np.zeros(self.n_nodes, dtype=np.int)
+            # Loop over every node and add their coordinates to the array
+            for i_node, curr_node in self.nodes.items():
+                ar_coords[i_node,:] = curr_node.coords
+                index_nodes[i_node] = curr_node.number
+
+        else:
+            ar_coords = np.zeros((len(nodes), dimensions) , dtype=np.float)
+            index_nodes = np.zeros(len(nodes), dtype=np.int)
+            ar_coords = np.zeros(len(nodes))
+            for i_node, curr_node in enumerate(nodes):
+                ar_coords[i_node,:] = curr_node.coords
+                index_nodes[i_node] = curr_node.number
+
+        # Set coordinate labels according to the model
+        if dimensions == 2:
+            index_label = ['x', 'y']
+        else:
+            index_label = ['x', 'y', 'z']
+
+        # Append to the Dta Frame
+        df_coords = pd.DataFrame(data=ar_coords, index=index_nodes, dtype=np.float64,
+                columns=index_label)
+
+        return df_coords
 
     def _generate_connectivity_table2D(self):
         """Generates the connectivity table for the model
@@ -427,6 +467,7 @@ class Model2D(Model):
         dimensionality = '2D'
         Model.__init__(self, name, dimensionality)
         self.n_dof_per_node = 3 # dof per node
+        self.n_dimensions = 2
 
     def Node(self, x, y):
         """2D implementation of the Node.
@@ -640,6 +681,7 @@ class ModelData(object):
         self.materials = copy(model.materials)
         self.n_nodes = model.n_nodes
         self.n_beams = model.n_beams
+        self.n_dimensions = model.n_dimensions
         self.n_materials = model.n_materials
         self._connectivity = copy(model._connectivity)
         # Number of dof per node. Initialized in the respective models

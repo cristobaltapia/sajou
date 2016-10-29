@@ -227,7 +227,7 @@ class Postprocess(object):
                                          'shear': np.max(shear),
                                          'axial': np.max(axial)
                                          }
-            min_internal_force[num_e] = {'moemnt':np.min(moment),
+            min_internal_force[num_e] = {'moment':np.min(moment),
                                          'shear': np.min(shear),
                                          'axial': np.min(axial)
                                          }
@@ -235,7 +235,8 @@ class Postprocess(object):
         # Get the maximum of the system
         max_df = pd.DataFrame(max_internal_force)
         min_df = pd.DataFrame(min_internal_force)
-        df_aux = pd.concat([max_df, -min_df], axis=1)
+        df_aux = pd.concat([max_df, np.abs(min_df)], axis=1)
+        print(df_aux)
 
         abs_max = df_aux.max(axis=1)
 

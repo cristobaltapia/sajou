@@ -116,20 +116,14 @@ class Model(object):
         dimensions = self.n_dimensions
         #
         if nodes == 'all':
-            ar_coords = np.zeros((self.n_nodes, dimensions) , dtype=np.float)
-            index_nodes = np.zeros(self.n_nodes, dtype=np.int)
-            # Loop over every node and add their coordinates to the array
-            for i_node, curr_node in self.nodes.items():
-                ar_coords[i_node,:] = curr_node.coords
-                index_nodes[i_node] = curr_node.number
+            nodes = [n for i, n in self.nodes.items()]
 
-        else:
-            ar_coords = np.zeros((len(nodes), dimensions) , dtype=np.float)
-            index_nodes = np.zeros(len(nodes), dtype=np.int)
-            ar_coords = np.zeros(len(nodes))
-            for i_node, curr_node in enumerate(nodes):
-                ar_coords[i_node,:] = curr_node.coords
-                index_nodes[i_node] = curr_node.number
+        ar_coords = np.zeros((len(nodes), dimensions) , dtype=np.float)
+        index_nodes = np.zeros(len(nodes), dtype=np.int)
+
+        for i_node, curr_node in enumerate(nodes):
+            ar_coords[i_node,:] = curr_node.coords
+            index_nodes[i_node] = curr_node.number
 
         # Set coordinate labels according to the model
         if dimensions == 2:

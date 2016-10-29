@@ -225,7 +225,7 @@ class Display(object):
                 # FIXME: ... according to the system coordinate chosen
                 T = element.transformation_matrix
                 sign_p = np.sign(load._p1)
-                offset = np.dot(T.T, np.array([0,-1,0, 0,-1,0]) * sign_p * size)
+                offset = T.T.dot(np.array([0,-1,0, 0,-1,0]) * sign_p * size)
                 n1_o = np.array(n1[:]) + offset[:3]
                 n2_o = np.array(n2[:]) + offset[3:]
                 # Generate points for the arrows with offset
@@ -305,7 +305,6 @@ class Display(object):
         max_range = max([x_range, y_range])
         max_component = result.metadata['internal forces']['system abs max'][component]
         scale_auto = 0.2 * max_range / max_component
-        print(max_component)
         # Plot the specified diagram
         # Transform the results from the local coordinates to global
         # coordinates

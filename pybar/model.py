@@ -1,19 +1,27 @@
 #!/usr/bin/env python
 # encoding: utf-8
+"""
+Defines the model classes for 2D and 3D models.
+"""
 import numpy as np
 import scipy.sparse as sparse
 from .utils import Local_Csys_two_points
 from .solvers import StaticSolver
 from .elements import Beam2D, Beam3D
-"""
-Includes all the necessary objects to create the model.
-"""
+from .nodes import Node2D
 
 class Model(object):
     """Defines a model object"""
 
+    def __new__(cls, name, dimensionality):
+        if cls is Model:
+            if dimensionality == '2D': return super(Model, cls).__new__(Model2D)
+            if dimensionality == '3D': return super(Model, cls).__new__(Model3D)
+        else:
+            return super(Model, cls).__new__(cls, name, dimensionality)
+
     def __init__(self, name, dimensionality):
-        """TODO: to be defined1.
+        """Initialization of model instance.
 
         :name: TODO
         :dimensionality: TODO
@@ -408,8 +416,96 @@ class Model(object):
         else:
             node.add_hinge()
 
-class SymbolicModel2D(Model):
+class Model2D(Model):
+    """Subclass of the 'Model' class. It is intended to be used for the 2-dimensional
+    models of frame structures."""
 
+    def __init__(self, name, dimensionality='2D'):
+        """TODO: to be defined1. """
+        dimensionality = '2D'
+        Model.__init__(self, name, dimensionality)
+        self.n_dof_per_node = 3 # dof per node
+
+    def Node(self, x, y):
+        """2D implementation of the Node.
+
+        :*kwargs: TODO
+        :returns: instance of Node
+
+        """
+        # A coordinate z=0 is passed to initiate the Node Instance
+        node = Node2D(x=x, y=y, z=0.0, number=self.n_nodes)
+        self.nodes[node.number] = node
+        self.n_nodes += 1
+
+        return node
+
+    def Beam(self, node1, node2):
+        """Define a line between two nodes.
+
+        :node1: first node
+        :node2: second node
+
+        """
+        line = Beam2D(node1=node1, node2=node2, number=self.n_beams)
+        self.beams[line.number] = line
+        self.n_beams += 1
+
+        return line
+
+    def distributed_load(self, elements, p1, p2=None, direction='z', coord_system='local'):
+        """Add a distributed load to a list of beam elements.
+        A list of elements has to be supplied for the first variable. The rest of the
+        variables are exactly the same as in the 'distributed_load' function of the
+        corresponding elements.
+
+        :elements: list of beams elements
+        :p1: TODO
+        :p2: TODO
+        :returns: TODO
+
+        """
+        for curr_elem in elements:
+            # Add distributed load
+            curr_elem.distributed_load(p1, p2, direction, coord_system)
+
+class Model3D(Model):
+    """Subclass of the 'Model' class. It is intended to be used for the 3-dimensional
+    models of frame structures."""
+
+    def __init__(self, name, dimensionality='3D'):
+        """TODO: to be defined1. """
+        dimensionality = '3D'
+        Model.__init__(self, name, dimensionality)
+        self.n_dof_per_node = 6 # dof per node
+
+    def Node(self, x, y, z):
+        """3D implementation of the Node.
+
+        :*kwargs: TODO
+        :returns: instance of Node
+
+        """
+        node = Node(x=x, y=y, z=z, number=self.n_nodes)
+        self.nodes[node.number] = node
+        self.n_nodes += 1
+
+        return node
+
+    def Beam(self, node1, node2):
+        """Define a line between two nodes.
+
+        :node1: first node
+        :node2: second node
+
+        """
+        line = Beam3D(node1=node1, node2=node2, number=self.n_beams)
+        self.beams[line.number] = line
+        self.n_beams += 1
+
+        return line
+
+class SymbolicModel2D(Model):
     """Defines a symbolic model object"""
 
 
@@ -522,216 +618,6 @@ class SymbolicModel2D(Model):
         self.n_beams += 1
 
         return line
-
-class Model2D(Model):
-    """Subclass of the 'Model' class. It is intended to be used for the 2-dimensional
-    models of frame structures."""
-
-    def __init__(self, name):
-        """TODO: to be defined1. """
-        dimensionality = '2D'
-        Model.__init__(self, name, dimensionality)
-        self.n_dof_per_node = 3 # dof per node
-
-    def Node(self, x, y):
-        """2D implementation of the Node.
-
-        :*kwargs: TODO
-        :returns: instance of Node
-
-        """
-        # A coordinate z=0 is passed to initiate the Node Instance
-        node = Node2D(x=x, y=y, z=0.0, number=self.n_nodes)
-        self.nodes[node.number] = node
-        self.n_nodes += 1
-
-        return node
-
-    def Beam(self, node1, node2):
-        """Define a line between two nodes.
-
-        :node1: first node
-        :node2: second node
-
-        """
-        line = Beam2D(node1=node1, node2=node2, number=self.n_beams)
-        self.beams[line.number] = line
-        self.n_beams += 1
-
-        return line
-
-    def distributed_load(self, elements, p1, p2=None, direction='z', coord_system='local'):
-        """Add a distributed load to a list of beam elements.
-        A list of elements has to be supplied for the first variable. The rest of the
-        variables are exactly the same as in the 'distributed_load' function of the
-        corresponding elements.
-
-        :elements: list of beams elements
-        :p1: TODO
-        :p2: TODO
-        :returns: TODO
-
-        """
-        for curr_elem in elements:
-            # Add distributed load
-            curr_elem.distributed_load(p1, p2, direction, coord_system)
-
-class Model3D(Model):
-    """Subclass of the 'Model' class. It is intended to be used for the 3-dimensional
-    models of frame structures."""
-
-    def __init__(self, name, dimensionality='3D'):
-        """TODO: to be defined1. """
-        dimensionality = '3D'
-        Model.__init__(self, name, dimensionality)
-        self.n_dof_per_node = 6 # dof per node
-
-    def Node(self, x, y, z):
-        """3D implementation of the Node.
-
-        :*kwargs: TODO
-        :returns: instance of Node
-
-        """
-        node = Node(x=x, y=y, z=z, number=self.n_nodes)
-        self.nodes[node.number] = node
-        self.n_nodes += 1
-
-        return node
-
-    def Beam(self, node1, node2):
-        """Define a line between two nodes.
-
-        :node1: first node
-        :node2: second node
-
-        """
-        line = Beam3D(node1=node1, node2=node2, number=self.n_beams)
-        self.beams[line.number] = line
-        self.n_beams += 1
-
-        return line
-
-class Node(np.ndarray):
-    """3-dimensional implementation of Nodes"""
-    def __new__(cls, x, y, z, number):
-        # A z-coordinate is incorporated if only two are given
-        obj = np.asarray([x, y, z], dtype=np.float64).view(cls)
-        obj.number = number
-        obj.x = x
-        obj.y = y
-        obj.z = z
-        # number of degree of freedom of the node
-        obj.n_dof = None
-
-        # Border conditions on the DOF:
-        # The border conditions are defined in this dictionary.
-        # The keys correspond to the dof restrained and the value to the
-        # border condition applied. The convention used ist that each
-        # key value is associated with the corresponding DOF, i.e. in a
-        # 2D model the key value '0' is associated with a translation in
-        # the first (x) direction, while a key value '2' is associated
-        # with a rotation around the third (z)-axis.
-        # Only global coordinates are allowed here. For use local
-        # coordinate system or another coordinate system the BC have
-        # to be transformed accordingly first.
-        # The function set_BC() is used to do this.
-        #
-        obj._BC = dict()
-        # Forces (moments) on the node
-        # The forces on the node are defined analogously as for the
-        # application of border conditions. The function used to apply
-        # the loads is set_Load().
-        #
-        obj._Loads = dict()
-        # Similar with the reactions. These are, of course, added after the
-        # solution is found.
-        obj.reactions = dict()
-
-        # dictionary containing the beams that use this node
-        obj.beams = dict()
-        #
-        obj._hinge = False
-
-        return obj
-
-    def set_BC(self, dof, val):
-        """Adds a BC to the specified dof of the Node.
-
-        :dof: specified degree of freedom
-        :val: value given
-        :returns: TODO
-
-        """
-        self._BC[dof] = val
-
-        return 1
-
-    def set_Load(self, dof, val):
-        """Adds a Load to the specified dof of the Node.
-
-        :dof: specified degree of freedom
-        :val: value given
-        :returns: TODO
-
-        """
-        self._Loads[dof] = val
-
-        return 1
-
-    def add_hinge(self):
-        """Method to add a hinge at the instance of the node
-        :returns: TODO
-
-        """
-        self._hinge = True
-
-    def append_beam(self, beam, node):
-        """Appends the information of the beam that uses the node and the corresponding
-        denomintaion: node 1 or 2
-
-        :beam: Beam instance
-        :node: '1' or '2'
-        :returns: nothing FIXME
-
-        """
-        self.beams[beam.number] = node
-
-    def __repr__(self):
-        """
-        Returns the printable string for this object
-        """
-        return 'Node {number}'.format(number=self.number)
-
-    def __str__(self):
-        """
-        Returns the printable string for this object
-        """
-        return 'Node {number}: ({x},{y},{z})'.format(number=self.number, x=self.x, y=self.y, z=self.z)
-
-class Node2D(Node):
-    """2-dimensional implementation of Nodes"""
-    def __init__(self, x, y, z, number):
-        """ Initializes a Node2D instance
-        """
-        #Node.__init__(self, x=x, y=y, z=0.0, number=number)
-        # Numbe od DOF per node:
-        # Translation in x, translation in y, rotation in z
-        self.n_dof = 3
-
-        return None
-
-    def __repr__(self):
-        """
-        Returns the printable string for this object
-        """
-        return 'Node2D {number}'.format(number=self.number)
-
-    def __str__(self):
-        """
-        Returns the printable string for this object
-        """
-        return 'Node2D {number}: ({x},{y},{z})'.format(number=self.number, x=self.x, y=self.y, z=self.z)
 
 class Material(object):
     """Material properties"""

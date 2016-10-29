@@ -430,19 +430,23 @@ class Result(object):
         # TODO: select a list of nodes from which to generate this array
         n_dimensions = self._model.n_dimensions
 
+        if nodes == 'all':
+            nodes = [n for i, n in self._model.nodes.items()]
+
         # nodal displacement results
         displ = self.data['nodal displacements']
 
         # Initialize numpy array
-        ar_coords = np.zeros((self._model.n_nodes, n_dimensions), dtype=np.float64)
-        index_nodes = np.zeros(self._model.n_nodes, dtype=np.int)
+        ar_coords = np.zeros((len(nodes), n_dimensions), dtype=np.float64)
+        index_nodes = np.zeros(len(nodes), dtype=np.int)
 
         # Loop for each node of the model
         # TODO: implement 3D case
-        for i_node, curr_node in self._model.nodes.items():
-            aux_arr = np.array([displ[i_node*3], displ[i_node*3+1]])
-            ar_coords[i_node,:] = aux_arr
-            index_nodes[i_node] = i_node
+        for ix, curr_node in enumerate(nodes):
+            ix_node = curr_node.number
+            aux_arr = np.array([displ[ix_node*3], displ[ix_node*3+1]])
+            ar_coords[ix,:] = aux_arr
+            index_nodes[ix] = ix_node
 
         index_label = ['x','y']
 

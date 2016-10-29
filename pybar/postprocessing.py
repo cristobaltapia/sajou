@@ -236,7 +236,6 @@ class Postprocess(object):
         max_df = pd.DataFrame(max_internal_force)
         min_df = pd.DataFrame(min_internal_force)
         df_aux = pd.concat([max_df, np.abs(min_df)], axis=1)
-        print(df_aux)
 
         abs_max = df_aux.max(axis=1)
 

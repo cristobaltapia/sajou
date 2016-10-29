@@ -4,6 +4,7 @@
 This module contains the different elements used and all its methods.
 """
 import numpy as np
+import scipy.sparse as sparse
 from . import loads
 from .utils import Local_Csys_two_points
 
@@ -145,16 +146,15 @@ class Beam2D(Beam):
         k[5,2] = k[2,5] = 2. * EI / L
         k[5,4] = k[4,5] = -6. * EI / L**2
 
-        # transform to global coordinates
-        #T = element.transformation_matrix
-
-        #Ke = np.dot(T.T, np.dot(k,T))
-        self._Ke_local = k
+        # Generate sparse matrix
+        k_local = sparse.csr_matrix(k)
+        self._Ke_local = k_local
 
         # transform to global coordinates
         T = self.transformation_matrix
 
-        Ke = np.dot(T.T, np.dot(k, T))
+        # Calculate global stiffness matrix
+        Ke = T.T.dot(k_local.dot(T))
 
         self._Ke = Ke
 

@@ -4,6 +4,7 @@
 transfered accordingly to the respective nodes.
 """
 import numpy as np
+import scipy.sparse as sparse
 
 class Load(object):
 
@@ -78,7 +79,7 @@ class DistributedLoad(Load):
         # Calculate the transfer matrix in global coordinates, using the
         # transformation matrix
         T = elem.transformation_matrix
-        self._transfer_matrix_global = np.dot(T.T, tr)
+        self._transfer_matrix_global = T.T.dot(tr)
 
 class DistributedMoment(Load):
 

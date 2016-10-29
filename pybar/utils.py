@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import numpy as np
+import scipy.sparse as sparse
 
 class CoordSys(object):
 
@@ -52,7 +53,10 @@ class CoordSys(object):
         T[4,4] = cx
         T[5,5] = 1
 
-        return T
+        # sparse form
+        T_s = sparse.csr_matrix(T)
+
+        return T_s
 
     def __str__(self):
         """

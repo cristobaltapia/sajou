@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # encoding: utf-8
 import numpy as np
+import scipy.sparse as sparse
 from .utils import Local_Csys_two_points
 from .solvers import StaticSolver
 from .elements import Beam2D, Beam3D
@@ -195,7 +196,10 @@ class Model(object):
             K[j1:j2,i1:i2] += self.beams[n_elem]._Ke[n_dof:,0:n_dof]
             K[i1:i2,j1:j2] += self.beams[n_elem]._Ke[0:n_dof,n_dof:]
 
-        return K
+        # Generate sparse matrix
+        K_s = sparse.csr_matrix(K)
+
+        return K_s
 
     def _generate_loading_vector(self):
         """Generate the global matrix of applied forces P.

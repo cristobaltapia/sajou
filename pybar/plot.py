@@ -254,7 +254,7 @@ class Display(object):
                 # FIXME: ... according to the system coordinate chosen
                 T = element.transformation_matrix
                 sign_p = np.sign(load._p1)
-                offset = np.dot(T.T, np.array([-1,0,0, -1,0,0]) * sign_p * size*0.4)
+                offset = T.T.dot(np.array([-1,0,0, -1,0,0]) * sign_p * size*0.4)
                 n1_o = np.array(n1[:]) + offset[:3]
                 n2_o = np.array(n2[:]) + offset[3:]
                 # Generate points for the arrows with offset
@@ -305,6 +305,7 @@ class Display(object):
         max_range = max([x_range, y_range])
         max_component = result.metadata['internal forces']['system abs max'][component]
         scale_auto = 0.2 * max_range / max_component
+        print(max_component)
         # Plot the specified diagram
         # Transform the results from the local coordinates to global
         # coordinates
@@ -330,7 +331,7 @@ class Display(object):
             # Plot the patches
             # positive part
             for curr_pol in d_pos:
-                rot_pos = np.dot(curr_pol.vertices, T)
+                rot_pos = np.dot(curr_pol.vertices, T.todense())
                 rot_pos[:,0] += elem._node1.x
                 rot_pos[:,1] += elem._node1.y
                 poly_pos = Polygon(rot_pos, True, **member_force_options_pos)
@@ -338,7 +339,7 @@ class Display(object):
 
             # negative part
             for curr_pol in d_neg:
-                rot_neg = np.dot(curr_pol.vertices, T)
+                rot_neg = np.dot(curr_pol.vertices, T.todense())
                 rot_neg[:,0] += elem._node1.x
                 rot_neg[:,1] += elem._node1.y
                 poly_neg = Polygon(rot_neg, True, **member_force_options_neg)

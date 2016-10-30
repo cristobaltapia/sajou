@@ -229,6 +229,22 @@ class Display(object):
         elems_with_loads = {ix: elem for ix, elem in model.beams.items() 
                 if elem._loads != []}
 
+        # Get maximum distributed load
+        if len(elems_with_loads) > 0:
+            pe = []
+            for ix, elem in elems_with_loads.items():
+                for load in elem._loads:
+                    try:
+                        p_max = np.max([np.abs(load._p1), np.abs(load._p2)])
+                        pe.append(p_max)
+                    except:
+                        pass
+
+            pmax = np.max(pe)
+        # Determine automatic scaling factor
+        x_range = ax.get_xlim()[1] - ax.get_xlim()[0]
+        y_range = ax.get_ylim()[1] - ax.get_ylim()[0]
+        scale = max([x_range, y_range])
         # A loop is done for each element that contains an element load
         for ix, elem in elems_with_loads.items():
             # Plot each element load
@@ -236,12 +252,13 @@ class Display(object):
                 # Different plot function is applied for the different
                 # element loadins
                 if load_i._type == 'Distributed Load':
-                    ax = self.plot_distributed_load(ax, model, elem, load_i)
+                    ax = self.plot_distributed_load_element(ax, model, elem, load_i,
+                            scale=scale, max_p=pmax)
                 # TODO: the other types
 
         return ax
 
-    def plot_distributed_load(self, ax, model, element, load):
+    def plot_distributed_load_element(self, ax, model, element, load, scale=1, max_p=1):
         """Plot a distributed load at the corresponding element.
 
         :ax: TODO
@@ -254,69 +271,67 @@ class Display(object):
         # Get the draw options for the forces
         force_options = self.draw_config['force']
         #
-        size = 500.
+        size = scale * 0.1
         # If it is a uniformly distributed load:
-        if load.is_uniform == True:
-            if load._direction == 'z' and load._coord_system == 'local':
-                #
-                n1 = element._node1
-                n2 = element._node2
-                # Number of arrows
-                n_arrows = (element._length*2)//size
-                # Generate points on the element line
-                nx_e = np.linspace(n1.x, n2.x, n_arrows)
-                ny_e = np.linspace(n1.y, n2.y, n_arrows)
-                # Offset from the position of the nodes...
-                # FIXME: ... according to the system coordinate chosen
-                T = element.transformation_matrix
-                sign_p = np.sign(load._p1)
-                offset = T.T.dot(np.array([0,-1,0, 0,-1,0]) * sign_p * size)
-                n1_o = np.array(n1[:]) + offset[:3]
-                n2_o = np.array(n2[:]) + offset[3:]
-                # Generate points for the arrows with offset
-                nx = np.linspace(n1_o[0], n2_o[0], n_arrows)
-                ny = np.linspace(n1_o[1], n2_o[1], n_arrows)
-                ax.plot(nx, ny, color=force_options['color'])
-                # Plot arrows
-                for arr_i in range(len(nx)):
-                    # annotate() is used instead of arrow() because the style
-                    # of the arrows is better
-                    ax.annotate('',
+        if load._direction == 'z' and load._coord_system == 'local':
+            #
+            n1 = element._node1
+            n2 = element._node2
+            p1 = load._p1
+            p2 = load._p2
+            # Number of arrows
+            n_arrows = (element._length*2)//size
+            # Generate points on the element line
+            nx_e = np.linspace(n1.x, n2.x, n_arrows)
+            ny_e = np.linspace(n1.y, n2.y, n_arrows)
+            # Offset from the position of the nodes...
+            # FIXME: ... according to the system coordinate chosen
+            T = element.transformation_matrix
+            sign_p = np.sign(load._p1)
+            offset = T.T.dot(np.array([0, -p1, 0, 0, -p2, 0]) * scale / max_p * 0.2)
+            n1_o = np.array(n1[:]) + offset[:3]
+            n2_o = np.array(n2[:]) + offset[3:]
+            # Generate points for the arrows with offset
+            nx = np.linspace(n1_o[0], n2_o[0], n_arrows)
+            ny = np.linspace(n1_o[1], n2_o[1], n_arrows)
+            ax.plot(nx, ny, color=force_options['color'])
+            # Plot arrows
+            for arr_i in range(len(nx)):
+                # annotate() is used instead of arrow() because the style
+                # of the arrows is better
+                ax.annotate('',
+                        xy=(nx_e[arr_i], ny_e[arr_i]),
+                        xytext=(nx[arr_i], ny[arr_i]),
+                        arrowprops=dict(arrowstyle='->', color=force_options['color']))
+
+        elif load._direction == 'x' and load._coord_system == 'local':
+            #
+            n1 = element._node1
+            n2 = element._node2
+            # Number of arrows
+            n_arrows = (element._length*2)//size
+            # Generate points on the element line
+            nx_e = np.linspace(n1.x, n2.x, n_arrows)
+            ny_e = np.linspace(n1.y, n2.y, n_arrows)
+            # Offset from the position of the nodes...
+            # FIXME: ... according to the system coordinate chosen
+            T = element.transformation_matrix
+            sign_p = np.sign(load._p1)
+            offset = T.T.dot(np.array([-1,0,0, -1,0,0]) * sign_p * size*0.4)
+            n1_o = np.array(n1[:]) + offset[:3]
+            n2_o = np.array(n2[:]) + offset[3:]
+            # Generate points for the arrows with offset
+            nx = np.linspace(n1_o[0], n2_o[0], n_arrows)
+            ny = np.linspace(n1_o[1], n2_o[1], n_arrows)
+            # Plot arrows
+            for arr_i in range(len(nx)):
+                # annotate() is used instead of arrow() because the style
+                # of the arrows is better
+                ax.annotate('',
                             xy=(nx_e[arr_i], ny_e[arr_i]),
                             xytext=(nx[arr_i], ny[arr_i]),
                             arrowprops=dict(arrowstyle='->', color=force_options['color']))
 
-            elif load._direction == 'x' and load._coord_system == 'local':
-                #
-                n1 = element._node1
-                n2 = element._node2
-                # Number of arrows
-                n_arrows = (element._length*2)//size
-                # Generate points on the element line
-                nx_e = np.linspace(n1.x, n2.x, n_arrows)
-                ny_e = np.linspace(n1.y, n2.y, n_arrows)
-                # Offset from the position of the nodes...
-                # FIXME: ... according to the system coordinate chosen
-                T = element.transformation_matrix
-                sign_p = np.sign(load._p1)
-                offset = T.T.dot(np.array([-1,0,0, -1,0,0]) * sign_p * size*0.4)
-                n1_o = np.array(n1[:]) + offset[:3]
-                n2_o = np.array(n2[:]) + offset[3:]
-                # Generate points for the arrows with offset
-                nx = np.linspace(n1_o[0], n2_o[0], n_arrows)
-                ny = np.linspace(n1_o[1], n2_o[1], n_arrows)
-                # Plot arrows
-                for arr_i in range(len(nx)):
-                    # annotate() is used instead of arrow() because the style
-                    # of the arrows is better
-                    ax.annotate('',
-                                xy=(nx_e[arr_i], ny_e[arr_i]),
-                                xytext=(nx[arr_i], ny[arr_i]),
-                                arrowprops=dict(arrowstyle='->', color=force_options['color']))
-
-        # Linearly varying distributed load
-        else:
-            pass
         return ax
 
     def plot_internal_forces(self, ax, result, component, scale=1):

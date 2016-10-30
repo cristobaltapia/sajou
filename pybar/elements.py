@@ -158,7 +158,7 @@ class Beam2D(Beam):
 
         self._Ke = Ke
 
-        return k
+        return Ke
 
     def assemble_sym_K(self):
         """This function assembles the stiffness matrix for one individual element. Optionally

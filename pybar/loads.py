@@ -40,53 +40,47 @@ class DistributedLoad(Load):
 
         self._elem = elem
         self._p1 = p1
-        self._p2 = p2
         self._direction = direction
         self._coord_system = coord_system
         self._type = 'Distributed Load'
-        self.is_uniform = True
 
         # Detect if distribution is a varying distributed load or not
-        if p2 != None:
+        if p2 == None:
+            self.is_uniform = True
+            p2 = p1
+            self._p2 = p1
+        else:
             self.is_uniform = False
+            self._p2 = p2
 
-        # Initialize transfer matrix
+        # Initialize loading vector
         # FIXME: make this dependant from the specific element.
-        tr = np.zeros(6)
+        # (thinking in 3D case)
+        load_v = np.zeros(6)
         # Calculate the transfer matrix for the axial load
         # (direction='x')
         if direction == 'x':
-            if self.is_uniform:
-                tr[0] = p1 * elem._length * 0.5
-                tr[3] = p1 * elem._length * 0.5
-            else:
-                tr[0] = elem._length * (2.*p1 + p2) / 6.
-                tr[3] = elem._length * (p1 + 2.*p2) / 6.
+            load_v[0] = elem._length * (2.*p1 + p2) / 6.
+            load_v[3] = elem._length * (p1 + 2.*p2) / 6.
 
         elif direction == 'z':
-            if self.is_uniform:
-                tr[1] = p1 * elem._length * 0.5
-                tr[2] = -p1 * elem._length / 12.
-                tr[4] = p1 * elem._length * 0.5
-                tr[5] = p1 * elem._length / 12.
-            else:
-                tr[1] = elem._length * (7.*p1 + 3*p2) / 20.
-                tr[2] = -elem._length**2 * (p1/20. + p2/30.)
-                tr[4] = elem._length * (3.*p1 + 7*p2) / 20.
-                tr[5] = elem._length**2 * (p1/30. + p2/20.)
+            load_v[1] = elem._length * (7.*p1 + 3.*p2) / 20.
+            load_v[2] = -elem._length**2 * (p1/20. + p2/30.)
+            load_v[4] = elem._length * (3.*p1 + 7*p2) / 20.
+            load_v[5] = elem._length**2 * (p1/30. + p2/20.)
 
-        self._transfer_matrix = tr
-        # Calculate the transfer matrix in global coordinates, using the
+        self._loading_vector = load_v
+        # Calculate the load vector in global coordinates, using the
         # transformation matrix
         T = elem.transformation_matrix
-        self._transfer_matrix_global = T.T.dot(tr)
+        self._load_vector_global = T.T.dot(load_v)
 
 class DistributedMoment(Load):
 
     """Docstring for DistributedMoment. """
 
-    def __init__(self, elem, m1, m2=None):
-        """TODO: to be defined1.
+    def __init__(self, elem, m1, m2=None, direction='z', coord_system='local'):
+        """Apply a distributed moment to a beam element
 
         :elem: TODO
         :m1: TODO
@@ -98,5 +92,40 @@ class DistributedMoment(Load):
         self._elem = elem
         self._m1 = m1
         self._m2 = m2
+        self._direction = direction
+        self._coord_system = coord_system
+        self._type = 'Distributed Moment'
+        self.is_uniform = True
         
+        # Detect if distribution is a varying distributed load or not
+        if m2 == None:
+            self.is_uniform = True
+            m2 = m1
+            self._m2 = m1
+        else:
+            self.is_uniform = False
+            self._m2 = m2
+
+        # Initialize loading vector
+        # FIXME: make this dependant from the specific element.
+        # (thinking in 3D case)
+        load_v = np.zeros(6)
+
+        # Calculate the transfer matrix for the axial load
+        # (direction='x')
+        if direction == 'z':
+            load_v[1] = (m1 + m2) * 0.5
+            load_v[2] = elem._length * (m1 - m2) / 12.
+            load_v[4] = -(m1 + m2) * 0.5
+            load_v[5] = -elem._length * (m1 - m2) / 12.
+
+        else:
+            # TODO: implement this in 3D
+            pass
+
+        self._transfer_matrix = load_v
+        # Calculate the load vector in global coordinates, using the
+        # transformation matrix
+        T = elem.transformation_matrix
+        self._load_vector_global = T.T.dot(load_v)
 

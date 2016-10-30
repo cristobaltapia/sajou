@@ -114,8 +114,8 @@ class Postprocess(object):
 
         return axial
 
-    def calc_axial_force_with_member_load(self, element, load, x):
-        """Calculate the axial force in the given element.
+    def calc_moment_with_member_load(self, element, load, x):
+        """Calculate the shear force in the given element.
         :returns: TODO
 
         :element:
@@ -124,18 +124,23 @@ class Postprocess(object):
 
         returns:
         """
-        if load._direction == 'x' and load._coord_system == 'local':
+        # linearly varying distributed load
+        if load._direction == 'z' and load._coord_system == 'local':
+            # get values of the distributed load
             p1 = load._p1
-            return -x * p1
+            p2 = load._p2
+
+            return p1 * x**2 * 0.5 + (p2 - p1) * x*x*x / (3. * element._length )
+
         # TODO: case with global coord system
         else:
             # Initialize moment
             try:
-                axial = np.zeros(len(x_l))
+                moment = np.zeros(len(x_l))
             except:
-                axial = 0.
+                moment = 0.
 
-            return axial
+            return moment
 
     def calc_shear_force_with_member_load(self, element, load, x):
         """Calculate the shear force in the given element.
@@ -149,7 +154,8 @@ class Postprocess(object):
         """
         if load._direction == 'z' and load._coord_system == 'local':
             p1 = load._p1
-            return x * p1
+            p2 = load._p2
+            return p1 * x + (p2 - p1) * x**2 / (2. * element._length)
         # TODO: case with global coord system
         else:
             # Initialize moment
@@ -160,8 +166,8 @@ class Postprocess(object):
 
             return shear
 
-    def calc_moment_with_member_load(self, element, load, x):
-        """Calculate the shear force in the given element.
+    def calc_axial_force_with_member_load(self, element, load, x):
+        """Calculate the axial force in the given element.
         :returns: TODO
 
         :element:
@@ -170,19 +176,19 @@ class Postprocess(object):
 
         returns:
         """
-        # TODO: linearly varying distributed load
-        if load._direction == 'z' and load._coord_system == 'local':
+        if load._direction == 'x' and load._coord_system == 'local':
             p1 = load._p1
-            return x**2 * 0.5 * p1
+            p2 = load._p2
+            return -p1 * x - (p2 - p1) * x**2 / (2. * element._length)
         # TODO: case with global coord system
         else:
             # Initialize moment
             try:
-                moment = np.zeros(len(x_l))
+                axial = np.zeros(len(x_l))
             except:
-                moment = 0.
+                axial = 0.
 
-            return moment
+            return axial
 
     def calc_all_internal_forces(self, n=11):
         """Compute the internal forces at every element of the model.

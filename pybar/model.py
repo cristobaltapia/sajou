@@ -240,6 +240,7 @@ class Model(object):
         # Initialize a zero vector of the size of the total number of
         # DOF
         P = np.zeros(self.n_nodes*self.n_dof_per_node, dtype=np.float64)
+
         # Add loads applied to the elements (distributed loads)
         for ix, elem in self.beams.items():
             if len(elem._loads) > 0:
@@ -247,16 +248,16 @@ class Model(object):
                 # First node:
                 n1 = elem._node1.number
                 # DOFs coresponding to the node 1
-                ind1 = n1*self.n_dof_per_node
+                ind1 = n1 * self.n_dof_per_node
                 # Second node:
                 n2 = elem._node2.number
                 # DOFs coresponding to the node 1
-                ind2 = n2*self.n_dof_per_node
+                ind2 = n2 * self.n_dof_per_node
 
-            for elem_load in elem._loads:
-                #
-                transfer = elem_load._transfer_matrix_global
-                P[[ind1, ind1+1, ind1+2, ind2, ind2+1, ind2+2]] += transfer
+                for elem_load in elem._loads:
+                    #
+                    load_v = elem_load._load_vector_global
+                    P[[ind1, ind1+1, ind1+2, ind2, ind2+1, ind2+2]] += load_v
 
         self._P = P
 

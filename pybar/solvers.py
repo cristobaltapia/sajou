@@ -97,7 +97,8 @@ class StaticSolver(Solver):
         result = Result(model=model_data)
 
         # Add nodal displacements to the result object
-        result.add_result('nodal displacements', V_res)
+        nodal_displ = self.process_nodal_displ(V_res)
+        result.add_result('nodal displacements', nodal_displ)
 
         # Add nodal reactions to the results object
         self.calc_nodal_reactions(result, V_res, K, P_e)
@@ -134,6 +135,39 @@ class StaticSolver(Solver):
                 print('Post-processing of '+curr_output+' not implemented yet.')
 
         return result
+    
+    def process_nodal_displ(self, nodal_displ):
+        """Return nodal displacements as a pandas DataFrame instance.
+        Each column represents a DOF and the index correspond to the respective node
+        number.
+
+        :nodal_displ: TODO
+        :returns: TODO
+
+        """
+        n_dimensions = self._model.n_dimensions
+
+        nodes = [n for i, n in self._model.nodes.items()]
+
+        # Initialize numpy array
+        ar_nodal_displ = np.zeros((len(nodes), n_dimensions), dtype=np.float64)
+        index_nodes = np.zeros(len(nodes), dtype=np.int)
+
+        # Loop for each node of the model
+        # TODO: implement 3D case
+        for ix, curr_node in enumerate(nodes):
+            ix_node = curr_node.number
+            aux_arr = np.array([nodal_displ[ix_node*3], nodal_displ[ix_node*3+1]])
+            ar_nodal_displ[ix,:] = aux_arr
+            index_nodes[ix] = curr_node.number
+
+        index_label = ['x','y']
+
+        # Create the data frame
+        df_nodal_displ = pd.DataFrame(data=ar_nodal_displ, index=index_nodes, dtype=np.float64,
+                columns=index_label)
+
+        return df_nodal_displ
 
     def calc_nodal_reactions(self, result, nodal_displ, K, elem_load):
         """Calculate the nodal reactions of the model.
@@ -420,39 +454,4 @@ class Result(object):
 
         return self
 
-    def get_dataframe_of_nodal_displacements(self, nodes='all'):
-        """Get the nodas displacements in an array (n x 3).
-
-        :nodes: TODO
-        :returns: TODO
-
-        """
-        # TODO: select a list of nodes from which to generate this array
-        n_dimensions = self._model.n_dimensions
-
-        if nodes == 'all':
-            nodes = [n for i, n in self._model.nodes.items()]
-
-        # nodal displacement results
-        displ = self.data['nodal displacements']
-
-        # Initialize numpy array
-        ar_coords = np.zeros((len(nodes), n_dimensions), dtype=np.float64)
-        index_nodes = np.zeros(len(nodes), dtype=np.int)
-
-        # Loop for each node of the model
-        # TODO: implement 3D case
-        for ix, curr_node in enumerate(nodes):
-            ix_node = curr_node.number
-            aux_arr = np.array([displ[ix_node*3], displ[ix_node*3+1]])
-            ar_coords[ix,:] = aux_arr
-            index_nodes[ix] = ix_node
-
-        index_label = ['x','y']
-
-        # Create the data frame
-        df_coords = pd.DataFrame(data=ar_coords, index=index_nodes, dtype=np.float64,
-                columns=index_label)
-
-        return df_coords
 

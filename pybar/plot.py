@@ -116,7 +116,7 @@ class Display(object):
                                               'alpha':0.5},
                     }
 
-    def plot_geometry(self, model, ax):
+    def plot_geometry(self, model, ax, ls='-'):
         """Plots the geometry of the model passed
 
         :model: TODO
@@ -138,7 +138,7 @@ class Display(object):
         for num, elem in model.beams.items():
             n1 = elem._node1
             n2 = elem._node2
-            ax.plot([n1.x, n2.x], [n1.y, n2.y], **elem_options)
+            ax.plot([n1.x, n2.x], [n1.y, n2.y], **elem_options, ls=ls)
 
         nodes = model.nodes
         if self.display_config['nodes'] == True:
@@ -159,20 +159,11 @@ class Display(object):
                 if len(node_i._BC) > 0:
                     ax = self.plot_support(ax, dof=node_i._BC.keys(), at=node_i)
 
-        #x_min = min([n.x for ix, n in nodes.items()])
-        #x_max = max([n.x for ix, n in nodes.items()])
-        #y_min = min([n.y for ix, n in nodes.items()])
-        #y_max = max([n.y for ix, n in nodes.items()])
-        #x_range = x_max - x_min
-
-        #ax.set_xlim(xmin=x_min-0.2*x_range, xmax=x_max+0.2*x_range)
-        #ax.set_ylim(ymin=y_min-0.2*x_range, ymax=y_max+0.2*x_range)
-
         ax.axis('equal')
 
         return ax
 
-    def plot_deformed_geometry(self, result, ax, scale=1.):
+    def plot_deformed_geometry(self, result, ax, show_undeformed=False, scale=1.):
         """Plot the system in its deformed configuration.
 
         :result:
@@ -197,12 +188,12 @@ class Display(object):
         ax.grid(True, **grid_options)
 
         for num, elem in model.beams.items():
-            n1 = elem._node1
-            n2 = elem._node2
+            n1 = elem._node1.number
+            n2 = elem._node2.number
             # Get original coordinates of nodes
             coords_nodes = get_dataframe_of_node_coords(model=model, nodes=[n1, n2])
             # Get displacements of the nodes
-            displ_nodes = result.get_dataframe_of_nodal_displacements(nodes=[n1, n2])
+            displ_nodes = result.data['nodal displacements'].loc[[n1, n2]]
             # Calculate position of nodes after load application
             deformed_nodes = coords_nodes + displ_nodes * scale
             # Plot deformed element
@@ -213,25 +204,14 @@ class Display(object):
             # Get original coordinates of nodes
             coords_nodes = get_dataframe_of_node_coords(model=model, nodes='all')
             # Get displacements of the nodes
-            displ_nodes = result.get_dataframe_of_nodal_displacements(nodes='all')
+            displ_nodes = result.data['nodal displacements']
             # Calculate position of nodes after load application
             deformed_nodes = coords_nodes + displ_nodes * scale
             # plot nodes
             ax.scatter(deformed_nodes['x'], deformed_nodes['y'], marker='o', **node_options)
-
-        # Plot forces if requiered
-        if self.display_config['forces']==True:
-            for ix, node_i in model.nodes.items():
-                for dof, val in node_i._Loads.items():
-                    ax = self.plot_nodal_force(ax, dof, at=node_i, val=val)
-            # Plot element Loads
-            ax = self.plot_element_loads(ax, model)
-
-        # Plot supports
-        if self.display_config['supports']==True:
-            for ix, node_i in model.nodes.items():
-                if len(node_i._BC) > 0:
-                    ax = self.plot_support(ax, dof=node_i._BC.keys(), at=node_i)
+        
+        if show_undeformed == True:
+            ax = self.plot_geometry(model=result._model, ax=ax, ls='--')
 
         ax.axis('equal')
 

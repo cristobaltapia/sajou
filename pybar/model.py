@@ -652,7 +652,6 @@ class ModelData(object):
         # Specify dofs that are not active due to border conditions
         self._dof_dirichlet = copy(model._dof_dirichlet)
 
-
 def get_dataframe_of_node_coords(model, nodes='all'):
     """Return a pandas dataframe with coordinates of selected nodes of the model  
 
@@ -663,14 +662,15 @@ def get_dataframe_of_node_coords(model, nodes='all'):
     dimensions = model.n_dimensions
     #
     if nodes == 'all':
-        nodes = [n for i, n in model.nodes.items()]
+        nodes = [i for i, n in model.nodes.items()]
 
     ar_coords = np.zeros((len(nodes), dimensions) , dtype=np.float)
     index_nodes = np.zeros(len(nodes), dtype=np.int)
 
-    for i_node, curr_node in enumerate(nodes):
-        ar_coords[i_node,:] = curr_node.coords
-        index_nodes[i_node] = curr_node.number
+    for ix_node, curr_node in enumerate(nodes):
+        node_i = model.nodes[curr_node]
+        ar_coords[ix_node,:] = node_i.coords
+        index_nodes[ix_node] = curr_node
 
     # Set coordinate labels according to the model
     if dimensions == 2:

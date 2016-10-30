@@ -4,7 +4,6 @@
 """
 import numpy as np
 
-
 class Node(np.ndarray):
     """3-dimensional implementation of Nodes"""
     def __new__(cls, x, y, z, number):
@@ -111,6 +110,7 @@ class Node2D(Node):
         # Numbe od DOF per node:
         # Translation in x, translation in y, rotation in z
         self.n_dof = 3
+        self.coords = [x, y]
 
         return None
 

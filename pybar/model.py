@@ -106,37 +106,6 @@ class Model(object):
         return str('Model: Name: {name}, Nodes: {n_nodes}, Beams: {n_beams}'.format(
             name=self._name, n_nodes=self.n_nodes, n_beams=self.n_beams))
 
-    def get_dataframe_of_node_coords(self, nodes='all'):
-        """Return a pandas dataframe with coordinates of selected nodes of the model  
-
-        :nodes: list of nodes or 'all'
-        :returns: TODO
-
-        """
-        dimensions = self.n_dimensions
-        #
-        if nodes == 'all':
-            nodes = [n for i, n in self.nodes.items()]
-
-        ar_coords = np.zeros((len(nodes), dimensions) , dtype=np.float)
-        index_nodes = np.zeros(len(nodes), dtype=np.int)
-
-        for i_node, curr_node in enumerate(nodes):
-            ar_coords[i_node,:] = curr_node.coords
-            index_nodes[i_node] = curr_node.number
-
-        # Set coordinate labels according to the model
-        if dimensions == 2:
-            index_label = ['x', 'y']
-        else:
-            index_label = ['x', 'y', 'z']
-
-        # Append to the Dta Frame
-        df_coords = pd.DataFrame(data=ar_coords, index=index_nodes, dtype=np.float64,
-                columns=index_label)
-
-        return df_coords
-
     def _generate_connectivity_table2D(self):
         """Generates the connectivity table for the model
         :returns: numpy array
@@ -682,4 +651,36 @@ class ModelData(object):
         self.n_dof_per_node = model.n_dof_per_node
         # Specify dofs that are not active due to border conditions
         self._dof_dirichlet = copy(model._dof_dirichlet)
+
+
+def get_dataframe_of_node_coords(model, nodes='all'):
+    """Return a pandas dataframe with coordinates of selected nodes of the model  
+
+    :nodes: list of nodes or 'all'
+    :returns: TODO
+
+    """
+    dimensions = model.n_dimensions
+    #
+    if nodes == 'all':
+        nodes = [n for i, n in model.nodes.items()]
+
+    ar_coords = np.zeros((len(nodes), dimensions) , dtype=np.float)
+    index_nodes = np.zeros(len(nodes), dtype=np.int)
+
+    for i_node, curr_node in enumerate(nodes):
+        ar_coords[i_node,:] = curr_node.coords
+        index_nodes[i_node] = curr_node.number
+
+    # Set coordinate labels according to the model
+    if dimensions == 2:
+        index_label = ['x', 'y']
+    else:
+        index_label = ['x', 'y', 'z']
+
+    # Append to the Dta Frame
+    df_coords = pd.DataFrame(data=ar_coords, index=index_nodes, dtype=np.float64,
+            columns=index_label)
+
+    return df_coords
 

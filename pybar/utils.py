@@ -40,7 +40,7 @@ class CoordSys(object):
         :returns: TODO
 
         """
-        T = np.zeros([6,6])
+        T = np.zeros([6,6], dtype=np.float64)
 
         T[0,0] = cx
         T[0,1] = cy

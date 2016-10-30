@@ -110,7 +110,7 @@ class StaticSolver(Solver):
         self.calc_nodal_forces(result, V_res, K, P_e)
 
         # Add end forces to the results object
-        self.calc_end_forces(result, V_res, P_e)
+        self.calc_end_forces(result, V_res)
 
         # Postprocess the results according to the specified in 'output'
         # variable
@@ -239,8 +239,8 @@ class StaticSolver(Solver):
 
         return nodal_react
 
-    def calc_end_forces(self, result, nodal_displ, elem_load):
-        """Calculate the internal forces of beam elements
+    def calc_end_forces(self, result, nodal_displ):
+        """Calculate the internal forces of beam elements.
 
         :result: Result object
         :returns: TODO
@@ -248,10 +248,6 @@ class StaticSolver(Solver):
         """
         # Initialize dictionary with results of the end forces
         end_forces = dict()
-        # Assemble the vector of applied element loads
-        # FIXME: only take the contribution of the analyzed beam element
-        # and not the contiguous too
-        P_e = elem_load
         # calculate for each element
         for num, elem in self._model.beams.items():
             # Get the transformation matrix for the element
@@ -282,6 +278,7 @@ class StaticSolver(Solver):
                 P_e_i = elem._loads[0]._load_vector_global
             else:
                 P_e_i = 0.
+
             # Get the End Forces of the element in global coordinates
             P_i_global = Ke.dot(v_i) - P_e_i
             # Transform End Forces to local coordinates

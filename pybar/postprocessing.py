@@ -35,17 +35,17 @@ class Postprocess(object):
 
         # Initialize moment
         try:
-            moment = np.zeros(len(x_l))
+            moment = np.zeros(len(x_l), dtype=np.float64)
         except:
             moment = 0.
-        # Calculate for every load applied
+        # Calculate for every applied load
         for load in element._loads:
             moment += self.calc_moment_with_member_load(element, load, x_l)
 
         num = element.number
-        # Get the end forces results
+        # Get the end forces of the element
         end_forces = self._result.data['end forces'] 
-        # Add effect of end forces to the total moment at position 'pos'
+        # Add effect of end forces to the total moment at position 'x_l'
         moment += end_forces[num][1]*x_l - end_forces[num][2]
 
         return moment
@@ -130,7 +130,9 @@ class Postprocess(object):
             p1 = load._p1
             p2 = load._p2
 
-            return p1 * x**2 * 0.5 + (p2 - p1) * x*x*x / (3. * element._length )
+            m_dist = p1 * x**2 * 0.5 + (p2 - p1) * x*x*x / (3. * element._length )
+
+            return m_dist
 
         # TODO: case with global coord system
         else:
@@ -214,7 +216,7 @@ class Postprocess(object):
         # A loop for each element of the model is made
         for num_e, curr_element in self._model.beams.items():
             # define the points
-            pos = np.linspace(0, 1, n) * curr_element._length
+            pos = np.linspace(0, 1, n, dtype=np.float64) * curr_element._length
             # call a function to calculate the internal forces in a
             # single element
             moment = self.calc_internal_force_element(curr_element, pos, component='moment')
@@ -250,7 +252,8 @@ class Postprocess(object):
         # Create dictionary with the maximum and minimum data
         min_max_internal_forces = {'min': min_internal_force,
                                    'max': max_internal_force,
-                                   'system abs max': abs_max}
+                                   'system abs max': abs_max
+                                   }
 
         # Add results to Result object
         result = self._result

@@ -251,7 +251,7 @@ class Model(object):
                 ind1 = n1 * self.n_dof_per_node
                 # Second node:
                 n2 = elem._node2.number
-                # DOFs coresponding to the node 1
+                # DOFs coresponding to the node 2
                 ind2 = n2 * self.n_dof_per_node
 
                 for elem_load in elem._loads:

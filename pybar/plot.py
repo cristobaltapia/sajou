@@ -520,20 +520,20 @@ class Display(object):
 
         # Force in x direction
         if dof==0:
-            if val < 0:
+            if val > 0:
                 halign = 'left'
             else:
                 halign = 'right'
 
             ax.annotate('{f:.2E}'.format(f=abs(val)), xy=(at.x, at.y),
-                xytext=(-np.sign(val)*50,0), color=force_options['color'], ha=halign,
+                xytext=(np.sign(val)*50,0), color=force_options['color'], ha=halign,
                 va='center',
                 textcoords='offset points',
                 arrowprops = dict(arrowstyle='->', color=force_options['color'], lw=2.5 ))
         # Force in y direction
         elif dof==1:
             ax.annotate('{f:.2E}'.format(f=abs(val)), xy=(at.x, at.y),
-                xytext=(0,-np.sign(val)*50), color=force_options['color'], ha='center',
+                xytext=(0,np.sign(val)*50), color=force_options['color'], ha='center',
                 va='center',
                 textcoords='offset points',
                 arrowprops = dict(arrowstyle='->', color=force_options['color'], lw=2.5 ))
@@ -543,7 +543,7 @@ class Display(object):
                 xytext=(20,20), color=force_options['color'], ha='left',
                 va='center',
                 textcoords='offset points')
-            if np.sign(val) >= 0.:
+            if np.sign(val) <= 0.:
                 ax.plot([at.x],[at.y], marker=marker_moment_pos, markeredgecolor=force_options['color'],
                         markerfacecolor='None', ms=40, markeredgewidth=2)
             else:

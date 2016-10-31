@@ -46,7 +46,7 @@ class Postprocess(object):
         # Get the end forces of the element
         end_forces = self._result.data['end forces'] 
         # Add effect of end forces to the total moment at position 'x_l'
-        moment += end_forces[num][1]*x_l - end_forces[num][2]
+        moment += -end_forces[num][1]*x_l + end_forces[num][2]
 
         return moment
 
@@ -130,7 +130,7 @@ class Postprocess(object):
             p1 = load._p1
             p2 = load._p2
 
-            m_dist = p1 * x**2 * 0.5 + (p2 - p1) * x*x*x / (3. * element._length )
+            m_dist = p1 * x**2 * 0.5 + (p2 - p1) * x*x*x / (6. * element._length )
 
             return m_dist
 

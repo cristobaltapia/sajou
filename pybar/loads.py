@@ -65,10 +65,10 @@ class DistributedLoad(Load):
         # Load vector for the transversal load
         # (direction='z')
         elif direction == 'z':
-            load_v[1] = -elem._length * (7.*p1 + 3.*p2) / 20.
-            load_v[2] = -elem._length**2 * (p1/20. + p2/30.)
-            load_v[4] = -elem._length * (3.*p1 + 7*p2) / 20.
-            load_v[5] = elem._length**2 * (p1/30. + p2/20.)
+            load_v[1] = elem._length * (7.*p1 + 3.*p2) / 20.
+            load_v[2] = elem._length**2 * (p1/20. + p2/30.)
+            load_v[4] = elem._length * (3.*p1 + 7*p2) / 20.
+            load_v[5] = -elem._length**2 * (p1/30. + p2/20.)
 
         self._loading_vector = load_v
         # Calculate the load vector in global coordinates, using the

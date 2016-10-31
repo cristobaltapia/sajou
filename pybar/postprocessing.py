@@ -46,7 +46,7 @@ class Postprocess(object):
         # Get the end forces of the element
         end_forces = self._result.data['end forces'] 
         # Add effect of end forces to the total moment at position 'x_l'
-        moment += -end_forces[num][1]*x_l + end_forces[num][2]
+        moment += end_forces[num][1]*x_l - end_forces[num][2]
 
         return moment
 
@@ -78,7 +78,7 @@ class Postprocess(object):
         # Get the end forces results
         end_forces = self._result.data['end forces'] 
         # Add effect of end forces to the total moment at position 'pos'
-        shear += end_forces[num][1]
+        shear -= end_forces[num][1]
 
         return shear
 
@@ -110,7 +110,7 @@ class Postprocess(object):
         # Get the end forces results
         end_forces = self._result.data['end forces'] 
         # Add effect of end forces to the total moment at position 'pos'
-        axial += -end_forces[num][0]
+        axial -= end_forces[num][0]
 
         return axial
 
@@ -157,7 +157,7 @@ class Postprocess(object):
         if load._direction == 'z' and load._coord_system == 'local':
             p1 = load._p1
             p2 = load._p2
-            return p1 * x + (p2 - p1) * x**2 / (2. * element._length)
+            return -p1 * x - (p2 - p1) * x**2 / (2. * element._length)
         # TODO: case with global coord system
         else:
             # Initialize moment

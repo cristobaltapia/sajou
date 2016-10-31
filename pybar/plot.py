@@ -372,12 +372,12 @@ class Display(object):
             # Get the transformation matrix
             T = elem.transformation_matrix[0:2,0:2]
             # Get the positions at which the internal forces were
-            # caclculated
+            # calculated
             x_axis = result.data['internal forces'][num][component]['x']
             # Get the specified member forces
             d = result.data['internal forces'][num][component]['data'] * scale_auto * scale
 
-            # Results are mutiplied by -1 to represent them in the convention
+            # Results are multiplied by -1 to represent them in the convention
             # where positive moments are drawn 'below' the beam element.
             d = -d
             # Positive values
@@ -389,16 +389,16 @@ class Display(object):
 
             # Plot the patches
             # positive part
-            for curr_pol in d_pos:
-                rot_pos = np.dot(curr_pol.vertices, T.todense())
+            for curr_polygon in d_pos:
+                rot_pos = np.dot(curr_polygon.vertices, T.todense())
                 rot_pos[:,0] += elem._node1.x
                 rot_pos[:,1] += elem._node1.y
                 poly_pos = Polygon(rot_pos, True, **member_force_options_pos)
                 ax.add_patch(poly_pos)
 
             # negative part
-            for curr_pol in d_neg:
-                rot_neg = np.dot(curr_pol.vertices, T.todense())
+            for curr_polygon in d_neg:
+                rot_neg = np.dot(curr_polygon.vertices, T.todense())
                 rot_neg[:,0] += elem._node1.x
                 rot_neg[:,1] += elem._node1.y
                 poly_neg = Polygon(rot_neg, True, **member_force_options_neg)
@@ -520,20 +520,20 @@ class Display(object):
 
         # Force in x direction
         if dof==0:
-            if val > 0:
+            if val < 0:
                 halign = 'left'
             else:
                 halign = 'right'
 
             ax.annotate('{f:.2E}'.format(f=abs(val)), xy=(at.x, at.y),
-                xytext=(np.sign(val)*50,0), color=force_options['color'], ha=halign,
+                xytext=(-np.sign(val)*50,0), color=force_options['color'], ha=halign,
                 va='center',
                 textcoords='offset points',
                 arrowprops = dict(arrowstyle='->', color=force_options['color'], lw=2.5 ))
         # Force in y direction
         elif dof==1:
             ax.annotate('{f:.2E}'.format(f=abs(val)), xy=(at.x, at.y),
-                xytext=(0,np.sign(val)*50), color=force_options['color'], ha='center',
+                xytext=(0,-np.sign(val)*50), color=force_options['color'], ha='center',
                 va='center',
                 textcoords='offset points',
                 arrowprops = dict(arrowstyle='->', color=force_options['color'], lw=2.5 ))
@@ -543,7 +543,7 @@ class Display(object):
                 xytext=(20,20), color=force_options['color'], ha='left',
                 va='center',
                 textcoords='offset points')
-            if np.sign(val) <= 0.:
+            if np.sign(val) >= 0.:
                 ax.plot([at.x],[at.y], marker=marker_moment_pos, markeredgecolor=force_options['color'],
                         markerfacecolor='None', ms=40, markeredgewidth=2)
             else:

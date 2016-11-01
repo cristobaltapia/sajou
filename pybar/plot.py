@@ -378,9 +378,13 @@ class Display(object):
         member_force_options_pos = self.draw_config['member force positive']
         member_force_options_neg = self.draw_config['member force negative']
         model = result._model
+
         # First plot the geometry
         ax = self.plot_geometry(model, ax)
 
+        # FIXME: instead of using an auxiliary figure to create the
+        # polygon and then plot, calculate the respective points of the
+        # polygon with scipy.interp()
         # auxiliary axes
         fig_aux = plt.figure()
         ax_aux = fig_aux.add_subplot(111)

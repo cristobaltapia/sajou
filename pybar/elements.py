@@ -261,6 +261,7 @@ class Beam2D(Beam):
         self._loads.append(dist_moment)
         # Append the load vector (in global coordinates)
         self._load_vector_e += dist_moment._load_vector_global
+        self._poly_sec_force += dist_moment._poly_sec_force
 
         return 1
 

@@ -265,13 +265,6 @@ class DistributedMoment(Load):
         self._load_vector_global = load_v
         self._poly_sec_force = poly_sec_force
 
-
-        self._transfer_matrix = load_v
-        # Calculate the load vector in global coordinates, using the
-        # transformation matrix
-        T = elem.transformation_matrix
-        self._load_vector_global = T.T.dot(load_v)
-
     def _calc_loading_vector_local(self, m1, m2, length, direction):
         """ Generate the loading vector, when the distributed load is in local coords.
         Also returns the matrix used for the calculation of the sectional forces.
@@ -289,9 +282,9 @@ class DistributedMoment(Load):
         # (direction='z')
         if direction == 'z':
             load_v[1] = (m1 + m2) * 0.5
-            load_v[2] = length * (m1 - m2) / 12.
-            load_v[4] = -(m1 + m2) * 0.5
-            load_v[5] = -length * (m1 - m2) / 12.
+            load_v[2] = -length * (m1 - m2) / 12.
+            load_v[4] = (m1 + m2) * 0.5
+            load_v[5] = length * (m1 - m2) / 12.
             # Generate matrix used for the calculation of section forces
             poly_sec_force = self._generate_section_force_poly(
                     m1,
@@ -370,7 +363,8 @@ class DistributedMoment(Load):
 
         # Determine in which case we are
         if direction == 'z':
-            m_sec_force[:, 0] = np.array([0., m1 + (m2-m1)/length, 0., 0. ])
+            # Effect over the moment
+            m_sec_force[:, 2] = np.array([0., m1 + (m2-m1)/length, 0., 0. ])
         # For the case in which the loading direction is 'y'
         elif direction == 'y':
             # TODO:

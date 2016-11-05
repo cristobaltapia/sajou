@@ -289,12 +289,12 @@ class StaticSolver(Solver):
             # Add the corresponding nodal forces to the matrix to
             # calculate the sectional forces
             # - Axial force
-            elem._poly_sec_force[0,0] = -P_i_local[0]
+            elem._poly_sec_force[0,0] += -P_i_local[0]
             # - Shear force
-            elem._poly_sec_force[0,1] = P_i_local[1]
+            elem._poly_sec_force[0,1] += P_i_local[1]
             # - Moment
-            elem._poly_sec_force[0,2] = -P_i_local[2]
-            elem._poly_sec_force[1,2] = P_i_local[1]
+            elem._poly_sec_force[0,2] += -P_i_local[2]
+            elem._poly_sec_force[1,2] += P_i_local[1]
 
         # Add results to the result object
         result.add_result('end forces', end_forces)

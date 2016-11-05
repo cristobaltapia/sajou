@@ -286,6 +286,15 @@ class StaticSolver(Solver):
             # Add End Forces to the dictionary of End Forces of the result object
             # for the current beam element
             end_forces[num] = P_i_local
+            # Add the corresponding nodal forces to the matrix to
+            # calculate the sectional forces
+            # - Axial force
+            elem._poly_sec_force[0,0] = -P_i_local[0]
+            # - Shear force
+            elem._poly_sec_force[0,1] = P_i_local[1]
+            # - Moment
+            elem._poly_sec_force[0,2] = -P_i_local[2]
+            elem._poly_sec_force[1,2] = P_i_local[1]
 
         # Add results to the result object
         result.add_result('end forces', end_forces)

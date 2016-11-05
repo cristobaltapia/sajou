@@ -44,7 +44,12 @@ class Beam(object):
         # Transformation matrix
         self.transformation_matrix = self._localCSys.calc_transformation_matrix(self._length, cx, cy, cz)
 
+        # Stiffness matrix (global coordinates)
         self._Ke = None
+        # Load vector (global coordinates)
+        self._load_vector_e = None
+        # Vector to calculate section forces
+        self._poly_sec_force = None
 
     def assign_section(self, beam_section):
         """Assign a beam section instance to the beam
@@ -86,6 +91,8 @@ class Beam2D(Beam):
         self._n_nodes = 2
         # Number of DOF per node
         self._dof_per_node = 3
+        # Total DOF
+        self._ndof = 6
 
         # displacement/rotation of each degree of freedom, for each node
         # - Node 1
@@ -104,8 +111,12 @@ class Beam2D(Beam):
 
         # Loads applied to the frame element
         self._loads = []
-
-        self._Ke = None
+        # Initialize the loading vector
+        self._load_vector_e = np.zeros(self._ndof)
+        # Vector to calculate section forces
+        # (The size of this vector depends on the order of the polynom
+        # describing the section forces [...and deflections TODO])
+        self._poly_sec_force = np.zeros((4, 3))
 
     def assemble_K(self, second_order=False):
         """This function assembles the stiffness matrix for one individual element. Optionally
@@ -208,8 +219,10 @@ class Beam2D(Beam):
 
         return k
 
-    def distributed_load(self, p1, p2=None, direction='z', coord_system='local'):
+    def distributed_load(self, **kwargs):
         """Assign a DistributedLoad object to the frame current element.
+
+        The parameters are the same as defined for the class DistributedLoad()
 
         :p1: TODO
         :p2: TODO
@@ -218,12 +231,36 @@ class Beam2D(Beam):
         :returns: TODO
 
         """
-        dist_load = loads.DistributedLoad(elem=self, p1=p1, p2=p2,
-                direction=direction, coord_system=coord_system)
+        dist_load = loads.DistributedLoad(elem=self, **kwargs)
 
         # Add this DistributedLoad instance to the list of loads of the
         # element
         self._loads.append(dist_load)
+        # Append the load vector (in global coordinates)
+        self._load_vector_e += dist_load._load_vector_global
+        self._poly_sec_force += dist_load._poly_sec_force
+
+        return 1
+
+    def distributed_moment(self, **kwargs):
+        """Assign a DistributedLoad object to the frame current element.
+
+        The parameters are the same as defined for the class DistributedMoment()
+
+        :p1: TODO
+        :p2: TODO
+        :direction: TODO
+        :coord_system: TODO
+        :returns: TODO
+
+        """
+        dist_moment = loads.DistributedMoment(elem=self, **kwargs)
+
+        # Add this DistributedLoad instance to the list of loads of the
+        # element
+        self._loads.append(dist_moment)
+        # Append the load vector (in global coordinates)
+        self._load_vector_e += dist_moment._load_vector_global
 
         return 1
 

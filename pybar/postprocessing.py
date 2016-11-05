@@ -18,8 +18,8 @@ class Postprocess(object):
         self._result = result
         self._model = result._model
         
-    def calc_moment_at(self, pos, element, unit_length=False):
-        """Calculate the moment of element at position x.
+    def calc_axial_at(self, pos, element, unit_length=False):
+        """Calculate the axial force of element at position x.
 
         :pos: TODO
         :element: TODO
@@ -27,28 +27,25 @@ class Postprocess(object):
         :returns: TODO
 
         """
+        # FIXME: verify first if 'pos' is array
+        pos = np.array(pos)
         # Decide which data to use
         if unit_length == True:
             x_l = pos * element._length
         else:
             x_l = pos
 
-        # Initialize moment
-        try:
-            moment = np.zeros(len(x_l), dtype=np.float64)
-        except:
-            moment = 0.
-        # Calculate for every applied load
-        for load in element._loads:
-            moment += self.calc_moment_with_member_load(element, load, x_l)
+        x_l = np.array(
+                [np.ones(pos.shape),
+                x_l,
+                x_l**2,
+                x_l**3]
+                ).T
 
-        num = element.number
-        # Get the end forces of the element
-        end_forces = self._result.data['end forces'] 
-        # Add effect of end forces to the total moment at position 'x_l'
-        moment += end_forces[num][1]*x_l - end_forces[num][2]
+        # Calculate moment
+        axial = np.dot(x_l, element._poly_sec_force[:,0])
 
-        return moment
+        return axial
 
     def calc_shear_at(self, pos, element, unit_length=False):
         """Calculate the shear force of element at position x.
@@ -59,31 +56,28 @@ class Postprocess(object):
         :returns: TODO
 
         """
+        # FIXME: verify first if 'pos' is array
+        pos = np.array(pos)
         # Decide which data to use
         if unit_length == True:
             x_l = pos * element._length
         else:
             x_l = pos
 
-        # Initialize shear force results
-        try:
-            shear = np.zeros(len(x_l))
-        except:
-            shear = 0.
-        # Calculate for every load applied
-        for load in element._loads:
-            shear += self.calc_shear_force_with_member_load(element, load, x_l)
+        x_l = np.array(
+                [np.ones(pos.shape),
+                x_l,
+                x_l**2,
+                x_l**3]
+                ).T
 
-        num = element.number
-        # Get the end forces results
-        end_forces = self._result.data['end forces'] 
-        # Add effect of end forces to the total moment at position 'pos'
-        shear += end_forces[num][1]
+        # Calculate moment
+        shear = np.dot(x_l, element._poly_sec_force[:,1])
 
         return shear
 
-    def calc_axial_at(self, pos, element, unit_length=False):
-        """Calculate the axial force of element at position x.
+    def calc_moment_at(self, pos, element, unit_length=False):
+        """Calculate the moment of element at position x.
 
         :pos: TODO
         :element: TODO
@@ -91,106 +85,25 @@ class Postprocess(object):
         :returns: TODO
 
         """
+        # FIXME: verify first if 'pos' is array
+        pos = np.array(pos)
         # Decide which data to use
         if unit_length == True:
             x_l = pos * element._length
         else:
             x_l = pos
 
-        # Initialize shear force results
-        try:
-            axial = np.zeros(len(x_l))
-        except:
-            axial = 0.
-        # Calculate for every load applied
-        for load in element._loads:
-            axial += self.calc_axial_force_with_member_load(element, load, x_l)
+        x_l = np.array(
+                [np.ones(pos.shape),
+                x_l,
+                x_l**2,
+                x_l**3]
+                ).T
 
-        num = element.number
-        # Get the end forces results
-        end_forces = self._result.data['end forces'] 
-        # Add effect of end forces to the total moment at position 'pos'
-        axial -= end_forces[num][0]
+        # Calculate moment
+        moment = np.dot(x_l, element._poly_sec_force[:,2])
 
-        return axial
-
-    def calc_moment_with_member_load(self, element, load, x):
-        """Calculate the shear force in the given element.
-        :returns: TODO
-
-        :element:
-        :load:
-        :x:
-
-        returns:
-        """
-        # linearly varying distributed load
-        if load._direction == 'z' and load._coord_system == 'local':
-            # get values of the distributed load
-            p1 = load._p1
-            p2 = load._p2
-
-            m_dist = p1 * x**2 * 0.5 + (p2 - p1) * x*x*x / (6. * element._length )
-
-            return m_dist
-
-        # TODO: case with global coord system
-        else:
-            # Initialize moment
-            try:
-                moment = np.zeros(len(x_l))
-            except:
-                moment = 0.
-
-            return moment
-
-    def calc_shear_force_with_member_load(self, element, load, x):
-        """Calculate the shear force in the given element.
-        :returns: TODO
-
-        :element:
-        :load:
-        :x:
-
-        returns:
-        """
-        if load._direction == 'z' and load._coord_system == 'local':
-            p1 = load._p1
-            p2 = load._p2
-            return p1 * x + (p2 - p1) * x**2 / (2. * element._length)
-        # TODO: case with global coord system
-        else:
-            # Initialize moment
-            try:
-                shear = np.zeros(len(x_l))
-            except:
-                shear = 0.
-
-            return shear
-
-    def calc_axial_force_with_member_load(self, element, load, x):
-        """Calculate the axial force in the given element.
-        :returns: TODO
-
-        :element:
-        :load:
-        :x:
-
-        returns:
-        """
-        if load._direction == 'x' and load._coord_system == 'local':
-            p1 = load._p1
-            p2 = load._p2
-            return -p1 * x - (p2 - p1) * x**2 / (2. * element._length)
-        # TODO: case with global coord system
-        else:
-            # Initialize moment
-            try:
-                axial = np.zeros(len(x_l))
-            except:
-                axial = 0.
-
-            return axial
+        return moment
 
     def calc_all_internal_forces(self, n=11):
         """Compute the internal forces at every element of the model.

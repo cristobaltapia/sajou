@@ -40,6 +40,7 @@ class CoordSys(object):
         :returns: TODO
 
         """
+        # TODO: implement for 3D
         T = np.zeros([6,6], dtype=np.float64)
 
         T[0,0] = cx

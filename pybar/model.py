@@ -253,11 +253,8 @@ class Model(object):
                 n2 = elem._node2.number
                 # DOFs coresponding to the node 2
                 ind2 = n2 * self.n_dof_per_node
-
-                for elem_load in elem._loads:
-                    #
-                    load_v = elem_load._load_vector_global
-                    P[[ind1, ind1+1, ind1+2, ind2, ind2+1, ind2+2]] += load_v
+                # Add to the global load vector
+                P[[ind1, ind1+1, ind1+2, ind2, ind2+1, ind2+2]] = elem._load_vector_e
 
         self._P = P
 

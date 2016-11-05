@@ -13,13 +13,14 @@ class Load(object):
     def __init__(self):
         """Initialize the Load instance"""
         self._type = ''
+        self._load_vector_global = None
         
 
 class DistributedLoad(Load):
 
     """Docstring for DistributedLoad. """
 
-    def __init__(self, elem, p1, p2=None, direction='z', coord_system='local'):
+    def __init__(self, elem, p1, p2=None, direction='y', coord_system='local'):
         """Apply a distributed load on the frame element.
 
         If 'p2' is given, then a linearly varying load is applied with value 'p1' at the
@@ -53,28 +54,155 @@ class DistributedLoad(Load):
             self.is_uniform = False
             self._p2 = p2
 
+        # If the distributed load is given in local coordinates
+        if coord_system == 'local':
+            # Generate loading vector
+            load_v, poly_sec_force = self._calc_loading_vector_local(
+                        p1,
+                        p2,
+                        elem._length,
+                        direction)
+        # Else, if the distributed load is given in global coordinates
+        elif coord_system == 'global':
+            # Generate loading vector
+            load_v, poly_sec_force = self._calc_loading_vector_global(
+                    p1,
+                    p2,
+                    elem._length,
+                    direction)
+
+        self._load_vector_global = load_v
+        self._poly_sec_force = poly_sec_force
+
+    def _calc_loading_vector_local(self, p1, p2, length, direction):
+        """ Generate the loading vector, when the distributed load is in local coords.
+        Also returns the matrix used for the calculation of the sectional forces.
+
+        :returns: TODO
+
+        """
         # Initialize loading vector
         # FIXME: make this dependant from the specific element.
         # (thinking in 3D case)
-        load_v = np.zeros(6)
+        n_dof = self._elem._ndof
+        load_v = np.zeros(n_dof)
+
         # Load vector for the axial load
         # (direction='x')
         if direction == 'x':
-            load_v[0] = elem._length * (2.*p1 + p2) / 6.
-            load_v[3] = elem._length * (p1 + 2.*p2) / 6.
+            load_v[0] = length * (2.*p1 + p2) / 6.
+            load_v[3] = length * (p1 + 2.*p2) / 6.
+            # Generate matrix used for the calculation of section forces
+            poly_sec_force = self._generate_section_force_poly(
+                    p1,
+                    p2,
+                    length,
+                    direction)
         # Load vector for the transversal load
         # (direction='z')
-        elif direction == 'z':
-            load_v[1] = elem._length * (7.*p1 + 3.*p2) / 20.
-            load_v[2] = elem._length**2 * (p1/20. + p2/30.)
-            load_v[4] = elem._length * (3.*p1 + 7*p2) / 20.
-            load_v[5] = -elem._length**2 * (p1/30. + p2/20.)
+        elif direction == 'y':
+            load_v[1] = length * (7.*p1 + 3.*p2) / 20.
+            load_v[2] = length**2 * (p1/20. + p2/30.)
+            load_v[4] = length * (3.*p1 + 7*p2) / 20.
+            load_v[5] = -length**2 * (p1/30. + p2/20.)
+            # Generate matrix used for the calculation of section forces
+            poly_sec_force = self._generate_section_force_poly(
+                    p1,
+                    p2,
+                    length,
+                    direction)
 
         self._loading_vector = load_v
         # Calculate the load vector in global coordinates, using the
         # transformation matrix
-        T = elem.transformation_matrix
-        self._load_vector_global = T.T.dot(load_v)
+        T = self._elem.transformation_matrix
+        # Rotate
+        load_vector_global = T.T.dot(load_v)
+
+        return load_vector_global, poly_sec_force
+
+    def _calc_loading_vector_global(self, p1, p2, length, direction):
+        """ Generate the loading vector, when the distributed load is in global coords.
+
+        :returns: TODO
+
+        """
+        # Initialize loading vector
+        # FIXME: make this dependant from the specific element.
+        # (thinking in 3D case)
+        n_dof = self._elem._ndof
+        load_v = np.zeros(n_dof)
+        poly_sec_force = np.zeros((4, 3))
+
+        # transformation matrix
+        T = self._elem.transformation_matrix
+
+        # the load has to be decomposed in their respective local
+        # components:
+        if direction == 'x':
+            # x-component in local coordinates
+            p1_x = p1 * T[0,0]
+            p2_x = p2 * T[0,0]
+            load_v_aux, poly_sec_force_aux = self._calc_loading_vector_local(p1_x, p2_x, length, 'x')
+            load_v += load_v_aux
+            poly_sec_force += poly_sec_force_aux
+            # y-component in local coordinates
+            p1_y = p2 * T[0,1]
+            p2_y = p1 * T[0,1]
+            load_v_aux, poly_sec_force_aux = self._calc_loading_vector_local(p1_y, p2_y, length, 'y')
+            load_v += load_v_aux
+            poly_sec_force += poly_sec_force_aux
+
+        elif direction == 'y':
+            # x-component in local coordinates
+            p1_x = p1 * T[0,1]
+            p2_x = p2 * T[0,1]
+            load_v_aux, poly_sec_force_aux = self._calc_loading_vector_local(p1_x, p2_x, length, 'x')
+            load_v += load_v_aux
+            poly_sec_force += poly_sec_force_aux
+            # y-component in local coordinates
+            p1_y = p2 * T[0,0]
+            p2_y = p1 * T[0,0]
+            load_v_aux, poly_sec_force_aux = self._calc_loading_vector_local(p1_y, p2_y, length, 'y')
+            load_v += load_v_aux
+            poly_sec_force += poly_sec_force_aux
+
+        return load_v, poly_sec_force
+
+    def _generate_section_force_poly(self, p1, p2, length, direction):
+        """Generate the matrix used to calculate the section forces.
+
+        This matrix has a shape (4xn_dof) and will be used to calculate the sectional
+        forces produced by this LoadDistribution instance.
+        It will then be added in the Element object to contain every contribution made to
+        the element.
+
+                [ N ]  
+                [ V ] = [ 1, x, x**2, x**3 ] * S
+                [ M ]
+
+            where 'S' is the matrix created here, 'x' is the position along the element in
+            local direction 'x'.
+
+        :p1: TODO
+        :p2: TODO
+        :length: TODO
+        :direction: TODO
+        :returns: TODO
+
+        """
+        # TODO: implement for the 3D case
+        # Initialize matrix
+        m_sec_force = np.zeros((4, 3))
+        # Determine in which case we are
+        if direction == 'x':
+            m_sec_force[:, 0] = np.array([0., -p1, (p1-p2)/(2*length), 0. ])
+        # For the case in which the loading direction is 'y'
+        elif direction == 'y':
+            m_sec_force[:, 1] = np.array([0., p1, (p2-p1)/(2*length), 0.                 ])
+            m_sec_force[:, 2] = np.array([0., 0., p1*0.5,             (p2-p1)/(6*length) ])
+
+        return m_sec_force
 
 class DistributedMoment(Load):
 

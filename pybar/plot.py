@@ -116,8 +116,8 @@ class Display(object):
                                               'alpha':0.5},
                     }
 
-    def plot_geometry(self, model, ax, ls='-'):
-        """Plots the geometry of the model passed
+    def plot_geometry(self, model, ax, ls='-', **kwargs):
+        """Plot the geometry of the model passed.
 
         :model: TODO
         :ax: a matplotlib axis object
@@ -130,6 +130,7 @@ class Display(object):
         grid_options = self.draw_config['grid']
         force_options = self.draw_config['force']
         support_options = self.draw_config['support']
+        show_loads = kwargs.get('show_loads', self.display_config['forces'])
 
         # set background color
         ax.set_axis_bgcolor(background_options['color'])
@@ -146,7 +147,7 @@ class Display(object):
                 ax.scatter(node.x, node.y, marker='o', **node_options)
 
         # Plot forces if requiered
-        if self.display_config['forces']==True:
+        if show_loads == True:
             for ix, node_i in model.nodes.items():
                 for dof, val in node_i._Loads.items():
                     ax = self.plot_nodal_force(ax, dof, at=node_i, val=val)
@@ -154,7 +155,7 @@ class Display(object):
             ax = self.plot_element_loads(ax, model)
 
         # Plot supports
-        if self.display_config['supports']==True:
+        if self.display_config['supports'] == True:
             for ix, node_i in model.nodes.items():
                 if len(node_i._BC) > 0:
                     ax = self.plot_support(ax, dof=node_i._BC.keys(), at=node_i)
@@ -285,7 +286,7 @@ class Display(object):
 
         # If it is a uniformly distributed load:
         if load._type == 'Distributed Load':
-            if load._direction == 'z' and load._coord_system == 'local':
+            if load._direction == 'y' and load._coord_system == 'local':
                 # Generate points on the element line
                 nx_e = np.linspace(n1.x, n2.x, n_arrows)
                 ny_e = np.linspace(n1.y, n2.y, n_arrows)
@@ -380,7 +381,7 @@ class Display(object):
         model = result._model
 
         # First plot the geometry
-        ax = self.plot_geometry(model, ax)
+        ax = self.plot_geometry(model, ax, show_loads=False)
 
         # FIXME: instead of using an auxiliary figure to create the
         # polygon and then plot, calculate the respective points of the

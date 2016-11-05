@@ -286,15 +286,20 @@ class Display(object):
 
         # If it is a uniformly distributed load:
         if load._type == 'Distributed Load':
-            if load._direction == 'y' and load._coord_system == 'local':
+            if load._direction == 'y':
                 # Generate points on the element line
                 nx_e = np.linspace(n1.x, n2.x, n_arrows)
                 ny_e = np.linspace(n1.y, n2.y, n_arrows)
                 # Offset from the position of the nodes...
-                # FIXME: ... according to the system coordinate chosen
                 T = element.transformation_matrix
-                sign_p = np.sign(load._p1)
-                offset = T.T.dot(np.array([0, -p1, 0, 0, -p2, 0]) * scale / max_p * 0.2)
+                # Differentiate between local and global coordinates
+                # - For local coordinates
+                if load._coord_system == 'local':
+                    offset = T.T.dot(np.array([0, -p1, 0, 0, -p2, 0]) * scale / max_p * 0.2)
+                # - For global coordinates
+                elif load._coord_system == 'global':
+                    offset = np.array([0, -p1, 0, 0, -p2, 0]) * scale / max_p * 0.2
+
                 n1_o = np.array(n1[:]) + offset[:3]
                 n2_o = np.array(n2[:]) + offset[3:]
                 # Generate points for the arrows with offset
@@ -310,30 +315,50 @@ class Display(object):
                             xytext=(nx[arr_i], ny[arr_i]),
                             arrowprops=dict(arrowstyle='->', color=force_options['color']))
 
-            elif load._direction == 'x' and load._coord_system == 'local':
+            elif load._direction == 'x':
                 #
-                # Generate points on the element line
-                nx_e = range_with_ratio(n1.x, n2.x, n_arrows, p1/p2)
-                ny_e = range_with_ratio(n1.y, n2.y, n_arrows, p1/p2)
                 # Offset from the position of the nodes...
                 # FIXME: ... according to the system coordinate chosen
                 T = element.transformation_matrix
-                offset = T.T.dot(np.array([-p1,0,0, -p2,0,0]) * size / max_p *0.8)
+                # Differentiate between local and global coordinates
+                # - For local coordinates
+                if load._coord_system == 'local':
+                    # Generate points on the element line
+                    nx_e = range_with_ratio(n1.x, n2.x, n_arrows, p1/p2)
+                    ny_e = range_with_ratio(n1.y, n2.y, n_arrows, p1/p2)
+                    offset = T.T.dot(np.array([-p1, 0, 0, -p2, 0, 0]) * size / max_p *0.8)
+                # - For global coordinates
+                elif load._coord_system == 'global':
+                    # Generate points on the element line
+                    nx_e = np.linspace(n1.x, n2.x, n_arrows)
+                    ny_e = np.linspace(n1.y, n2.y, n_arrows)
+                    offset = np.array([-p1, 0, 0, -p2, 0, 0]) * scale / max_p * 0.2
+
                 n1_o = np.array(n1[:]) + offset[:3]
                 n2_o = np.array(n2[:]) + offset[3:]
                 # Generate points for the arrows with offset
                 nx = range_with_ratio(n1_o[0], n2_o[0], n_arrows, p1/p2)
                 ny = range_with_ratio(n1_o[1], n2_o[1], n_arrows, p1/p2)
+                if load._coord_system == 'global':
+                    ax.plot(nx, ny, color=force_options['color'])
+
                 # Plot arrows
                 for arr_i in range(len(nx)):
                     # annotate() is used instead of arrow() because the style
                     # of the arrows is better
-                    ax.annotate('',
+                    if load._coord_system == 'local':
+                        ax.annotate('',
                                 xy=(nx_e[arr_i], ny_e[arr_i]),
                                 xytext=(nx[arr_i], ny[arr_i]),
                                 arrowprops=dict(arrowstyle='->',
                                     color=force_options['color'])
                                 )
+                    elif load._coord_system == 'global':
+                        ax.annotate('',
+                            xy=(nx_e[arr_i], ny_e[arr_i]),
+                            xytext=(nx[arr_i], ny[arr_i]),
+                            arrowprops=dict(arrowstyle='->', color=force_options['color']))
+
         # Distributed Mmoment
         elif load._type == 'Distributed Moment':
             if load._direction == 'z' and load._coord_system == 'local':

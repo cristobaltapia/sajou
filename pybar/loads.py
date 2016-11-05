@@ -5,6 +5,7 @@ transfered accordingly to the respective nodes.
 """
 import numpy as np
 import scipy.sparse as sparse
+from .utils import Local_Csys_two_points
 
 class Load(object):
 
@@ -44,6 +45,11 @@ class DistributedLoad(Load):
         self._direction = direction
         self._coord_system = coord_system
         self._type = 'Distributed Load'
+        # Assign a coordinate system to the load
+        if coord_system == 'local':
+            self._localCSys = elem._localCSys
+        elif coord_system == 'global':
+            self._localCSys = Local_Csys_two_points(point1=(0.,0.,0.), point2=(1.,0.,0.))
 
         # Detect if distribution is a varying distributed load or not
         if p2 == None:

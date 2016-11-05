@@ -81,6 +81,7 @@ class Local_Csys_two_points(CoordSys):
         :type: TODO
 
         """
+        # TODO: implement a function to rotate a coordinate system
         CoordSys.__init__(self, type=type)
 
         self._point1 = point1

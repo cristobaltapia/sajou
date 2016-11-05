@@ -280,8 +280,9 @@ class DistributedMoment(Load):
 
         # Load vector for the moment load
         # (direction='z')
+        # FIXME:
         if direction == 'z':
-            load_v[1] = (m1 + m2) * 0.5
+            load_v[1] = -(m1 + m2) * 0.5
             load_v[2] = -length * (m1 - m2) / 12.
             load_v[4] = (m1 + m2) * 0.5
             load_v[5] = length * (m1 - m2) / 12.

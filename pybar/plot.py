@@ -12,9 +12,31 @@ import seaborn.apionly as sns
 
 class Display(object):
 
-    """Display class"""
+    """
+    Class to present the pre and postprocessing graphically.
 
-    def __init__(self, width, height, theme='dark', backend='matplotlib'):
+    This class is not intended to be used directly, but rather their sublclasses, which
+    implement different plotting backends (at the moent only matplotlib).
+
+    """
+
+    def __new__(cls, backend='matplotlib', **kwargs):
+        if cls is Display:
+            if backend == 'matplotlib': return super(Display, cls).__new__(Display_mpl)
+        else:
+            return super(Display, cls).__new__(cls, backend)
+
+    def __init__(self, backend):
+        """Instatiate a Display object. """
+        self._backend = backend
+        
+
+class Display_mpl(Display):
+
+    """Docstring for Display_mpl. """
+
+
+    def __init__(self, width=10., height=10., theme='dark', backend='matplotlib'):
         """TODO: to be defined1.
 
         :width: width of the window in pixels
@@ -26,6 +48,8 @@ class Display(object):
             - 'mayavi' (not implemented yet)
 
         """
+        Display.__init__(self, backend)
+
         self._width = width
         self._height = height
         self._theme = theme

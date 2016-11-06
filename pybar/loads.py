@@ -16,7 +16,6 @@ class Load(object):
         self._type = ''
         self._load_vector_global = None
         
-
 class DistributedLoad(Load):
 
     """Docstring for DistributedLoad. """

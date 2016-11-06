@@ -76,7 +76,13 @@ class Beam(object):
         return 'Beam {number}'.format(number=self.number)
 
 class Beam2D(Beam):
-    """Beam object, joining two nodes"""
+    """
+    Two-dimensional Bernoulli Beam element.
+
+    This beam element connects two nodes and is based on the Bernoulli beam theory.
+    Optionally the rotations on the end nodes can be released to create hinges.
+
+    """
 
     def __init__(self, node1, node2, number):
         """TODO: to be defined1.
@@ -106,8 +112,8 @@ class Beam2D(Beam):
         self.dof6 = 0. # rot z
 
         # Release rotation on the ends of the beam
-        self.release_node_1 = False # first node
-        self.release_node_2 = False # second node
+        self.release_end_1 = False # first node
+        self.release_end_2 = False # second node
 
         # Loads applied to the frame element
         self._loads = []
@@ -119,11 +125,44 @@ class Beam2D(Beam):
         self._poly_sec_force = np.zeros((4, 3))
 
     def assemble_K(self, second_order=False):
-        """This function assembles the stiffness matrix for one individual element. Optionally
-        it can take the shear effect into account (second order effect).
+        """
+        Assemble the element stiffness matrix 'Ke' in local and global coordinates.
 
         :second_order: boolean
         :returns: local stiffness matrix
+
+        """
+
+        # Generate the element stiffness matrix depending on the use of
+        # hinges or not (release_end_1 and release_end_2)
+        if self.release_end_1 == False and self.release_end_2 == False:
+            k = self.__assemble_Ke__()
+        # If the rotation is release in the first node
+        elif self.release_end_1 == True:
+            k = self.__assemble_Ke_end_release1__()
+        # If the rotation is release in the second node
+        elif self.release_end_2 == True:
+            k = self.__assemble_Ke_end_release2__()
+        # If both ends are released
+        elif self.release_end_1 == True and self.release_end_2 == True:
+            k = self.__assemble_Ke_end_release_both__()
+
+        # Generate sparse matrix
+        ke_local = sparse.csr_matrix(k)
+        # Store as property of the object
+        self._Ke_local = ke_local
+        # Transform to global coordinates:
+        T = self.transformation_matrix
+        Ke = T.T.dot(ke_local.dot(T))
+
+        self._Ke = Ke
+
+        return Ke
+
+    def __assemble_Ke__(self):
+        """
+        Assemble the element stiffness matrix in local coordinates for the Bernoulli beam.
+        :returns: TODO
 
         """
         # Modulus of elasticity
@@ -134,42 +173,104 @@ class Beam2D(Beam):
         EI = self._beam_section._Iz * E
         # Length of the element
         L = self._length
-        # TODO: Take account of the second order effects
-        if second_order:
-            G = self._material.G
-            Ksy = 12.*E*Iz / (G*Asy*L*L)
-            Ksz = 12.*E*Iy / (G*Asz*L*L)
-        else:
-            Ksy = 0.0
-            Ksz = 0.0
 
         # Initialize stiffness matrix
-        k = np.zeros((6,6), dtype=np.float64)
+        ke = np.zeros((6,6), dtype=np.float64)
 
-        k[0,0] = k[3,3] = EA / L
-        k[1,1] = k[4,4] = 12. * EI / (L*L*L)
-        k[2,2] = k[5,5] = 4. * EI / L
-        k[2,1] = k[1,2] = 6. * EI / L**2
-        k[3,0] = k[0,3] = - EA / L
-        k[4,1] = k[1,4] = -12. * EI / (L*L*L)
-        k[4,2] = k[2,4] = -6. * EI / L**2
-        k[5,1] = k[1,5] = 6. * EI / L**2
-        k[5,2] = k[2,5] = 2. * EI / L
-        k[5,4] = k[4,5] = -6. * EI / L**2
+        ke[0,0] = ke[3,3] = EA / L
+        ke[1,1] = ke[4,4] = 12. * EI / (L*L*L)
+        ke[2,2] = ke[5,5] = 4. * EI / L
+        ke[2,1] = ke[1,2] = 6. * EI / L**2
+        ke[3,0] = ke[0,3] = - EA / L
+        ke[4,1] = ke[1,4] = -12. * EI / (L*L*L)
+        ke[4,2] = ke[2,4] = -6. * EI / L**2
+        ke[5,1] = ke[1,5] = 6. * EI / L**2
+        ke[5,2] = ke[2,5] = 2. * EI / L
+        ke[5,4] = ke[4,5] = -6. * EI / L**2
 
-        # Generate sparse matrix
-        k_local = sparse.csr_matrix(k)
-        self._Ke_local = k_local
+        return ke
 
-        # transform to global coordinates
-        T = self.transformation_matrix
+    def __assemble_Ke_end_release1__(self):
+        """
+        Assembles the element stiffness matrix in local and global coordinates for the
+        case when the release_end_1 option is set to 'True'.
+        :returns: TODO
 
-        # Calculate global stiffness matrix
-        Ke = T.T.dot(k_local.dot(T))
+        """
+        # Modulus of elasticity
+        E = self._beam_section._material._data[0]
+        # Area of the section
+        EA = self._beam_section._area * E
+        # Inertias
+        EI = self._beam_section._Iz * E
+        # Length of the element
+        L = self._length
 
-        self._Ke = Ke
+        # Initialize stiffness matrix
+        ke = np.zeros((6,6), dtype=np.float64)
 
-        return Ke
+        ke[0,0] = ke[3,3] = EA / L
+        ke[1,1] = ke[4,4] = 3. * EI / (L*L*L)
+        ke[5,5] = 3. * EI / L
+        ke[3,0] = ke[0,3] = - EA / L
+        ke[4,1] = ke[1,4] = -3. * EI / (L*L*L)
+        ke[5,1] = ke[1,5] = 3. * EI / L**2
+        ke[5,4] = ke[4,5] = -3. * EI / L**2
+
+        return ke
+
+    def __assemble_Ke_end_release2__(self):
+        """
+        Assembles the element stiffness matrix in local and global coordinates for the
+        case when the release_end_2 option is set to 'True'.
+        :returns: TODO
+
+        """
+        # Modulus of elasticity
+        E = self._beam_section._material._data[0]
+        # Area of the section
+        EA = self._beam_section._area * E
+        # Inertias
+        EI = self._beam_section._Iz * E
+        # Length of the element
+        L = self._length
+
+        # Initialize stiffness matrix
+        ke = np.zeros((6,6), dtype=np.float64)
+
+        ke[0,0] = ke[3,3] = EA / L
+        ke[1,1] = ke[4,4] = 3. * EI / (L*L*L)
+        ke[2,2] = 3. * EI / L
+        ke[2,1] = ke[1,2] = 3. * EI / L**2
+        ke[2,4] = ke[4,2] = -3. * EI / L**2
+        ke[3,0] = ke[0,3] = - EA / L
+        ke[4,1] = ke[1,4] = -3. * EI / (L*L*L)
+
+        return ke
+
+    def __assemble_Ke_end_release_both__(self):
+        """
+        Assembles the element stiffness matrix in local and global coordinates for the
+        case when the release_end_2 option is set to 'True'.
+        :returns: TODO
+
+        """
+        # Modulus of elasticity
+        E = self._beam_section._material._data[0]
+        # Area of the section
+        EA = self._beam_section._area * E
+        # Inertias
+        EI = self._beam_section._Iz * E
+        # Length of the element
+        L = self._length
+
+        # Initialize stiffness matrix
+        ke = np.zeros((6,6), dtype=np.float64)
+
+        ke[0,0] = ke[3,3] = EA / L
+        ke[3,0] = ke[0,3] = - EA / L
+
+        return ke
 
     def assemble_sym_K(self):
         """This function assembles the stiffness matrix for one individual element. Optionally
@@ -262,6 +363,25 @@ class Beam2D(Beam):
         # Append the load vector (in global coordinates)
         self._load_vector_e += dist_moment._load_vector_global
         self._poly_sec_force += dist_moment._poly_sec_force
+
+        return 1
+
+    def release_end(self, which):
+        """
+        Release the rotation DOF of one or both ends of the beam element.
+
+        :which: specifies the end that should be released. It can be '1', '2' or 'both'
+        :returns: TODO
+
+        """
+        # Set the respective property to 'True'
+        if which == 1:
+            self.release_end_1 = True
+        elif which == 2:
+            self.release_end_2 = True
+        elif which == 'both':
+            self.release_end_1 = True
+            self.release_end_2 = True
 
         return 1
 

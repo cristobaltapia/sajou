@@ -253,7 +253,9 @@ class StaticSolver(Solver):
             # Get the transformation matrix for the element
             T = elem.transformation_matrix
             # Get the stiffness matrix of the element in global coordinates
+            # FIXME!
             Ke = elem._Ke
+            #Ke = elem.__assemble_Ke__()
             # Get number of DOF per node
             dof_pn = elem._dof_per_node
             # Get the displacements of the corresponding DOFs in global coordinates
@@ -272,6 +274,13 @@ class StaticSolver(Solver):
                 j2 = dof_pn * (1 + node.number)
                 # Add the results for these DOFs to the v_i array
                 v_i[i1:i2] = nodal_displ[j1:j2] # DOF of node selected
+            """
+            If an element uses release_end option, then the displacement (rotation) needs
+            to be calculated sepparately.
+            """
+            if elem.release_end_1 == True or elem.release_end_2 == True:
+                aux = elem._calc_condensed_displacements(v_i)
+                #v_i[5] = aux
 
             if len(elem._loads) > 0:
                 # Element load vector FIXME:

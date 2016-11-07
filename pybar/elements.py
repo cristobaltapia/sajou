@@ -99,6 +99,12 @@ class Beam2D(Beam):
         self._dof_per_node = 3
         # Total DOF
         self._ndof = 6
+        # TODO: Node Freedom Signature
+        # TODO: Node Freedom Allocation Table (in Model class)
+        # TODO: Node Freedom Base Table (in Model class)
+        # TODO: Element Freedom Signature (in Element class)
+        # TODO: Element Freedom Table
+        nfs = [1, 1, 1, 1, 1, 1]
 
         # displacement/rotation of each degree of freedom, for each node
         # - Node 1
@@ -137,23 +143,23 @@ class Beam2D(Beam):
         # hinges or not (release_end_1 and release_end_2)
         if self.release_end_1 == False and self.release_end_2 == False:
             k = self.__assemble_Ke__()
+        # If both ends are released
+        elif self.release_end_1 == True and self.release_end_2 == True:
+            k = self.__assemble_Ke_end_release_both__()
         # If the rotation is release in the first node
         elif self.release_end_1 == True:
             k = self.__assemble_Ke_end_release1__()
         # If the rotation is release in the second node
         elif self.release_end_2 == True:
             k = self.__assemble_Ke_end_release2__()
-        # If both ends are released
-        elif self.release_end_1 == True and self.release_end_2 == True:
-            k = self.__assemble_Ke_end_release_both__()
 
         # Generate sparse matrix
         ke_local = sparse.csr_matrix(k)
         # Store as property of the object
         self._Ke_local = ke_local
         # Transform to global coordinates:
-        T = self.transformation_matrix
-        Ke = T.T.dot(ke_local.dot(T))
+        Te = self.transformation_matrix
+        Ke = Te.T.dot(ke_local.dot(Te))
 
         self._Ke = Ke
 
@@ -271,6 +277,43 @@ class Beam2D(Beam):
         ke[3,0] = ke[0,3] = - EA / L
 
         return ke
+
+    def _calc_condensed_displacements(self, displ):
+        """
+        Calculate the nodal displacements taking into account the condensend DOF due to
+        the end_release options.
+
+        If the condensed displacemtns are denoted by the subindex 'j' and the remaining
+        DOFs are denoted with the letter 'i', then the condensed displacements are
+        calculated according to
+
+
+                v_j = -K_jj^-1 . K_ji . v_i
+
+        :displ: TODO
+        :returns: TODO
+
+        """
+        if self.release_end_1 == True and self.release_end_2 == True:
+            j_n = [2, 5]
+            i_n = [0, 1, 3, 4]
+        elif self.release_end_1 == True:
+            j_n = [2]
+            i_n = [0, 1, 3, 4, 5]
+        elif self.release_end_2 == True:
+            j_n = [5]
+            i_n = [0, 1, 2, 3, 4]
+
+        ke = self.__assemble_Ke__()
+        # Transform to global coordinates
+        k_jj = ke[j_n,j_n]
+        k_ji = ke[j_n,i_n]
+        from numpy.linalg import inv
+        #print(k_jj.todense())
+        #print(k_ji.todense())
+        v_j = np.dot( k_jj**(-1), np.dot(k_ji, displ[i_n]) )
+
+        return v_j
 
     def assemble_sym_K(self):
         """This function assembles the stiffness matrix for one individual element. Optionally

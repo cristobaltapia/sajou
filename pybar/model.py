@@ -32,6 +32,9 @@ class Model(object):
         """
         self._name = name
         self._dimensionality = dimensionality
+        # Node Freedome Allocation Table:
+        #
+        self.nfat = dict()
         self.nodes = dict()
         self.beams = dict()
         self.beam_sections = dict()
@@ -49,6 +52,8 @@ class Model(object):
         self.n_dof_per_node = None
         # Specify dofs that are not active due to border conditions
         self._dof_dirichlet = []
+        # Node Freedom Allocation Table
+        self._nfat = dict()
 
     def Material(self, name, data, type='isotropic'):
         """Function used to create a Material instance in the model
@@ -418,6 +423,25 @@ class Model(object):
                 node_i.add_hinge()
         else:
             node.add_hinge()
+
+    def generate_node_freedom_allocation_dict(self):
+        """
+        Generate the Node Freedom Allocation Table.
+
+        Generates a dictionary of arrays, containing the Node Freedom
+        Signature of each Node of the model. The key values correspond to the node
+        numbers.
+
+        :returns: a dictionary
+
+        """
+        # Loop over each node and add its Node Freedom Signature to the
+        # dictionary
+        for n_num, node in self.nodes.items():
+            self.nfat[node.number] = node.nfs
+
+        return self.nfat
+
 
 class Model2D(Model):
     """Subclass of the 'Model' class. It is intended to be used for the 2-dimensional

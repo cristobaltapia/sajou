@@ -7,6 +7,9 @@ import numpy as np
 class Node(np.ndarray):
     """3-dimensional implementation of Nodes"""
     def __new__(cls, x, y, z, number):
+        """
+        Instatiate a Node object.
+        """
         # A z-coordinate is incorporated if only two are given
         obj = np.asarray([x, y, z], dtype=np.float64).view(cls)
         obj.number = number
@@ -104,13 +107,19 @@ class Node(np.ndarray):
 class Node2D(Node):
     """2-dimensional implementation of Nodes"""
     def __init__(self, x, y, z, number):
-        """ Initializes a Node2D instance
+        """ Instatiate a Node2D instance.
         """
-        #Node.__init__(self, x=x, y=y, z=0.0, number=number)
-        # Numbe od DOF per node:
+        # Number od DOF per node:
         # Translation in x, translation in y, rotation in z
         self.n_dof = 3
         self.coords = [x, y]
+        # Node Freedom Signature:
+        # Indicates which degrees of freedom are active in the node
+        # according to the Node Freedom Arrangement selected:
+        # NFA = [v_1, v_2, r_3]
+        # 
+        # All DOFs are initiated to be unused.
+        obj.nfs = np.zeros(n_dof, dtype=np.int)
 
         return None
 

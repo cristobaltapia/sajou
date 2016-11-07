@@ -8,59 +8,17 @@ import scipy.sparse as sparse
 from . import loads
 from .utils import Local_Csys_two_points
 
-class Beam(object):
-    """Beam object, joining two nodes. Parent class for the 2D and 3D implementation."""
+class Element(object):
+    """Generic Element object. Parent class for the 2D and 3D implementation."""
 
-    def __init__(self, node1, node2, number):
+    def __init__(self, number):
         """TODO: to be defined1.
 
-        :node1: first node
-        :node2: second node
         :number: number of the line
 
         """
-        self._beam_section = None
-        # TODO: accept tuples with coordinates also
-        self._node1 = node1
-        self._node2 = node2
-        self._nodes = [self._node1, self._node2]
         # TODO: check that the number is not in use
         self.number = number
-        #
-        node1.append_beam(self, 1)
-        node2.append_beam(self, 2)
-        # Calculate the length of the element
-        self._length = np.linalg.norm(node2-node1)
-        # Local coordinate system
-        self._localCSys = Local_Csys_two_points(point1=node1, point2=node2, type='cartesian')
-        # Section
-        self._beam_section = None
-        # Directive cosines
-        delta = node2 - node1
-        cx = delta[0] / self._length
-        cy = delta[1] / self._length
-        cz = delta[2] / self._length
-
-        # Transformation matrix
-        self.transformation_matrix = self._localCSys.calc_transformation_matrix(self._length, cx, cy, cz)
-
-        # Stiffness matrix (global coordinates)
-        self._Ke = None
-        # Load vector (global coordinates)
-        self._load_vector_e = None
-        # Vector to calculate section forces
-        self._poly_sec_force = None
-
-    def assign_section(self, beam_section):
-        """Assign a beam section instance to the beam
-
-        :beam_section: a BeamSection instance
-        :returns: self
-
-        """
-        self._beam_section = beam_section
-
-        return self
 
     def __str__(self):
         """
@@ -75,7 +33,7 @@ class Beam(object):
         """
         return 'Beam {number}'.format(number=self.number)
 
-class Beam2D(Beam):
+class Beam2D(Element):
     """
     Two-dimensional Bernoulli Beam element.
 
@@ -92,35 +50,55 @@ class Beam2D(Beam):
         :number: number of the line
 
         """
-        Beam.__init__(self, node1, node2, number)
+        # Instatiate the Element parent class
+        Element.__init__(self, number)
+        # TODO: accept tuples with coordinates also
+        self._node1 = node1
+        self._node2 = node2
+        self._nodes = [self._node1, self._node2]
+        # TODO: check that the number is not in use
+        self.number = number
+        #
+        node1.append_element(self, 1)
+        node2.append_element(self, 2)
+        # Calculate the length of the element
+        self._length = np.linalg.norm(node2-node1)
+        # Local coordinate system
+        self._localCSys = Local_Csys_two_points(point1=node1, point2=node2, type='cartesian')
+        # Directive cosines
+        delta = node2 - node1
+        cx = delta[0] / self._length
+        cy = delta[1] / self._length
+        cz = delta[2] / self._length
+
+        # Transformation matrix
+        self.transformation_matrix = self._localCSys.calc_transformation_matrix(self._length, cx, cy, cz)
+
+        # Stiffness matrix (global coordinates)
+        self._Ke = None
+        # Load vector (global coordinates)
+        self._load_vector_e = None
+        # Vector to calculate section forces
+        self._poly_sec_force = None
         # Number of nodes of the element
         self._n_nodes = 2
         # Number of DOF per node
         self._dof_per_node = 3
         # Total DOF
         self._ndof = 6
-        # TODO: Node Freedom Signature
-        # TODO: Node Freedom Allocation Table (in Model class)
-        # TODO: Node Freedom Base Table (in Model class)
-        # TODO: Element Freedom Signature (in Element class)
-        # TODO: Element Freedom Table
-        nfs = [1, 1, 1, 1, 1, 1]
-
-        # displacement/rotation of each degree of freedom, for each node
-        # - Node 1
-        self.dof1 = 0. # trans x
-        self.dof2 = 0. # trans y
-        self.dof3 = 0. # rot z
-
-        # Node 2
-        self.dof4 = 0. # trans x
-        self.dof5 = 0. # trans y
-        self.dof6 = 0. # rot z
+        # Element Freedom Signature:
+        # 
+        self.efs = {
+                    node1.number: np.array([1, 1, 1], dtype=np.int),
+                    node2.number: np.array([1, 1, 1], dtype=np.int)
+                   }
 
         # Release rotation on the ends of the beam
         self.release_end_1 = False # first node
         self.release_end_2 = False # second node
 
+        # Beam section
+        self._beam_section = None
         # Loads applied to the frame element
         self._loads = []
         # Initialize the loading vector
@@ -428,7 +406,19 @@ class Beam2D(Beam):
 
         return 1
 
-class Beam3D(Beam):
+    def assign_section(self, beam_section):
+        """Assign a beam section instance to the beam
+
+        :beam_section: a BeamSection instance
+        :returns: self
+
+        """
+        self._beam_section = beam_section
+
+        return self
+
+
+class Beam3D(Element):
     """Beam object, joining two nodes"""
 
     def __init__(self, node1, node2, number):

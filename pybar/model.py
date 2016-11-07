@@ -54,6 +54,10 @@ class Model(object):
         self._dof_dirichlet = []
         # Node Freedom Allocation Table
         self._nfat = dict()
+        # Node Freedom Map Table:
+        # Stores the index of the first used DOF of a node in the global
+        # system.
+        self._nfmt = dict()
 
     def Material(self, name, data, type='isotropic'):
         """Function used to create a Material instance in the model
@@ -190,29 +194,46 @@ class Model(object):
         :returns: numpy array
 
         """
-        # FIXME: generalize the assembly of the stiffness matrix for
-        # other elements, too
-        connect_table = self._generate_connectivity_table2D()
         # Prealocate the matrix
+        # FIXME: use node freedom signature to determine this
         num_dof = self.n_nodes * self.n_dof_per_node
         # number of dof per node
         n_dof = self.n_dof_per_node
+        # Generate Node Freedom Al[location Table
+        self.__generate_node_freedom_allocation_dict__()
+        # Generate Node Freedom Map dictionary
+        self.__generate_node_freedom_map_dict__()
         #
         K = np.zeros([num_dof, num_dof], dtype=np.float64)
         # Fill the global stiffness matrix
-        for n_elem in self.beams:
-            n1 = connect_table[n_elem, 1]
-            n2 = connect_table[n_elem, 2]
-            self.beams[n_elem].assemble_K()
-            #
-            i1 = int(n_dof*n1)
-            i2 = int(n_dof*(n1 + 1))
-            j1 = int(n_dof*n2)
-            j2 = int(n_dof*(n2 + 1))
-            K[i1:i2,i1:i2] += self.beams[n_elem]._Ke[0:n_dof,0:n_dof]
-            K[j1:j2,j1:j2] += self.beams[n_elem]._Ke[n_dof:,n_dof:]
-            K[j1:j2,i1:i2] += self.beams[n_elem]._Ke[n_dof:,0:n_dof]
-            K[i1:i2,j1:j2] += self.beams[n_elem]._Ke[0:n_dof,n_dof:]
+        for n_elem, curr_elem in self.beams.items():
+            # Get nodes of the respective element
+            nodes_elem = curr_elem._nodes
+            # Assemble element stiffness matrix
+            curr_elem.assemble_K()
+            # List to store  the global system indices
+            g_i = []
+            # For each node in the current element
+            for curr_node in nodes_elem:
+                # Get Element Freedom Signature
+                efs = curr_elem.efs[curr_node.number]
+                # Number of active DOF in the node of the element
+                active_dof = np.sum(efs)
+                if active_dof > 0:
+                    # Get value of th Node Freedom Assign Table for the
+                    # current node
+                    nfat_node = self.nfmt[curr_node.number]
+                    # for the total of used DOF in the node
+                    # FIXME: fo the transformation to range in element
+                    # class?
+                    active_nodes = nfat_node + np.arange(n_dof)[efs>0]
+                    g_i.extend(active_nodes)
+
+            # Convert list to numpy array in order to broadcast more
+            # easily to the global stiffness matrix
+            g_i = np.array(g_i)
+            # Map the dof in global system
+            K[g_i[:, None], g_i] += curr_elem._Ke
 
         # Generate sparse matrix
         K_s = sparse.csr_matrix(K)
@@ -424,7 +445,7 @@ class Model(object):
         else:
             node.add_hinge()
 
-    def generate_node_freedom_allocation_dict(self):
+    def __generate_node_freedom_allocation_dict__(self):
         """
         Generate the Node Freedom Allocation Table.
 
@@ -438,10 +459,32 @@ class Model(object):
         # Loop over each node and add its Node Freedom Signature to the
         # dictionary
         for n_num, node in self.nodes.items():
+            node.__generate_node_freedom_signature__()
             self.nfat[node.number] = node.nfs
 
         return self.nfat
 
+    def __generate_node_freedom_map_dict__(self):
+        """
+        Generate the Node Freedom Map Table of the system.
+
+        The Node Freedom Map Table is a dictionary that contains the index, relative to
+        the global system, to which each node's first active DOF contributes.
+        It is assumed that the Node Freedom Allocation Table has already been generated
+        using the function __generate_node_freedom_allocation_dict__().
+
+        :returns: TODO
+
+        """
+        from numpy import cumsum
+        # Obtain the number of active DOFs in each node:
+        n_active_dof = [sum(node.nfs) for n_node, node in self.nodes.items()]
+        # Obtain the cumulative sum
+        nfmt = cumsum(n_active_dof, dtype=np.int) - n_active_dof[0]
+
+        self.nfmt = nfmt
+
+        return nfmt
 
 class Model2D(Model):
     """Subclass of the 'Model' class. It is intended to be used for the 2-dimensional

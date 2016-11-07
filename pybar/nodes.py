@@ -43,8 +43,9 @@ class Node(np.ndarray):
         # solution is found.
         obj.reactions = dict()
 
-        # dictionary containing the beams that use this node
-        obj.beams = dict()
+        # dictionary containing the elements that use this node
+        #obj.elements = dict()
+        obj.elements = []
         #
         obj._hinge = False
 
@@ -81,7 +82,7 @@ class Node(np.ndarray):
         """
         self._hinge = True
 
-    def append_beam(self, beam, node):
+    def append_element(self, element, node):
         """Appends the information of the beam that uses the node and the corresponding
         denomintaion: node 1 or 2
 
@@ -90,7 +91,31 @@ class Node(np.ndarray):
         :returns: nothing FIXME
 
         """
-        self.beams[beam.number] = node
+        self.elements.append([element, node])
+        #self.elements[element.number] = node
+
+    def __generate_node_freedom_signature__(self):
+        """
+        Generate the Node Freedom Signature based on the information taken from the
+        elements attached to the node.
+
+        This function has to be call when no more changes will be made to the model.
+
+        :returns: TODO
+
+        """
+        # Initiate a new node freedom signature
+        nfs = np.zeros(self.n_dof, dtype=np.int)
+        # Iterate for each element connected to the node
+        for elem, n_node in self.elements:
+            # Modify the Node Freedom Signature of the node
+            # Activate the given DOF if it is no activated already
+            nfs += elem.efs[self.number] - (elem.efs[self.number] * nfs)
+
+        self.nfs = nfs
+
+        return self.nfs
+
 
     def __repr__(self):
         """
@@ -119,7 +144,7 @@ class Node2D(Node):
         # NFA = [v_1, v_2, r_3]
         # 
         # All DOFs are initiated to be unused.
-        obj.nfs = np.zeros(n_dof, dtype=np.int)
+        self.nfs = np.zeros(self.n_dof, dtype=np.int)
 
         return None
 

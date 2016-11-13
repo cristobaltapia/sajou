@@ -80,8 +80,10 @@ class DistributedLoad(Load):
         self._poly_sec_force = poly_sec_force
 
     def _calc_loading_vector_local(self, p1, p2, length, direction):
-        """ Generate the loading vector, when the distributed load is in local coords.
-        Also returns the matrix used for the calculation of the sectional forces.
+        """
+        Generate the loading vector, when the distributed load is in local coords.
+        Also returns the matrix with the polynomial coefficients used for the
+        calculation of the sectional forces.
 
         :returns: TODO
 
@@ -89,7 +91,7 @@ class DistributedLoad(Load):
         # Initialize loading vector
         # FIXME: make this dependant from the specific element.
         # (thinking in 3D case)
-        n_dof = self._elem._ndof
+        n_dof = self._elem.n_active_dof
         load_v = np.zeros(n_dof)
 
         # Load vector for the axial load

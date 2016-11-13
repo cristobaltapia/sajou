@@ -1,37 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""
-This module contains the different elements used and all its methods.
-"""
 import numpy as np
 import scipy.sparse as sparse
-from . import loads
-from .utils import Local_Csys_two_points
-
-class Element(object):
-    """Generic Element object. Parent class for the 2D and 3D implementation."""
-
-    def __init__(self, number):
-        """TODO: to be defined1.
-
-        :number: number of the line
-
-        """
-        # TODO: check that the number is not in use
-        self.number = number
-
-    def __str__(self):
-        """
-        Returns the printable string for this object
-        """
-        return 'Beam {number}: (N{n1}, N{n2})'.format(number=self.number,
-                n1=self._node1.number, n2=self._node2.number)
-
-    def __repr__(self):
-        """
-        Returns the printable string for this object
-        """
-        return 'Beam {number}'.format(number=self.number)
+from pybar import loads
+from pybar.utils import Local_Csys_two_points
+from pybar.elements.element import Element
 
 class Beam2D(Element):
     """
@@ -55,12 +28,32 @@ class Beam2D(Element):
         # TODO: accept tuples with coordinates also
         self._node1 = node1
         self._node2 = node2
-        self._nodes = [self._node1, self._node2]
-        # TODO: check that the number is not in use
-        self.number = number
-        #
-        node1.append_element(self, 1)
-        node2.append_element(self, 2)
+
+        # Element nodal connectivity:
+        self._nodal_connectivity = {
+                0:node1,
+                1:node2
+                }
+
+        # Element Freedom Signature:
+        self.efs = {
+                0: np.array([1, 1, 1], dtype=np.int),
+                1: np.array([1, 1, 1], dtype=np.int)
+                }
+
+        # Node freedom map table of the element (will be automatically
+        # calculated when the element stiffness matrix is assebled)
+        self.nefmt = None
+
+        # Total number of active DOFs in the element (will be updated
+        # when the element stiffness matrix is assembled)
+        self.n_active_dof = 6
+
+        # Make the corresponding nodes aware that they belong to this
+        # element instance
+        node1.append_element(self, 0)
+        node2.append_element(self, 1)
+
         # Calculate the length of the element
         self._length = np.linalg.norm(node2-node1)
         # Local coordinate system
@@ -80,19 +73,6 @@ class Beam2D(Element):
         self._load_vector_e = None
         # Vector to calculate section forces
         self._poly_sec_force = None
-        # Number of nodes of the element
-        self._n_nodes = 2
-        # Number of DOF per node
-        self._dof_per_node = 3
-        # Total DOF
-        self._ndof = 6
-        # Element Freedom Signature:
-        # 
-        self.efs = {
-                    node1.number: np.array([1, 1, 1], dtype=np.int),
-                    node2.number: np.array([1, 1, 1], dtype=np.int)
-                   }
-
         # Release rotation on the ends of the beam
         self.release_end_1 = False # first node
         self.release_end_2 = False # second node
@@ -102,13 +82,13 @@ class Beam2D(Element):
         # Loads applied to the frame element
         self._loads = []
         # Initialize the loading vector
-        self._load_vector_e = np.zeros(self._ndof)
+        self._load_vector_e = np.zeros(self.n_active_dof)
         # Vector to calculate section forces
         # (The size of this vector depends on the order of the polynom
         # describing the section forces [...and deflections TODO])
         self._poly_sec_force = np.zeros((4, 3))
 
-    def assemble_K(self, second_order=False):
+    def assemble_Ke(self, second_order=False):
         """
         Assemble the element stiffness matrix 'Ke' in local and global coordinates.
 
@@ -140,6 +120,12 @@ class Beam2D(Element):
         Ke = Te.T.dot(ke_local.dot(Te))
 
         self._Ke = Ke
+
+        # Generate the Element Node Freedom Map Table
+        self.__generate_element_node_freedom_map_dict__()
+        # Calculate total number of active DOFs in the element
+        sum_dof = np.array( [np.sum(nfs) for node_i, nfs in self.efs.items()] )
+        self.n_active_dof = np.sum(sum_dof)
 
         return Ke
 
@@ -200,6 +186,10 @@ class Beam2D(Element):
         ke[4,1] = ke[1,4] = -3. * EI / (L*L*L)
         ke[5,1] = ke[1,5] = 3. * EI / L**2
         ke[5,4] = ke[4,5] = -3. * EI / L**2
+
+        # The Element Freedom signature has to be changed for the
+        # respective node
+        self.efs[1] = np.array([1, 1, 0], dtype=np.int)
 
         return ke
 
@@ -292,6 +282,55 @@ class Beam2D(Element):
         v_j = np.dot( k_jj**(-1), np.dot(k_ji, displ[i_n]) )
 
         return v_j
+
+    def get_index_array_of_node(self, node):
+        """
+        Get an array containing the indices of the used DOFs of the given node of the
+        element.
+
+        The array has the following form:
+                [0, 1, 2] --> all DOFs are used
+                [0, 2] --> DOF 0 and 2 are used only (ux and rz)
+
+        This array is used to know exactly which DOFs should be used to assemble the global
+        stiffness matrix or to retrieve the corresponding displacements.
+
+        For example:
+
+            i_global_node_1 = e.get_index_list_of_node(n_node_ele) + nfat[global_node_number]
+
+        :node: the number of the node in the element (element number of the node: 0, 1,
+        2... )
+        :returns: array of indices
+
+        """
+        efs = self.efs[node]
+
+        return np.arange(len(efs))[efs>0]
+
+    def __generate_element_node_freedom_map_dict__(self):
+        """
+        Generate the Node Freedom Map Table of the element.
+
+        The Node Freedom Map Table of the element is a dictionary that contains the index 
+        to which each node's first active DOF contributes within the element.
+
+        It is analogous to the function __generate_node_freedom_map_dict__() from the
+        Model class.
+
+        :returns: TODO
+
+        """
+        from numpy import cumsum
+        # Obtain the number of active DOFs in each node:
+        n_active_dof = [sum(nfs) for n_node, nfs in self.efs.items()]
+        # Obtain the cumulative sum
+        enfmt = cumsum(n_active_dof, dtype=np.int) - n_active_dof[0]
+        # TODO: make this a dictionary
+
+        self.enfmt = enfmt
+
+        return enfmt
 
     def assemble_sym_K(self):
         """This function assembles the stiffness matrix for one individual element. Optionally
@@ -416,96 +455,4 @@ class Beam2D(Element):
         self._beam_section = beam_section
 
         return self
-
-
-class Beam3D(Element):
-    """Beam object, joining two nodes"""
-
-    def __init__(self, node1, node2, number):
-        """TODO: to be defined1.
-
-        :node1: first node
-        :node2: second node
-        :number: number of the line
-
-        """
-        Beam.__init__(self, node1, node2, number)
-        # displacement/rotation of each degree of freedom, for each node
-        # - Node 1
-        self.dof1 = 0. # trans x
-        self.dof2 = 0. # trans y
-        self.dof3 = 0. # trans z
-        self.dof4 = 0. # rot x
-        self.dof5 = 0. # rot y
-        self.dof6 = 0. # rot z
-
-        # Node 2
-        self.dof7 = 0.  # trans x
-        self.dof8 = 0.  # trans y
-        self.dof9 = 0.  # trans z
-        self.dof10 = 0. # rot x
-        self.dof11 = 0. # rot y
-        self.dof12 = 0. # rot z
-
-    def assemble_K(self, second_order=False):
-        """This function assembles the stiffness matrix for one individual element. Optionally
-        it can take the shear effect into account (second order effect).
-
-        :element: segment instance
-        :seecond_order: boolean
-        :returns: local stiffness matrix
-
-        """
-        # Modulus of elasticity
-        E = self._beam_section.material._data[0]
-        # Area of the section
-        Ax = self._beam_section._area
-        # Shear areas
-        Asy = self._beam_section._Sy
-        Asz = self._beam_section._Sz
-        # Inertias
-        Iz = self._beam_section._I33
-        Iy = self._beam_section._I22
-        J = self._beam_section._J11
-        # Length of the element
-        Le = self._length
-        # Take account of the second order effects
-        if second_order:
-            G = self._material.G
-            Ksy = 12.*E*Iz / (G*Asy*Le*Le)
-            Ksz = 12.*E*Iy / (G*Asz*Le*Le)
-        else:
-            Ksy = 0.0
-            Ksz = 0.0
-
-        # Initialize stiffness matrix
-        k = np.zeros((12,12))
-
-        k[0,0] = k[6,6]   = E*Ax / Le
-        k[1,1] = k[7,7]   = 12.*E*Iz / ( Le*Le*Le*(1.+Ksy) )
-        k[2,2] = k[8,8]   = 12.*E*Iy / ( Le*Le*Le*(1.+Ksz) )
-        k[3,3] = k[9,9]   = G*J / Le
-        k[4,4] = k[10,10] = (4.+Ksz)*E*Iy / ( Le*(1.+Ksz) )
-        k[5,5] = k[11,11] = (4.+Ksy)*E*Iz / ( Le*(1.+Ksy) )
-
-        k[4,2] = k[2,4] = -6.*E*Iy / ( Le*Le*(1.+Ksz) );
-        k[5,1] = k[1,5] = 6.*E*Iz / ( Le*Le*(1.+Ksy) );
-        k[6,0] = k[0,6] = -k[0,0];
-
-        k[11,7] = k[7,11] = k[7,5] = k[5,7] = -k[5,1];
-        k[10,8] = k[8,10] = k[8,4] = k[4,8] = -k[4,2];
-        k[9,3]  = k[3,9]  = -k[3,3];
-        k[10,2] = k[2,10] = k[4,2];
-        k[11,1] = k[1,11] = k[5,1];
-
-        k[7,1]  = k[1,7]  = -k[1,1];
-        k[8,2]  = k[2,8]  = -k[2,2];
-        k[10,4] = k[4,10] = (2.-Ksz)*E*Iy / ( Le*(1.+Ksz) );
-        k[11,5] = k[5,11] = (2.-Ksy)*E*Iz / ( Le*(1.+Ksy) );
-
-        # transform to global coordinates
-        T = self._localCSys.transformation_matrix
-
-
-        return k
 

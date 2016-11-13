@@ -248,6 +248,10 @@ class StaticSolver(Solver):
         """
         # Initialize dictionary with results of the end forces
         end_forces = dict()
+        # Get the node freedom map table
+        nfmt = self._model.nfmt
+        # Get the node freedom allocation
+        nfat = self._model.nfat
         # calculate for each element
         for num, elem in self._model.beams.items():
             # Get the transformation matrix for the element
@@ -255,32 +259,30 @@ class StaticSolver(Solver):
             # Get the stiffness matrix of the element in global coordinates
             # FIXME!
             Ke = elem._Ke
-            #Ke = elem.__assemble_Ke__()
-            # Get number of DOF per node
-            dof_pn = elem._dof_per_node
             # Get the displacements of the corresponding DOFs in global coordinates
             # - Initialize matrix
-            v_i = np.zeros(dof_pn * elem._n_nodes, dtype=np.float64)
-            P_e_i = np.zeros(dof_pn * elem._n_nodes, dtype=np.float64)
+            v_i = np.zeros(elem.n_active_dof, dtype=np.float64)
+            P_e_i = np.zeros(elem.n_active_dof, dtype=np.float64)
+            # Get the node freedom allocation of the current element
+            enfmt = elem.enfmt
             # Assemble matrix with element nodal displacements of the current
             # beam element
-            for n_node, node in enumerate(elem._nodes):
-                # indices for the array v_i
-                i1 = dof_pn * n_node
-                i2 = dof_pn * (n_node + 1)
+            for n_node_e, node in elem._nodal_connectivity.items():
+                # Indices for the array v_i
+                index_base = elem.get_index_array_of_node(n_node_e)
+                i_index = index_base + enfmt[n_node_e]
                 # Indices corresponding to the position of the DOF of
-                # the current node analyzed
-                j1 = dof_pn * node.number
-                j2 = dof_pn * (1 + node.number)
+                # the current node analyzed (global system)
+                j_index = index_base + nfmt[node.number]
                 # Add the results for these DOFs to the v_i array
-                v_i[i1:i2] = nodal_displ[j1:j2] # DOF of node selected
+                v_i[i_index] = nodal_displ[j_index] # DOF of node selected
             """
             If an element uses release_end option, then the displacement (rotation) needs
             to be calculated sepparately.
-            """
             if elem.release_end_1 == True or elem.release_end_2 == True:
                 aux = elem._calc_condensed_displacements(v_i)
                 #v_i[5] = aux
+            """
 
             if len(elem._loads) > 0:
                 # Element load vector FIXME:

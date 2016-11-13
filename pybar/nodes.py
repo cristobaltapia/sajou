@@ -45,7 +45,7 @@ class Node(np.ndarray):
 
         # dictionary containing the elements that use this node
         #obj.elements = dict()
-        obj.elements = []
+        obj.elements = dict()
         #
         obj._hinge = False
 
@@ -83,16 +83,18 @@ class Node(np.ndarray):
         self._hinge = True
 
     def append_element(self, element, node):
-        """Appends the information of the beam that uses the node and the corresponding
-        denomintaion: node 1 or 2
+        """
+        Append the information of the beam that uses the node and the number
+        in the element: 1, 2, 3,...
 
         :beam: Beam instance
-        :node: '1' or '2'
+        :node: int corresponding to the number of the node within the element
         :returns: nothing FIXME
 
         """
-        self.elements.append([element, node])
-        #self.elements[element.number] = node
+        self.elements[element.number] = {'element':element, 'node':node}
+
+        return 1
 
     def __generate_node_freedom_signature__(self):
         """
@@ -107,15 +109,18 @@ class Node(np.ndarray):
         # Initiate a new node freedom signature
         nfs = np.zeros(self.n_dof, dtype=np.int)
         # Iterate for each element connected to the node
-        for elem, n_node in self.elements:
+        for n_elem, data_element in self.elements.items():
+            # Get the number of the node used within the element
+            n_node = data_element['node']
+            # Get the element instance
+            elem = data_element['element']
             # Modify the Node Freedom Signature of the node
             # Activate the given DOF if it is no activated already
-            nfs += elem.efs[self.number] - (elem.efs[self.number] * nfs)
+            nfs += elem.efs[n_node] - (elem.efs[n_node] * nfs)
 
         self.nfs = nfs
 
         return self.nfs
-
 
     def __repr__(self):
         """

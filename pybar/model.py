@@ -8,7 +8,6 @@ import scipy.sparse as sparse
 import pandas as pd
 from .utils import Local_Csys_two_points
 from .solvers import StaticSolver
-from .elements import Beam2D, Beam3D
 from .nodes import Node2D
 from .materials import Material
 from .sections import BeamSection
@@ -194,29 +193,27 @@ class Model(object):
         :returns: numpy array
 
         """
-        # Prealocate the matrix
-        # FIXME: use node freedom signature to determine this
-        num_dof = self.n_nodes * self.n_dof_per_node
-        # number of dof per node
-        n_dof = self.n_dof_per_node
-        # Generate Node Freedom Al[location Table
+        # Generate Node Freedom Al[location Table and total number of
+        # active DOFs of the system
         self.__generate_node_freedom_allocation_dict__()
         # Generate Node Freedom Map dictionary
         self.__generate_node_freedom_map_dict__()
-        #
-        K = np.zeros([num_dof, num_dof], dtype=np.float64)
+        # number of dof per node
+        n_dof = self.n_active_dof
+        # Initialize the global stiffness matrix
+        K = np.zeros([n_dof, n_dof], dtype=np.float64)
         # Fill the global stiffness matrix
         for n_elem, curr_elem in self.beams.items():
             # Get nodes of the respective element
-            nodes_elem = curr_elem._nodes
+            nodes_elem = curr_elem._nodal_connectivity
             # Assemble element stiffness matrix
-            curr_elem.assemble_K()
+            curr_elem.assemble_Ke()
             # List to store  the global system indices
             g_i = []
             # For each node in the current element
-            for curr_node in nodes_elem:
+            for n_node_e, curr_node in nodes_elem.items():
                 # Get Element Freedom Signature
-                efs = curr_elem.efs[curr_node.number]
+                efs = curr_elem.efs[n_node_e]
                 # Number of active DOF in the node of the element
                 active_dof = np.sum(efs)
                 if active_dof > 0:
@@ -224,15 +221,17 @@ class Model(object):
                     # current node
                     nfat_node = self.nfmt[curr_node.number]
                     # for the total of used DOF in the node
-                    # FIXME: fo the transformation to range in element
+                    # FIXME: do the transformation to range in element
                     # class?
-                    active_nodes = nfat_node + np.arange(n_dof)[efs>0]
+                    index_base = curr_elem.get_index_array_of_node(n_node_e)
+                    active_nodes = nfat_node + index_base
+                    # Extend the list
                     g_i.extend(active_nodes)
 
             # Convert list to numpy array in order to broadcast more
             # easily to the global stiffness matrix
             g_i = np.array(g_i)
-            # Map the dof in global system
+            # Add the contributions to the respective DOFs in global system
             K[g_i[:, None], g_i] += curr_elem._Ke
 
         # Generate sparse matrix
@@ -452,15 +451,21 @@ class Model(object):
         Generates a dictionary of arrays, containing the Node Freedom
         Signature of each Node of the model. The key values correspond to the node
         numbers.
+        Also counts the total number of active DOFs of the system and stores it on the
+        variable self.n_active_dof
 
         :returns: a dictionary
 
         """
+        n_active_dof = 0
         # Loop over each node and add its Node Freedom Signature to the
         # dictionary
         for n_num, node in self.nodes.items():
             node.__generate_node_freedom_signature__()
             self.nfat[node.number] = node.nfs
+            n_active_dof += np.sum(node.nfs)
+
+        self.n_active_dof = n_active_dof
 
         return self.nfat
 
@@ -481,21 +486,31 @@ class Model(object):
         n_active_dof = [sum(node.nfs) for n_node, node in self.nodes.items()]
         # Obtain the cumulative sum
         nfmt = cumsum(n_active_dof, dtype=np.int) - n_active_dof[0]
+        # TODO: make this a dictionary
 
         self.nfmt = nfmt
 
         return nfmt
 
 class Model2D(Model):
-    """Subclass of the 'Model' class. It is intended to be used for the 2-dimensional
-    models of frame structures."""
+    """
+    Subclass of the 'Model' class. It is intended to be used for the 2-dimensional
+    models of frame structures.
+
+    Allocation of DOFs in each node:
+
+            [1 2 3] = [ux, uy, rz]
+
+    """
 
     def __init__(self, name, dimensionality='2D'):
         """TODO: to be defined1. """
         dimensionality = '2D'
         Model.__init__(self, name, dimensionality)
-        self.n_dof_per_node = 3 # dof per node
+        # Numer of dimensions
         self.n_dimensions = 2
+        # Number of degrees of freedom per node:
+        self.n_dof_per_node = 3
 
     def Node(self, x, y):
         """2D implementation of the Node.
@@ -518,6 +533,7 @@ class Model2D(Model):
         :node2: second node
 
         """
+        from .elements.beam2d import Beam2D
         line = Beam2D(node1=node1, node2=node2, number=self.n_beams)
         self.beams[line.number] = line
         self.n_beams += 1

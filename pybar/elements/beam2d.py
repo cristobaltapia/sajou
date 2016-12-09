@@ -13,6 +13,7 @@ class Beam2D(Element):
     This beam element connects two nodes and is based on the Bernoulli beam theory.
     Optionally the rotations on the end nodes can be released to create hinges.
 
+    TODO: fixed problem with release ends and distribuetd loads
     """
 
     def __init__(self, node1, node2, number):

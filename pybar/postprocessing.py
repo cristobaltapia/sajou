@@ -43,7 +43,7 @@ class Postprocess(object):
                 ).T
 
         # Calculate moment
-        axial = np.dot(x_l, element._poly_sec_force[:,0])
+        axial = x_l @ element._poly_sec_force[:,0]
 
         return axial
 
@@ -72,7 +72,7 @@ class Postprocess(object):
                 ).T
 
         # Calculate moment
-        shear = np.dot(x_l, element._poly_sec_force[:,1])
+        shear = x_l @ element._poly_sec_force[:,1]
 
         return shear
 
@@ -101,7 +101,7 @@ class Postprocess(object):
                 ).T
 
         # Calculate moment
-        moment = np.dot(x_l, element._poly_sec_force[:,2])
+        moment = x_l @ element._poly_sec_force[:,2]
 
         return moment
 

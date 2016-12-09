@@ -48,6 +48,8 @@ class Beam2D(Element):
         # Total number of active DOFs in the element (will be updated
         # when the element stiffness matrix is assembled)
         self.n_active_dof = 6
+        # length of the stiffness matrix
+        self._k_size = 6
 
         # Make the corresponding nodes aware that they belong to this
         # element instance
@@ -100,16 +102,16 @@ class Beam2D(Element):
         # Generate the element stiffness matrix depending on the use of
         # hinges or not (release_end_1 and release_end_2)
         if self.release_end_1 == False and self.release_end_2 == False:
-            k = self.__assemble_Ke__()
+            k = self._assemble_Ke()
         # If both ends are released
         elif self.release_end_1 == True and self.release_end_2 == True:
-            k = self.__assemble_Ke_end_release_both__()
+            k = self._assemble_Ke_end_release_both()
         # If the rotation is release in the first node
         elif self.release_end_1 == True:
-            k = self.__assemble_Ke_end_release1__()
+            k = self._assemble_Ke_end_release1()
         # If the rotation is release in the second node
         elif self.release_end_2 == True:
-            k = self.__assemble_Ke_end_release2__()
+            k = self._assemble_Ke_end_release2()
 
         # Generate sparse matrix
         ke_local = sparse.csr_matrix(k)
@@ -117,19 +119,19 @@ class Beam2D(Element):
         self._Ke_local = ke_local
         # Transform to global coordinates:
         Te = self.transformation_matrix
-        Ke = Te.T.dot(ke_local.dot(Te))
+        Ke = Te.T @ ke_local @ Te
 
         self._Ke = Ke
 
         # Generate the Element Node Freedom Map Table
-        self.__generate_element_node_freedom_map_dict__()
+        self._generate_element_node_freedom_map_dict()
         # Calculate total number of active DOFs in the element
         sum_dof = np.array( [np.sum(nfs) for node_i, nfs in self.efs.items()] )
         self.n_active_dof = np.sum(sum_dof)
 
         return Ke
 
-    def __assemble_Ke__(self):
+    def _assemble_Ke(self):
         """
         Assemble the element stiffness matrix in local coordinates for the Bernoulli beam.
         :returns: TODO
@@ -160,7 +162,7 @@ class Beam2D(Element):
 
         return ke
 
-    def __assemble_Ke_end_release1__(self):
+    def _assemble_Ke_end_release1(self):
         """
         Assembles the element stiffness matrix in local and global coordinates for the
         case when the release_end_1 option is set to 'True'.
@@ -189,11 +191,11 @@ class Beam2D(Element):
 
         # The Element Freedom signature has to be changed for the
         # respective node
-        self.efs[1] = np.array([1, 1, 0], dtype=np.int)
+        self.efs[0] = np.array([1, 1, 0], dtype=np.int)
 
         return ke
 
-    def __assemble_Ke_end_release2__(self):
+    def _assemble_Ke_end_release2(self):
         """
         Assembles the element stiffness matrix in local and global coordinates for the
         case when the release_end_2 option is set to 'True'.
@@ -220,9 +222,13 @@ class Beam2D(Element):
         ke[3,0] = ke[0,3] = - EA / L
         ke[4,1] = ke[1,4] = -3. * EI / (L*L*L)
 
+        # The Element Freedom signature has to be changed for the
+        # respective node
+        self.efs[1] = np.array([1, 1, 0], dtype=np.int)
+
         return ke
 
-    def __assemble_Ke_end_release_both__(self):
+    def _assemble_Ke_end_release_both(self):
         """
         Assembles the element stiffness matrix in local and global coordinates for the
         case when the release_end_2 option is set to 'True'.
@@ -243,6 +249,11 @@ class Beam2D(Element):
 
         ke[0,0] = ke[3,3] = EA / L
         ke[3,0] = ke[0,3] = - EA / L
+
+        # The Element Freedom signature has to be changed for the
+        # respective node
+        self.efs[0] = np.array([1, 1, 0], dtype=np.int)
+        self.efs[1] = np.array([1, 1, 0], dtype=np.int)
 
         return ke
 
@@ -272,14 +283,19 @@ class Beam2D(Element):
             j_n = [5]
             i_n = [0, 1, 2, 3, 4]
 
-        ke = self.__assemble_Ke__()
+        ke = self._assemble_Ke()
+        # To sparse
+        ke_local = sparse.csr_matrix(ke)
+        # Transform to global coordinates:
+        Te = self.transformation_matrix
+        Ke = Te.T @ ke_local.todense() @ Te
         # Transform to global coordinates
-        k_jj = ke[j_n,j_n]
-        k_ji = ke[j_n,i_n]
+        k_jj = Ke[j_n,j_n]
+        k_ji = Ke[j_n,i_n]
         from numpy.linalg import inv
         #print(k_jj.todense())
         #print(k_ji.todense())
-        v_j = np.dot( k_jj**(-1), np.dot(k_ji, displ[i_n]) )
+        v_j = k_jj**(-1) @ k_ji @ displ[i_n]
 
         return v_j
 
@@ -308,7 +324,7 @@ class Beam2D(Element):
 
         return np.arange(len(efs))[efs>0]
 
-    def __generate_element_node_freedom_map_dict__(self):
+    def _generate_element_node_freedom_map_dict(self):
         """
         Generate the Node Freedom Map Table of the element.
 
@@ -323,10 +339,18 @@ class Beam2D(Element):
         """
         from numpy import cumsum
         # Obtain the number of active DOFs in each node:
-        n_active_dof = [sum(nfs) for n_node, nfs in self.efs.items()]
+        # -
+        # Not sure about this. It seems that this is not really
+        # necessary, since the total number of DOF and the size of the
+        # element stiffness matrix is not changed. Thus, the node
+        # freedom map table remains constant, even when some DOFs are
+        # not used (e.g. release ends)
+        # -
+        #n_active_dof = [sum(nfs) for n_node, nfs in self.efs.items()]
         # Obtain the cumulative sum
-        enfmt = cumsum(n_active_dof, dtype=np.int) - n_active_dof[0]
+        #enfmt = cumsum(n_active_dof, dtype=np.int) - n_active_dof[0]
         # TODO: make this a dictionary
+        enfmt = np.array([0, 3], dtype=np.int)
 
         self.enfmt = enfmt
 
@@ -366,7 +390,6 @@ class Beam2D(Element):
         # transform to global coordinates
         #T = element.transformation_matrix
 
-        #Ke = np.dot(T.T, np.dot(k,T))
         self._Ke_local = k
 
         # transform to global coordinates

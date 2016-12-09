@@ -77,6 +77,8 @@ class DistributedLoad(Load):
                     direction)
 
         self._load_vector_global = load_v
+        # Polynomial coefficients to calculate the section forces along
+        # the beam element.
         self._poly_sec_force = poly_sec_force
 
     def _calc_loading_vector_local(self, p1, p2, length, direction):
@@ -122,14 +124,15 @@ class DistributedLoad(Load):
         self._loading_vector = load_v
         # Calculate the load vector in global coordinates, using the
         # transformation matrix
-        T = self._elem.transformation_matrix
+        Te = self._elem.transformation_matrix
         # Rotate
-        load_vector_global = T.T.dot(load_v)
+        load_vector_global = Te.T @ load_v
 
         return load_vector_global, poly_sec_force
 
     def _calc_loading_vector_global(self, p1, p2, length, direction):
-        """ Generate the loading vector, when the distributed load is in global coords.
+        """
+        Generate the loading vector, when the distributed load is in global coords.
 
         :returns: TODO
 
@@ -137,7 +140,7 @@ class DistributedLoad(Load):
         # Initialize loading vector
         # FIXME: make this dependant from the specific element.
         # (thinking in 3D case)
-        n_dof = self._elem._ndof
+        n_dof = self._elem.n_active_dof
         load_v = np.zeros(n_dof)
         poly_sec_force = np.zeros((4, 3))
 
@@ -177,9 +180,11 @@ class DistributedLoad(Load):
         return load_v, poly_sec_force
 
     def _generate_section_force_poly(self, p1, p2, length, direction):
-        """Generate the matrix used to calculate the section forces.
+        """
+        Generate the matrix with polynomial coefficients used to calculate
+        the section forces.
 
-        This matrix has a shape (4xn_dof) and will be used to calculate the sectional
+        This matrix has a shape (4 x n_dof) and will be used to calculate the sectional
         forces produced by this LoadDistribution instance.
         It will then be added in the Element object to contain every contribution made to
         the element.
@@ -297,9 +302,9 @@ class DistributedMoment(Load):
         self._loading_vector = load_v
         # Calculate the load vector in global coordinates, using the
         # transformation matrix
-        T = self._elem.transformation_matrix
+        Te = self._elem.transformation_matrix
         # Rotate
-        load_vector_global = T.T.dot(load_v)
+        load_vector_global = Te.T @ load_v
 
         return load_vector_global, poly_sec_force
 

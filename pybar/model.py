@@ -203,36 +203,45 @@ class Model(object):
         # Initialize the global stiffness matrix
         K = np.zeros([n_dof, n_dof], dtype=np.float64)
         # Fill the global stiffness matrix
-        for n_elem, curr_elem in self.beams.items():
+        for n_elem, element in self.beams.items():
             # Get nodes of the respective element
-            nodes_elem = curr_elem._nodal_connectivity
+            nodes_elem = element._nodal_connectivity
             # Assemble element stiffness matrix
-            curr_elem.assemble_Ke()
-            # List to store  the global system indices
+            element.assemble_Ke()
+            # List to store the global system indices
             g_i = []
+            # List of indices of used element DOFs
+            g_e = []
             # For each node in the current element
-            for n_node_e, curr_node in nodes_elem.items():
+            for n_node_e, node in nodes_elem.items():
                 # Get Element Freedom Signature
-                efs = curr_elem.efs[n_node_e]
+                efs = element.efs[n_node_e]
                 # Number of active DOF in the node of the element
                 active_dof = np.sum(efs)
                 if active_dof > 0:
                     # Get value of th Node Freedom Assign Table for the
                     # current node
-                    nfat_node = self.nfmt[curr_node.number]
+                    nfat_node = self.nfmt[node.number]
+                    # Get NFS of the node in the element
+                    enfs_node = element.enfmt[n_node_e]
                     # for the total of used DOF in the node
                     # FIXME: do the transformation to range in element
                     # class?
-                    index_base = curr_elem.get_index_array_of_node(n_node_e)
+                    index_base = element.get_index_array_of_node(n_node_e)
                     active_nodes = nfat_node + index_base
                     # Extend the list
                     g_i.extend(active_nodes)
+                    #
+                    index_base_e = element.get_index_array_of_node(n_node_e)
+                    active_nodes_e = enfs_node + index_base_e
+                    g_e.extend(active_nodes_e)
 
             # Convert list to numpy array in order to broadcast more
             # easily to the global stiffness matrix
             g_i = np.array(g_i)
+            g_e = np.array(g_e)
             # Add the contributions to the respective DOFs in global system
-            K[g_i[:, None], g_i] += curr_elem._Ke
+            K[g_i[:, None], g_i] += element._Ke[g_e[:, None], g_e]
 
         # Generate sparse matrix
         K_s = sparse.csr_matrix(K)
@@ -244,12 +253,22 @@ class Model(object):
         :returns: numpy array
 
         """
+        # number of dof per node
+        n_dof = self.n_active_dof
+        # Get the node freedom allocation map table
+        nfmt = self.nfmt
         # Initialize a zero vector of the size of the total number of
         # dof
-        P = np.zeros(self.n_nodes*self.n_dof_per_node, dtype=np.float64)
+        P = np.zeros(n_dof, dtype=np.float64)
         # Assign the values corresponding to the loads in each dof
-        for ix, node_i in self.nodes.items():
-            for dof, val in node_i._Loads.items():
+        for ix, node in self.nodes.items():
+            # Get the Node Freedom Signature of the current node
+            nfs = node.nfs
+            #
+            #index_base = node.get_index_array_of_node()
+            #i_index = 
+            #P[i_index] = node._Loads[j_index]
+            for dof, val in node._Loads.items():
                 ind = ix*self.n_dof_per_node + dof
                 P[ind] = val
 
@@ -262,24 +281,50 @@ class Model(object):
         :returns: numpy array
 
         """
+        # number of dof per node
+        n_dof = self.n_active_dof
         # Initialize a zero vector of the size of the total number of
         # DOF
-        P = np.zeros(self.n_nodes*self.n_dof_per_node, dtype=np.float64)
+        P = np.zeros(n_dof, dtype=np.float64)
 
         # Add loads applied to the elements (distributed loads)
-        for ix, elem in self.beams.items():
-            if len(elem._loads) > 0:
-                # Get the correct indices
-                # First node:
-                n1 = elem._node1.number
-                # DOFs coresponding to the node 1
-                ind1 = n1 * self.n_dof_per_node
-                # Second node:
-                n2 = elem._node2.number
-                # DOFs coresponding to the node 2
-                ind2 = n2 * self.n_dof_per_node
+        for ix, element in self.beams.items():
+            # Check if the element has element loads defined
+            if len(element._loads) > 0:
+                # Get nodes of the respective element
+                nodes_elem = element._nodal_connectivity
+                # List of indices of the global system
+                g_i = []
+                # List of indices of used element DOFs
+                g_e = []
+                # For each node in the current element
+                for n_node_e, node in nodes_elem.items():
+                    # Get Element Freedom Signature
+                    efs = element.efs[n_node_e]
+                    # Number of active DOF in the node of the element
+                    active_dof = np.sum(efs)
+
+                    if active_dof > 0:
+                        # Get value of th Node Freedom Assign Table for the
+                        # current node
+                        nfat_node = self.nfmt[node.number]
+                        # Get node freedom signature of the node in the element
+                        enfs_node = element.enfmt[n_node_e]
+                        # Get the corresponding active indices of the
+                        # node in the element
+                        index_base = element.get_index_array_of_node(n_node_e)
+                        active_nodes = nfat_node + index_base
+                        # Extend the list
+                        g_i.extend(active_nodes)
+                        #
+                        index_base_e = element.get_index_array_of_node(n_node_e)
+                        active_nodes_e = enfs_node + index_base_e
+                        g_e.extend(active_nodes_e)
+
+                #g_i = np.array([0,1,2,3,4,5])
+                #g_e = np.array([0,1,2,3,4,5])
                 # Add to the global load vector
-                P[[ind1, ind1+1, ind1+2, ind2, ind2+1, ind2+2]] += elem._load_vector_e
+                P[g_i] += element._load_vector_e[g_e]
 
         self._P = P
 
@@ -395,6 +440,7 @@ class Model(object):
             for dof, curr_force in enumerate(list_dof):
                 if curr_force is not None:
                     node.set_Load(dof=dof, val=curr_force)
+
         # For the case of the 3D model
         elif self.n_dof_per_node == 6:
             list_dof = [f1, f2, f3, m1, m2, m3]

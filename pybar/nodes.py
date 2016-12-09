@@ -9,6 +9,8 @@ class Node(np.ndarray):
     def __new__(cls, x, y, z, number):
         """
         Instatiate a Node object.
+
+        :number: number assigned to the new node instance
         """
         # A z-coordinate is incorporated if only two are given
         obj = np.asarray([x, y, z], dtype=np.float64).view(cls)
@@ -38,6 +40,7 @@ class Node(np.ndarray):
         # application of border conditions. The function used to apply
         # the loads is set_Load().
         #
+        #obj._Loads = np.zeros(6, dtype=np.float64)
         obj._Loads = dict()
         # Similar with the reactions. These are, of course, added after the
         # solution is found.

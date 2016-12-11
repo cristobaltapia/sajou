@@ -34,14 +34,13 @@ class Node(np.ndarray):
         # to be transformed accordingly first.
         # The function set_BC() is used to do this.
         #
-        obj._BC = dict()
+        obj._bc = dict()
         # Forces (moments) on the node
         # The forces on the node are defined analogously as for the
         # application of border conditions. The function used to apply
         # the loads is set_Load().
         #
-        #obj._Loads = np.zeros(6, dtype=np.float64)
-        obj._Loads = dict()
+        obj._loads = dict()
         # Similar with the reactions. These are, of course, added after the
         # solution is found.
         obj.reactions = dict()
@@ -62,7 +61,7 @@ class Node(np.ndarray):
         :returns: TODO
 
         """
-        self._BC[dof] = val
+        self._bc[dof] = val
 
         return 1
 
@@ -74,7 +73,7 @@ class Node(np.ndarray):
         :returns: TODO
 
         """
-        self._Loads[dof] = val
+        self._loads[dof] = val
 
         return 1
 

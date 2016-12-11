@@ -265,12 +265,8 @@ class Model(object):
             # Get the Node Freedom Signature of the current node
             nfs = node.nfs
             #
-            #index_base = node.get_index_array_of_node()
-            #i_index = 
-            #P[i_index] = node._Loads[j_index]
-            for dof, val in node._Loads.items():
-                ind = ix*self.n_dof_per_node + dof
-                P[ind] = val
+            index_i = np.array([kx for kx in node._loads.keys()], dtype=np.int) + nfmt[node.number]
+            P[index_i] = np.array([kx for kx in node._loads.values()])
 
         self._P = P
 
@@ -295,7 +291,7 @@ class Model(object):
                 nodes_elem = element._nodal_connectivity
                 # List of indices of the global system
                 g_i = []
-                # List of indices of used element DOFs
+                # List of indices of active element DOFs
                 g_e = []
                 # For each node in the current element
                 for n_node_e, node in nodes_elem.items():
@@ -321,8 +317,6 @@ class Model(object):
                         active_nodes_e = enfs_node + index_base_e
                         g_e.extend(active_nodes_e)
 
-                #g_i = np.array([0,1,2,3,4,5])
-                #g_e = np.array([0,1,2,3,4,5])
                 # Add to the global load vector
                 P[g_i] += element._load_vector_e[g_e]
 
@@ -337,18 +331,22 @@ class Model(object):
         :returns: numpy array
 
         """
+        # number of dof per node
+        n_dof = self.n_active_dof
+        # Get the node freedom allocation map table
+        nfmt = self.nfmt
         # Initialize a zero vector of the size of the total number of
         # dof
         V = np.zeros(self.n_nodes*self.n_dof_per_node, dtype=np.float64)
         # Assign the values corresponding to the loads in each dof
-        for ix, node_i in self.nodes.items():
-            for dof, val in node_i._BC.items():
-                # Compute index corresponding to the current dof
-                ind = int(ix*self.n_dof_per_node + dof)
-                # Add value to the vector
-                V[ind] = val
-                # Add to the list of restrained DOFs
-                self._dof_dirichlet.append(ind)
+        for ix, node in self.nodes.items():
+            # Get the Node Freedom Signature of the current node
+            nfs = node.nfs
+            #
+            index_i = np.array([kx for kx in node._bc.keys()], dtype=np.int) + nfmt[node.number]
+            V[index_i] = np.array([kx for kx in node._bc.values()])
+            # Add to the list of restrained DOFs
+            self._dof_dirichlet.extend(index_i.tolist())
 
         self._V = V
 
@@ -586,7 +584,7 @@ class Model2D(Model):
 
         return line
 
-    def distributed_load(self, elements, p1, p2=None, direction='z', coord_system='local'):
+    def distributed_load(self, elements, **kwargs):
         """Add a distributed load to a list of beam elements.
         A list of elements has to be supplied for the first variable. The rest of the
         variables are exactly the same as in the 'distributed_load' function of the
@@ -600,7 +598,9 @@ class Model2D(Model):
         """
         for curr_elem in elements:
             # Add distributed load
-            curr_elem.distributed_load(p1, p2, direction, coord_system)
+            curr_elem.distributed_load(**kwargs)
+
+        return 1
 
 class Model3D(Model):
     """Subclass of the 'Model' class. It is intended to be used for the 3-dimensional
@@ -692,7 +692,7 @@ class SymbolicModel2D(Model):
         P = zeros(self.n_nodes*self.n_dof_per_node, 1)
         # Assign the values corresponding to the loads in each dof
         for ix, node_i in self.nodes.items():
-            for dof, val in node_i._Loads.items():
+            for dof, val in node_i._loads.items():
                 ind = ix*self.n_dof_per_node + dof
                 P[ind] = val
 

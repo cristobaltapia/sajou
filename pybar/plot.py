@@ -173,7 +173,7 @@ class Display_mpl(Display):
         # Plot forces if requiered
         if show_loads == True:
             for ix, node_i in model.nodes.items():
-                for dof, val in node_i._Loads.items():
+                for dof, val in node_i._loads.items():
                     ax = self.plot_nodal_force(ax, dof, at=node_i, val=val)
             # Plot element Loads
             ax = self.plot_element_loads(ax, model)
@@ -181,8 +181,8 @@ class Display_mpl(Display):
         # Plot supports
         if self.display_config['supports'] == True:
             for ix, node_i in model.nodes.items():
-                if len(node_i._BC) > 0:
-                    ax = self.plot_support(ax, dof=node_i._BC.keys(), at=node_i)
+                if len(node_i._bc) > 0:
+                    ax = self.plot_support(ax, dof=node_i._bc.keys(), at=node_i)
 
         ax.axis('equal')
 

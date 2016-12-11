@@ -256,6 +256,7 @@ class Beam2D(Element):
         self.efs[0] = np.array([1, 1, 0], dtype=np.int)
         self.efs[1] = np.array([1, 1, 0], dtype=np.int)
 
+
         return ke
 
     def _calc_condensed_displacements(self, displ):

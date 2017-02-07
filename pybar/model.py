@@ -4,13 +4,15 @@
 Defines the model classes for 2D and 3D models.
 """
 import numpy as np
-import scipy.sparse as sparse
 import pandas as pd
-from .utils import Local_Csys_two_points
-from .solvers import StaticSolver
-from .nodes import Node2D
+import scipy.sparse as sparse
+
 from .materials import Material
+from .nodes import Node2D
 from .sections import BeamSection
+from .solvers import StaticSolver
+from .utils import Local_Csys_two_points
+
 
 class Model(object):
     """Defines a model object"""
@@ -225,8 +227,6 @@ class Model(object):
                     # Get NFS of the node in the element
                     enfs_node = element.enfmt[n_node_e]
                     # for the total of used DOF in the node
-                    # FIXME: do the transformation to range in element
-                    # class?
                     index_base = element.get_index_array_of_node(n_node_e)
                     active_nodes = nfat_node + index_base
                     # Extend the list
@@ -373,7 +373,7 @@ class Model(object):
         :returns: TODO
 
         """
-        # FIXME: currently only in global coordintaes. Implement
+        # TODO: currently only in global coordintaes. Implement
         # transformation in other coordinate systems.
 
         # Get the BC applied
@@ -780,7 +780,7 @@ class ModelData(object):
         self._dof_dirichlet = copy(model._dof_dirichlet)
 
 def get_dataframe_of_node_coords(model, nodes='all'):
-    """Return a pandas dataframe with coordinates of selected nodes of the model  
+    """Return a pandas dataframe with coordinates of selected nodes of the model
 
     :nodes: list of nodes or 'all'
     :returns: TODO
@@ -810,4 +810,3 @@ def get_dataframe_of_node_coords(model, nodes='all'):
             columns=index_label)
 
     return df_coords
-

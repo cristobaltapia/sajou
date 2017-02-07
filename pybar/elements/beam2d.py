@@ -2,9 +2,11 @@
 # -*- coding: utf-8 -*-
 import numpy as np
 import scipy.sparse as sparse
+
 from pybar import loads
-from pybar.utils import Local_Csys_two_points
 from pybar.elements.element import Element
+from pybar.utils import Local_Csys_two_points
+
 
 class Beam2D(Element):
     """
@@ -330,7 +332,7 @@ class Beam2D(Element):
         """
         Generate the Node Freedom Map Table of the element.
 
-        The Node Freedom Map Table of the element is a dictionary that contains the index 
+        The Node Freedom Map Table of the element is a dictionary that contains the index
         to which each node's first active DOF contributes within the element.
 
         It is analogous to the function __generate_node_freedom_map_dict__() from the
@@ -480,4 +482,3 @@ class Beam2D(Element):
         self._beam_section = beam_section
 
         return self
-

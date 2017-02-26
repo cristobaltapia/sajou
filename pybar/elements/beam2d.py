@@ -6,6 +6,7 @@ import scipy.sparse as sparse
 from pybar import loads
 from pybar.elements.element import Element
 from pybar.utils import Local_Csys_two_points
+from numpy import cumsum
 
 
 class Beam2D(Element):
@@ -33,16 +34,13 @@ class Beam2D(Element):
         self._node2 = node2
 
         # Element nodal connectivity:
-        self._nodal_connectivity = {
-                0:node1,
-                1:node2
-                }
+        self._nodal_connectivity = {0: node1, 1: node2}
 
         # Element Freedom Signature:
         self.efs = {
-                0: np.array([1, 1, 1], dtype=np.int),
-                1: np.array([1, 1, 1], dtype=np.int)
-                }
+            0: np.array([1, 1, 1], dtype=np.int),
+            1: np.array([1, 1, 1], dtype=np.int)
+        }
 
         # Node freedom map table of the element (will be automatically
         # calculated when the element stiffness matrix is assebled)
@@ -60,9 +58,10 @@ class Beam2D(Element):
         node2.append_element(self, 1)
 
         # Calculate the length of the element
-        self._length = np.linalg.norm(node2-node1)
+        self._length = np.linalg.norm(node2 - node1)
         # Local coordinate system
-        self._localCSys = Local_Csys_two_points(point1=node1, point2=node2, type='cartesian')
+        self._localCSys = Local_Csys_two_points(
+            point1=node1, point2=node2, type='cartesian')
         # Directive cosines
         delta = node2 - node1
         cx = delta[0] / self._length
@@ -70,7 +69,8 @@ class Beam2D(Element):
         cz = delta[2] / self._length
 
         # Transformation matrix
-        self.transformation_matrix = self._localCSys.calc_transformation_matrix(self._length, cx, cy, cz)
+        self.transformation_matrix = self._localCSys.calc_transformation_matrix(
+            self._length, cx, cy, cz)
 
         # Stiffness matrix (global coordinates)
         self._Ke = None
@@ -79,8 +79,8 @@ class Beam2D(Element):
         # Vector to calculate section forces
         self._poly_sec_force = None
         # Release rotation on the ends of the beam
-        self.release_end_1 = False # first node
-        self.release_end_2 = False # second node
+        self.release_end_1 = False  # first node
+        self.release_end_2 = False  # second node
 
         # Beam section
         self._beam_section = None
@@ -129,7 +129,7 @@ class Beam2D(Element):
         # Generate the Element Node Freedom Map Table
         self._generate_element_node_freedom_map_dict()
         # Calculate total number of active DOFs in the element
-        sum_dof = np.array( [np.sum(nfs) for node_i, nfs in self.efs.items()] )
+        sum_dof = np.array([np.sum(nfs) for node_i, nfs in self.efs.items()])
         self.n_active_dof = np.sum(sum_dof)
 
         return Ke
@@ -150,18 +150,18 @@ class Beam2D(Element):
         L = self._length
 
         # Initialize stiffness matrix
-        ke = np.zeros((6,6), dtype=np.float64)
+        ke = np.zeros((6, 6), dtype=np.float64)
 
-        ke[0,0] = ke[3,3] = EA / L
-        ke[1,1] = ke[4,4] = 12. * EI / (L*L*L)
-        ke[2,2] = ke[5,5] = 4. * EI / L
-        ke[2,1] = ke[1,2] = 6. * EI / L**2
-        ke[3,0] = ke[0,3] = - EA / L
-        ke[4,1] = ke[1,4] = -12. * EI / (L*L*L)
-        ke[4,2] = ke[2,4] = -6. * EI / L**2
-        ke[5,1] = ke[1,5] = 6. * EI / L**2
-        ke[5,2] = ke[2,5] = 2. * EI / L
-        ke[5,4] = ke[4,5] = -6. * EI / L**2
+        ke[0, 0] = ke[3, 3] = EA / L
+        ke[1, 1] = ke[4, 4] = 12. * EI / (L * L * L)
+        ke[2, 2] = ke[5, 5] = 4. * EI / L
+        ke[2, 1] = ke[1, 2] = 6. * EI / L**2
+        ke[3, 0] = ke[0, 3] = -EA / L
+        ke[4, 1] = ke[1, 4] = -12. * EI / (L * L * L)
+        ke[4, 2] = ke[2, 4] = -6. * EI / L**2
+        ke[5, 1] = ke[1, 5] = 6. * EI / L**2
+        ke[5, 2] = ke[2, 5] = 2. * EI / L
+        ke[5, 4] = ke[4, 5] = -6. * EI / L**2
 
         return ke
 
@@ -182,15 +182,15 @@ class Beam2D(Element):
         L = self._length
 
         # Initialize stiffness matrix
-        ke = np.zeros((6,6), dtype=np.float64)
+        ke = np.zeros((6, 6), dtype=np.float64)
 
-        ke[0,0] = ke[3,3] = EA / L
-        ke[1,1] = ke[4,4] = 3. * EI / (L*L*L)
-        ke[5,5] = 3. * EI / L
-        ke[3,0] = ke[0,3] = - EA / L
-        ke[4,1] = ke[1,4] = -3. * EI / (L*L*L)
-        ke[5,1] = ke[1,5] = 3. * EI / L**2
-        ke[5,4] = ke[4,5] = -3. * EI / L**2
+        ke[0, 0] = ke[3, 3] = EA / L
+        ke[1, 1] = ke[4, 4] = 3. * EI / (L * L * L)
+        ke[5, 5] = 3. * EI / L
+        ke[3, 0] = ke[0, 3] = -EA / L
+        ke[4, 1] = ke[1, 4] = -3. * EI / (L * L * L)
+        ke[5, 1] = ke[1, 5] = 3. * EI / L**2
+        ke[5, 4] = ke[4, 5] = -3. * EI / L**2
 
         # The Element Freedom signature has to be changed for the
         # respective node
@@ -215,15 +215,15 @@ class Beam2D(Element):
         L = self._length
 
         # Initialize stiffness matrix
-        ke = np.zeros((6,6), dtype=np.float64)
+        ke = np.zeros((6, 6), dtype=np.float64)
 
-        ke[0,0] = ke[3,3] = EA / L
-        ke[1,1] = ke[4,4] = 3. * EI / (L*L*L)
-        ke[2,2] = 3. * EI / L
-        ke[2,1] = ke[1,2] = 3. * EI / L**2
-        ke[2,4] = ke[4,2] = -3. * EI / L**2
-        ke[3,0] = ke[0,3] = - EA / L
-        ke[4,1] = ke[1,4] = -3. * EI / (L*L*L)
+        ke[0, 0] = ke[3, 3] = EA / L
+        ke[1, 1] = ke[4, 4] = 3. * EI / (L * L * L)
+        ke[2, 2] = 3. * EI / L
+        ke[2, 1] = ke[1, 2] = 3. * EI / L**2
+        ke[2, 4] = ke[4, 2] = -3. * EI / L**2
+        ke[3, 0] = ke[0, 3] = -EA / L
+        ke[4, 1] = ke[1, 4] = -3. * EI / (L * L * L)
 
         # The Element Freedom signature has to be changed for the
         # respective node
@@ -248,16 +248,15 @@ class Beam2D(Element):
         L = self._length
 
         # Initialize stiffness matrix
-        ke = np.zeros((6,6), dtype=np.float64)
+        ke = np.zeros((6, 6), dtype=np.float64)
 
-        ke[0,0] = ke[3,3] = EA / L
-        ke[3,0] = ke[0,3] = - EA / L
+        ke[0, 0] = ke[3, 3] = EA / L
+        ke[3, 0] = ke[0, 3] = -EA / L
 
         # The Element Freedom signature has to be changed for the
         # respective node
         self.efs[0] = np.array([1, 1, 0], dtype=np.int)
         self.efs[1] = np.array([1, 1, 0], dtype=np.int)
-
 
         return ke
 
@@ -294,8 +293,8 @@ class Beam2D(Element):
         Te = self.transformation_matrix
         Ke = Te.T @ ke_local.todense() @ Te
         # Transform to global coordinates
-        k_jj = Ke[j_n,j_n]
-        k_ji = Ke[j_n,i_n]
+        k_jj = Ke[j_n, j_n]
+        k_ji = Ke[j_n, i_n]
         from numpy.linalg import inv
         #print(k_jj.todense())
         #print(k_ji.todense())
@@ -326,7 +325,7 @@ class Beam2D(Element):
         """
         efs = self.efs[node]
 
-        return np.arange(len(efs))[efs>0]
+        return np.arange(len(efs))[efs > 0]
 
     def _generate_element_node_freedom_map_dict(self):
         """
@@ -341,7 +340,6 @@ class Beam2D(Element):
         :returns: TODO
 
         """
-        from numpy import cumsum
         # Obtain the number of active DOFs in each node:
         # -
         # Not sure about this. It seems that this is not really
@@ -378,18 +376,18 @@ class Beam2D(Element):
         L = self._length
 
         # Initialize stiffness matrix
-        k = zeros(6,6)
+        k = zeros(6, 6)
 
-        k[0,0] = k[3,3] = EA / L
-        k[1,1] = k[4,4] = 12. * EI / (L*L*L)
-        k[2,2] = k[5,5] = 4. * EI / L
-        k[2,1] = k[1,2] = 6 * EI / L**2
-        k[3,0] = k[0,3] = - EA / L
-        k[4,1] = k[1,4] = -12. * EI / (L*L*L)
-        k[4,2] = k[2,4] = -6. * EI / L**2
-        k[5,1] = k[1,5] = 6. * EI / L**2
-        k[5,2] = k[2,5] = 2. * EI / L
-        k[5,4] = k[4,5] = -6. * EI / L**2
+        k[0, 0] = k[3, 3] = EA / L
+        k[1, 1] = k[4, 4] = 12. * EI / (L * L * L)
+        k[2, 2] = k[5, 5] = 4. * EI / L
+        k[2, 1] = k[1, 2] = 6 * EI / L**2
+        k[3, 0] = k[0, 3] = -EA / L
+        k[4, 1] = k[1, 4] = -12. * EI / (L * L * L)
+        k[4, 2] = k[2, 4] = -6. * EI / L**2
+        k[5, 1] = k[1, 5] = 6. * EI / L**2
+        k[5, 2] = k[2, 5] = 2. * EI / L
+        k[5, 4] = k[4, 5] = -6. * EI / L**2
 
         # transform to global coordinates
         #T = element.transformation_matrix

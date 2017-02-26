@@ -7,17 +7,17 @@ import numpy as np
 import scipy.sparse as sparse
 from .utils import Local_Csys_two_points
 
-class Load(object):
 
+class Load(object):
     """Defines the Load object."""
 
     def __init__(self):
         """Initialize the Load instance"""
         self._type = ''
         self._load_vector_global = None
-        
-class DistributedLoad(Load):
 
+
+class DistributedLoad(Load):
     """Docstring for DistributedLoad. """
 
     def __init__(self, elem, p1, p2=None, direction='y', coord_system='local'):
@@ -48,7 +48,8 @@ class DistributedLoad(Load):
         if coord_system == 'local':
             self._localCSys = elem._localCSys
         elif coord_system == 'global':
-            self._localCSys = Local_Csys_two_points(point1=(0.,0.,0.), point2=(1.,0.,0.))
+            self._localCSys = Local_Csys_two_points(
+                point1=(0., 0., 0.), point2=(1., 0., 0.))
 
         # Detect if distribution is a varying distributed load or not
         if p2 == None:
@@ -63,18 +64,12 @@ class DistributedLoad(Load):
         if coord_system == 'local':
             # Generate loading vector
             load_v, poly_sec_force = self._calc_loading_vector_local(
-                        p1,
-                        p2,
-                        elem._length,
-                        direction)
+                p1, p2, elem._length, direction)
         # Else, if the distributed load is given in global coordinates
         elif coord_system == 'global':
             # Generate loading vector
             load_v, poly_sec_force = self._calc_loading_vector_global(
-                    p1,
-                    p2,
-                    elem._length,
-                    direction)
+                p1, p2, elem._length, direction)
 
         self._load_vector_global = load_v
         # Polynomial coefficients to calculate the section forces along
@@ -99,27 +94,21 @@ class DistributedLoad(Load):
         # Load vector for the axial load
         # (direction='x')
         if direction == 'x':
-            load_v[0] = length * (2.*p1 + p2) / 6.
-            load_v[3] = length * (p1 + 2.*p2) / 6.
+            load_v[0] = length * (2. * p1 + p2) / 6.
+            load_v[3] = length * (p1 + 2. * p2) / 6.
             # Generate matrix used for the calculation of section forces
-            poly_sec_force = self._generate_section_force_poly(
-                    p1,
-                    p2,
-                    length,
-                    direction)
+            poly_sec_force = self._generate_section_force_poly(p1, p2, length,
+                                                               direction)
         # Load vector for the transversal load
         # (direction='z')
         elif direction == 'y':
-            load_v[1] = length * (7.*p1 + 3.*p2) / 20.
-            load_v[2] = length**2 * (p1/20. + p2/30.)
-            load_v[4] = length * (3.*p1 + 7*p2) / 20.
-            load_v[5] = -length**2 * (p1/30. + p2/20.)
+            load_v[1] = length * (7. * p1 + 3. * p2) / 20.
+            load_v[2] = length**2 * (p1 / 20. + p2 / 30.)
+            load_v[4] = length * (3. * p1 + 7 * p2) / 20.
+            load_v[5] = -length**2 * (p1 / 30. + p2 / 20.)
             # Generate matrix used for the calculation of section forces
-            poly_sec_force = self._generate_section_force_poly(
-                    p1,
-                    p2,
-                    length,
-                    direction)
+            poly_sec_force = self._generate_section_force_poly(p1, p2, length,
+                                                               direction)
 
         self._loading_vector = load_v
         # Calculate the load vector in global coordinates, using the
@@ -151,29 +140,33 @@ class DistributedLoad(Load):
         # components:
         if direction == 'x':
             # x-component in local coordinates
-            p1_x = p1 * T[0,0]
-            p2_x = p2 * T[0,0]
-            load_v_aux, poly_sec_force_aux = self._calc_loading_vector_local(p1_x, p2_x, length, 'x')
+            p1_x = p1 * T[0, 0]
+            p2_x = p2 * T[0, 0]
+            load_v_aux, poly_sec_force_aux = self._calc_loading_vector_local(
+                p1_x, p2_x, length, 'x')
             load_v += load_v_aux
             poly_sec_force += poly_sec_force_aux
             # y-component in local coordinates
-            p1_y = p2 * T[0,1]
-            p2_y = p1 * T[0,1]
-            load_v_aux, poly_sec_force_aux = self._calc_loading_vector_local(p1_y, p2_y, length, 'y')
+            p1_y = p2 * T[0, 1]
+            p2_y = p1 * T[0, 1]
+            load_v_aux, poly_sec_force_aux = self._calc_loading_vector_local(
+                p1_y, p2_y, length, 'y')
             load_v += load_v_aux
             poly_sec_force += poly_sec_force_aux
 
         elif direction == 'y':
             # x-component in local coordinates
-            p1_x = p1 * T[0,1]
-            p2_x = p2 * T[0,1]
-            load_v_aux, poly_sec_force_aux = self._calc_loading_vector_local(p1_x, p2_x, length, 'x')
+            p1_x = p1 * T[0, 1]
+            p2_x = p2 * T[0, 1]
+            load_v_aux, poly_sec_force_aux = self._calc_loading_vector_local(
+                p1_x, p2_x, length, 'x')
             load_v += load_v_aux
             poly_sec_force += poly_sec_force_aux
             # y-component in local coordinates
-            p1_y = p2 * T[0,0]
-            p2_y = p1 * T[0,0]
-            load_v_aux, poly_sec_force_aux = self._calc_loading_vector_local(p1_y, p2_y, length, 'y')
+            p1_y = p2 * T[0, 0]
+            p2_y = p1 * T[0, 0]
+            load_v_aux, poly_sec_force_aux = self._calc_loading_vector_local(
+                p1_y, p2_y, length, 'y')
             load_v += load_v_aux
             poly_sec_force += poly_sec_force_aux
 
@@ -189,7 +182,7 @@ class DistributedLoad(Load):
         It will then be added in the Element object to contain every contribution made to
         the element.
 
-                [ N ]  
+                [ N ]
                 [ V ] = [ 1, x, x**2, x**3 ] * S
                 [ M ]
 
@@ -208,16 +201,19 @@ class DistributedLoad(Load):
         m_sec_force = np.zeros((4, 3))
         # Determine in which case we are
         if direction == 'x':
-            m_sec_force[:, 0] = np.array([0., -p1, (p1-p2)/(2*length), 0. ])
+            m_sec_force[:, 0] = np.array(
+                [0., -p1, (p1 - p2) / (2 * length), 0.])
         # For the case in which the loading direction is 'y'
         elif direction == 'y':
-            m_sec_force[:, 1] = np.array([0., p1, (p2-p1)/(2*length), 0.                 ])
-            m_sec_force[:, 2] = np.array([0., 0., p1*0.5,             (p2-p1)/(6*length) ])
+            m_sec_force[:, 1] = np.array(
+                [0., p1, (p2 - p1) / (2 * length), 0.])
+            m_sec_force[:, 2] = np.array(
+                [0., 0., p1 * 0.5, (p2 - p1) / (6 * length)])
 
         return m_sec_force
 
-class DistributedMoment(Load):
 
+class DistributedMoment(Load):
     """Docstring for DistributedMoment. """
 
     def __init__(self, elem, m1, m2=None, direction='z', coord_system='local'):
@@ -237,7 +233,7 @@ class DistributedMoment(Load):
         self._coord_system = coord_system
         self._type = 'Distributed Moment'
         self.is_uniform = True
-        
+
         # Detect if distribution is a varying distributed load or not
         if m2 == None:
             self.is_uniform = True
@@ -255,18 +251,12 @@ class DistributedMoment(Load):
         if coord_system == 'local':
             # Generate loading vector
             load_v, poly_sec_force = self._calc_loading_vector_local(
-                        m1,
-                        m2,
-                        elem._length,
-                        direction)
+                m1, m2, elem._length, direction)
         # Else, if the distributed load is given in global coordinates
         elif coord_system == 'global':
             # Generate loading vector
             load_v, poly_sec_force = self._calc_loading_vector_global(
-                    m1,
-                    m2,
-                    elem._length,
-                    direction)
+                m1, m2, elem._length, direction)
 
         self._load_vector_global = load_v
         self._poly_sec_force = poly_sec_force
@@ -293,11 +283,8 @@ class DistributedMoment(Load):
             load_v[4] = (m1 + m2) * 0.5
             load_v[5] = length * (m1 - m2) / 12.
             # Generate matrix used for the calculation of section forces
-            poly_sec_force = self._generate_section_force_poly(
-                    m1,
-                    m2,
-                    length,
-                    direction)
+            poly_sec_force = self._generate_section_force_poly(m1, m2, length,
+                                                               direction)
 
         self._loading_vector = load_v
         # Calculate the load vector in global coordinates, using the
@@ -329,7 +316,8 @@ class DistributedMoment(Load):
         if direction == 'z':
             # TODO: 3D case
             # z-component in local coordinates
-            load_v_aux, poly_sec_force_aux = self._calc_loading_vector_local(m1, m2, length, 'z')
+            load_v_aux, poly_sec_force_aux = self._calc_loading_vector_local(
+                m1, m2, length, 'z')
             load_v += load_v_aux
             poly_sec_force += poly_sec_force_aux
             # y-component in local coordinates
@@ -350,7 +338,7 @@ class DistributedMoment(Load):
         It will then be added in the Element object to contain every contribution made to
         the element.
 
-                [ N ]  
+                [ N ]
                 [ V ] = [ 1, x, x**2, x**3 ] * S
                 [ M ]
 
@@ -371,11 +359,10 @@ class DistributedMoment(Load):
         # Determine in which case we are
         if direction == 'z':
             # Effect over the moment
-            m_sec_force[:, 2] = np.array([0., m1 + (m2-m1)/length, 0., 0. ])
+            m_sec_force[:, 2] = np.array([0., m1 + (m2 - m1) / length, 0., 0.])
         # For the case in which the loading direction is 'y'
         elif direction == 'y':
             # TODO:
             pass
 
         return m_sec_force
-

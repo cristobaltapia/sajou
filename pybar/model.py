@@ -19,8 +19,10 @@ class Model(object):
 
     def __new__(cls, name, dimensionality):
         if cls is Model:
-            if dimensionality == '2D': return super(Model, cls).__new__(Model2D)
-            if dimensionality == '3D': return super(Model, cls).__new__(Model3D)
+            if dimensionality == '2D':
+                return super(Model, cls).__new__(Model2D)
+            if dimensionality == '3D':
+                return super(Model, cls).__new__(Model3D)
         else:
             return super(Model, cls).__new__(cls, name, dimensionality)
 
@@ -44,9 +46,9 @@ class Model(object):
         self.n_beams = 0
         self.n_materials = 0
         self._connectivity = None
-        self._K = None # global stiffness matrix
-        self._P = None # load matrix
-        self._V = None # global displacement matrix
+        self._K = None  # global stiffness matrix
+        self._P = None  # load matrix
+        self._V = None  # global displacement matrix
         # Number of dimensions of the model
         self.n_dimensions = None
         # Number of dof per node. Initialized in the respective models
@@ -96,7 +98,8 @@ class Model(object):
         else:
             material_section = material
 
-        section = BeamSection(name=name, material=material_section, data=data, type=type)
+        section = BeamSection(
+            name=name, material=material_section, data=data, type=type)
         # Add section to the list of beam sections
         self.beam_sections[name] = section
 
@@ -106,15 +109,17 @@ class Model(object):
         """
         Printable string
         """
-        return str('Model: Name: {name}, Nodes: {n_nodes}, Beams: {n_beams}'.format(
-            name=self._name, n_nodes=self.n_nodes, n_beams=self.n_beams))
+        return str(
+            'Model: Name: {name}, Nodes: {n_nodes}, Beams: {n_beams}'.format(
+                name=self._name, n_nodes=self.n_nodes, n_beams=self.n_beams))
 
     def __repr__(self):
         """
         Returns the printable string for this object
         """
-        return str('Model: Name: {name}, Nodes: {n_nodes}, Beams: {n_beams}'.format(
-            name=self._name, n_nodes=self.n_nodes, n_beams=self.n_beams))
+        return str(
+            'Model: Name: {name}, Nodes: {n_nodes}, Beams: {n_beams}'.format(
+                name=self._name, n_nodes=self.n_nodes, n_beams=self.n_beams))
 
     def _generate_connectivity_table2D(self):
         """Generates the connectivity table for the model
@@ -145,50 +150,6 @@ class Model(object):
         self._connectivity = conn_matrix
 
         return conn_matrix
-
-    def _generate_connectivity_matrix2D(self):
-        """Generates the connectivity matrix 'a' (also known as incidence matrix or locator) such that,
-
-            v = a*V
-
-            where "v" correspond to the vector containing displacements at the same node
-            from different elements
-
-            "V" contains the global displacements of all DOF's
-            "a" is the incidence matrix
-
-        :returns: numpy array
-
-        """
-        # Get the total DOF per node of each element and add it
-        n_v = 0
-        #
-        for keys, elem in self.beams.items():
-            n_v += elem._dof_per_node * elem._n_nodes
-
-        # Total number of DOFs
-        num_dof = self.n_nodes * self.beams[0]._dof_per_node
-
-        # DOF per node
-        n_dof = self.n_dof_per_node
-
-        # create a zero matrix with the adequate size
-        connectivity = np.zeros([n_v, num_dof], dtype=np.float64)
-
-        # Assemble the connectivity matrix
-        for n_elem, elem in self.beams.items():
-            n_nodes = elem._n_nodes
-            for ix, node in enumerate(elem._nodes):
-                n_node = node.number
-                i1 = n_elem*n_dof*n_nodes + ix * n_dof
-                i2 = n_elem*n_dof*n_nodes + ix * n_dof + n_dof
-                j1 = n_node * n_dof
-                j2 = n_node * n_dof + n_dof
-                connectivity[i1:i2,j1:j2] = np.eye(n_dof, dtype=np.float64)
-
-        self._connectivity = connectivity
-
-        return connectivity
 
     def _assemble_global_K(self):
         """Assemble the global stiffness matrix using the addition method.
@@ -265,7 +226,9 @@ class Model(object):
             # Get the Node Freedom Signature of the current node
             nfs = node.nfs
             #
-            index_i = np.array([kx for kx in node._loads.keys()], dtype=np.int) + nfmt[node.number]
+            index_i = np.array(
+                [kx for kx in node._loads.keys()],
+                dtype=np.int) + nfmt[node.number]
             P[index_i] = np.array([kx for kx in node._loads.values()])
 
         self._P = P
@@ -313,7 +276,8 @@ class Model(object):
                         # Extend the list
                         g_i.extend(active_nodes)
                         #
-                        index_base_e = element.get_index_array_of_node(n_node_e)
+                        index_base_e = element.get_index_array_of_node(
+                            n_node_e)
                         active_nodes_e = enfs_node + index_base_e
                         g_e.extend(active_nodes_e)
 
@@ -337,13 +301,15 @@ class Model(object):
         nfmt = self.nfmt
         # Initialize a zero vector of the size of the total number of
         # dof
-        V = np.zeros(self.n_nodes*self.n_dof_per_node, dtype=np.float64)
+        V = np.zeros(self.n_nodes * self.n_dof_per_node, dtype=np.float64)
         # Assign the values corresponding to the loads in each dof
         for ix, node in self.nodes.items():
             # Get the Node Freedom Signature of the current node
             nfs = node.nfs
             #
-            index_i = np.array([kx for kx in node._bc.keys()], dtype=np.int) + nfmt[node.number]
+            index_i = np.array(
+                [kx for kx in node._bc.keys()],
+                dtype=np.int) + nfmt[node.number]
             V[index_i] = np.array([kx for kx in node._bc.values()])
             # Add to the list of restrained DOFs
             self._dof_dirichlet.extend(index_i.tolist())
@@ -400,7 +366,7 @@ class Model(object):
 
         return None
 
-    # FIXME: there has to give a 'Load' class to handle the different
+    # TODO: there has to give a 'Load' class to handle the different
     # type of loads.
     def Load(self, node, coord_system='global', **kwargs):
         """Introduces a Load in the given direction according to the selected coordinate
@@ -421,7 +387,7 @@ class Model(object):
         :returns: TODO
 
         """
-        # FIXME: currently only in global coordintaes. Implement
+        # TODO: currently only in global coordintaes. Implement
         # transformation in other coordinate systems.
 
         # Get the BC applied
@@ -536,6 +502,7 @@ class Model(object):
 
         return nfmt
 
+
 class Model2D(Model):
     """
     Subclass of the 'Model' class. It is intended to be used for the 2-dimensional
@@ -602,6 +569,7 @@ class Model2D(Model):
 
         return 1
 
+
 class Model3D(Model):
     """Subclass of the 'Model' class. It is intended to be used for the 3-dimensional
     models of frame structures."""
@@ -610,7 +578,7 @@ class Model3D(Model):
         """TODO: to be defined1. """
         dimensionality = '3D'
         Model.__init__(self, name, dimensionality)
-        self.n_dof_per_node = 6 # dof per node
+        self.n_dof_per_node = 6  # dof per node
 
     def Node(self, x, y, z):
         """3D implementation of the Node.
@@ -638,15 +606,15 @@ class Model3D(Model):
 
         return line
 
+
 class SymbolicModel2D(Model):
     """Defines a symbolic model object"""
-
 
     def __init__(self, name):
         """TODO: to be defined1. """
         dimensionality = '2D'
         Model.__init__(self, name, dimensionality)
-        self.n_dof_per_node = 3 # dof per node
+        self.n_dof_per_node = 3  # dof per node
 
     def _assemble_global_sym_K(self):
         """Assembles the global stiffness matrix using the addition method in
@@ -670,14 +638,14 @@ class SymbolicModel2D(Model):
             n2 = connect_table[n_elem, 2]
             self.beams[n_elem].assemble_sym_K()
             #
-            i1 = int(n_dof*n1)
-            i2 = int(n_dof*(n1 + 1))
-            j1 = int(n_dof*n2)
-            j2 = int(n_dof*(n2 + 1))
-            K[i1:i2,i1:i2] += self.beams[n_elem]._Ke[0:n_dof,0:n_dof]
-            K[j1:j2,j1:j2] += self.beams[n_elem]._Ke[n_dof:,n_dof:]
-            K[j1:j2,i1:i2] += self.beams[n_elem]._Ke[n_dof:,0:n_dof]
-            K[i1:i2,j1:j2] += self.beams[n_elem]._Ke[0:n_dof,n_dof:]
+            i1 = int(n_dof * n1)
+            i2 = int(n_dof * (n1 + 1))
+            j1 = int(n_dof * n2)
+            j2 = int(n_dof * (n2 + 1))
+            K[i1:i2, i1:i2] += self.beams[n_elem]._Ke[0:n_dof, 0:n_dof]
+            K[j1:j2, j1:j2] += self.beams[n_elem]._Ke[n_dof:, n_dof:]
+            K[j1:j2, i1:i2] += self.beams[n_elem]._Ke[n_dof:, 0:n_dof]
+            K[i1:i2, j1:j2] += self.beams[n_elem]._Ke[0:n_dof, n_dof:]
 
         return K
 
@@ -689,11 +657,11 @@ class SymbolicModel2D(Model):
         from sympy.matrices import zeros
         # Initialize a zero vector of the size of the total number of
         # dof
-        P = zeros(self.n_nodes*self.n_dof_per_node, 1)
+        P = zeros(self.n_nodes * self.n_dof_per_node, 1)
         # Assign the values corresponding to the loads in each dof
         for ix, node_i in self.nodes.items():
             for dof, val in node_i._loads.items():
-                ind = ix*self.n_dof_per_node + dof
+                ind = ix * self.n_dof_per_node + dof
                 P[ind] = val
 
         self._P = P
@@ -710,12 +678,12 @@ class SymbolicModel2D(Model):
         from sympy.matrices import zeros
         # Initialize a zero vector of the size of the total number of
         # dof
-        V = zeros(self.n_nodes*self.n_dof_per_node, 1)
+        V = zeros(self.n_nodes * self.n_dof_per_node, 1)
         # Assign the values corresponding to the loads in each dof
         for ix, node_i in self.nodes.items():
             for dof, val in node_i._BC.items():
                 # Compute index corresponding to the current dof
-                ind = int(ix*self.n_dof_per_node + dof)
+                ind = int(ix * self.n_dof_per_node + dof)
                 # Add value to the vector
                 V[ind] = val
                 # Add to the list of restrained DOFs
@@ -752,6 +720,7 @@ class SymbolicModel2D(Model):
 
         return line
 
+
 class ModelData(object):
     """Object to store the data of a model object. It is used to pass it to the results object"""
 
@@ -779,6 +748,7 @@ class ModelData(object):
         # Specify dofs that are not active due to border conditions
         self._dof_dirichlet = copy(model._dof_dirichlet)
 
+
 def get_dataframe_of_node_coords(model, nodes='all'):
     """Return a pandas dataframe with coordinates of selected nodes of the model
 
@@ -791,12 +761,12 @@ def get_dataframe_of_node_coords(model, nodes='all'):
     if nodes == 'all':
         nodes = [i for i, n in model.nodes.items()]
 
-    ar_coords = np.zeros((len(nodes), dimensions) , dtype=np.float)
+    ar_coords = np.zeros((len(nodes), dimensions), dtype=np.float)
     index_nodes = np.zeros(len(nodes), dtype=np.int)
 
     for ix_node, curr_node in enumerate(nodes):
         node_i = model.nodes[curr_node]
-        ar_coords[ix_node,:] = node_i.coords
+        ar_coords[ix_node, :] = node_i.coords
         index_nodes[ix_node] = curr_node
 
     # Set coordinate labels according to the model
@@ -806,7 +776,10 @@ def get_dataframe_of_node_coords(model, nodes='all'):
         index_label = ['x', 'y', 'z']
 
     # Append to the Dta Frame
-    df_coords = pd.DataFrame(data=ar_coords, index=index_nodes, dtype=np.float64,
-            columns=index_label)
+    df_coords = pd.DataFrame(
+        data=ar_coords,
+        index=index_nodes,
+        dtype=np.float64,
+        columns=index_label)
 
     return df_coords

@@ -4,8 +4,10 @@
 """
 import numpy as np
 
+
 class Node(np.ndarray):
     """3-dimensional implementation of Nodes"""
+
     def __new__(cls, x, y, z, number):
         """
         Instatiate a Node object.
@@ -94,7 +96,7 @@ class Node(np.ndarray):
         :returns: nothing FIXME
 
         """
-        self.elements[element.number] = {'element':element, 'node':node}
+        self.elements[element.number] = {'element': element, 'node': node}
 
         return 1
 
@@ -134,10 +136,13 @@ class Node(np.ndarray):
         """
         Returns the printable string for this object
         """
-        return 'Node {number}: ({x},{y},{z})'.format(number=self.number, x=self.x, y=self.y, z=self.z)
+        return 'Node {number}: ({x},{y},{z})'.format(
+            number=self.number, x=self.x, y=self.y, z=self.z)
+
 
 class Node2D(Node):
     """2-dimensional implementation of Nodes"""
+
     def __init__(self, x, y, z, number):
         """ Instatiate a Node2D instance.
         """
@@ -149,7 +154,7 @@ class Node2D(Node):
         # Indicates which degrees of freedom are active in the node
         # according to the Node Freedom Arrangement selected:
         # NFA = [v_1, v_2, r_3]
-        # 
+        #
         # All DOFs are initiated to be unused.
         self.nfs = np.zeros(self.n_dof, dtype=np.int)
 
@@ -165,5 +170,5 @@ class Node2D(Node):
         """
         Returns the printable string for this object
         """
-        return 'Node2D {number}: ({x},{y},{z})'.format(number=self.number, x=self.x, y=self.y, z=self.z)
-
+        return 'Node2D {number}: ({x},{y},{z})'.format(
+            number=self.number, x=self.x, y=self.y, z=self.z)

@@ -4,6 +4,7 @@
 properties.
 """
 
+
 class Material(object):
     """Material properties"""
 
@@ -33,4 +34,3 @@ class Material(object):
         Returns the printable string for this object
         """
         return 'Material: {name}'.format(name=self._name)
-

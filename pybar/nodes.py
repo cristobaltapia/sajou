@@ -56,10 +56,11 @@ class Node(np.ndarray):
         return obj
 
     def set_BC(self, dof, val):
-        """Adds a BC to the specified dof of the Node.
+        """
+        Adds a BC to the specified *dof* of the Node.
 
-        :dof: specified degree of freedom
-        :val: value given
+        :param dof: specified degree of freedom
+        :param val: value given
         :returns: TODO
 
         """
@@ -70,8 +71,8 @@ class Node(np.ndarray):
     def set_Load(self, dof, val):
         """Adds a Load to the specified dof of the Node.
 
-        :dof: specified degree of freedom
-        :val: value given
+        :param dof: specified degree of freedom
+        :param val: value given
         :returns: TODO
 
         """
@@ -80,7 +81,9 @@ class Node(np.ndarray):
         return 1
 
     def add_hinge(self):
-        """Method to add a hinge at the instance of the node
+        """
+        Method to add a hinge at the instance of the node
+
         :returns: TODO
 
         """
@@ -91,8 +94,8 @@ class Node(np.ndarray):
         Append the information of the beam that uses the node and the number
         in the element: 1, 2, 3,...
 
-        :beam: Beam instance
-        :node: int corresponding to the number of the node within the element
+        :param beam: Beam instance
+        :param node: int corresponding to the number of the node within the element
         :returns: nothing FIXME
 
         """

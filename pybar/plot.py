@@ -3,6 +3,7 @@
 #
 # This fil defines all the functions needed to plot the created structures and the results
 # obtained with the program.
+# TODO: plot hinges
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.patches import Polygon

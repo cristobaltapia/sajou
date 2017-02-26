@@ -3,6 +3,8 @@
 """
 Defines the model classes for 2D and 3D models.
 """
+__docformat__ = 'reStructuredText'
+
 import numpy as np
 import pandas as pd
 import scipy.sparse as sparse
@@ -10,9 +12,6 @@ import scipy.sparse as sparse
 from .materials import Material
 from .nodes import Node2D
 from .sections import BeamSection
-from .solvers import StaticSolver
-from .utils import Local_Csys_two_points
-
 
 class Model(object):
     """Defines a model object"""
@@ -65,9 +64,9 @@ class Model(object):
     def Material(self, name, data, type='isotropic'):
         """Function used to create a Material instance in the model
 
-        :name: name of the material
-        :data: data for the material
-        :type: type of the material
+        :param name: name of the material
+        :param data: data for the material
+        :param type: type of the material
         :returns: a Material instance
 
         """
@@ -82,10 +81,10 @@ class Model(object):
     def BeamSection(self, name, material, data, type='rectangular'):
         """Function use to create a BeamSection instance in the model
 
-        :name: name of the section
-        :material: material for the section
-        :data: data (see BeamSection class definition)
-        :type: type of the section (see BeamSection class definition)
+        :param name: name of the section
+        :param material: material for the section
+        :param data: data (see BeamSection class definition)
+        :param type: type of the section (see BeamSection class definition)
         :returns: a beam section instance
 
         """
@@ -319,23 +318,31 @@ class Model(object):
         return V
 
     def BC(self, node, type='displacement', coord_system='global', **kwargs):
-        """Introduces a border condition to the node.
+        """
+        Introduces a border condition to the node.
 
-        :node: a Node instance
-        :type: type of border condition
-            - Options: - 'displacement'
-                       - ...
-        :**kwargs: optional arguments. The BC is defined for the different degree of
-            freedom available to the node.
+        :param node: a Node instance
+        :param type: type of border condition
 
-            vi : translation of the i-th direction in the specified dof
-            ri : rotation of the i-th direction in the specified dof
+            - Options:
+                ``'displacement'``, ``...``
+        :param coord_system: spcifies the coordinate system
 
-            For Beam2D elements:
-                - v1, v2, r3
-            For Beam3D elements:
-                - v1, v2, v3, r1, r2, r3
-            ...
+        **Optional arguments:** (**kwargs) At least one of the following parameters must be supplied
+
+        :param v1: displacement in the direction 1
+        :param v2: displacement in the direction 2
+        :param v3: displacement in the direction 3
+        :param r1: rotation in the direction 1
+        :param r2: rotation in the direction 2
+        :param r3: rotation in the direction 3
+        :type v1: float
+        :type v2: float
+        :type v3: float
+        :type r1: float
+        :type r2: float
+        :type r3: float
+
         :returns: TODO
 
         """
@@ -372,19 +379,20 @@ class Model(object):
         """Introduces a Load in the given direction according to the selected coordinate
         system at the specified node.
 
-        :node: a Node instance
-        :**kwargs: optional arguments. The BC is defined for the different degree of
-            freedom available to the node.
+        :param node: a Node instance
+        :param coordinate: coordinate system
+        :param **kwargs: optional arguments. The BC is defined for the different degree of freedom (*dof*) available to the node.
 
-            fi : force on the i-th direction in the specified dof
-            mi : moment on the i-th direction in the specified dof
+        **Optional arguments:** (**kwargs) At least one of the following parameters must be supplied
 
-            For Beam2D elements:
-                - f1, f2, m3
-            For Beam3D elements:
-                - f1, f2, f3, m1, m2, m3
-            ...
-        :returns: TODO
+        :param f1: force in direction 1
+        :param f2: force in direction 2
+        :param f3: force in direction 3
+        :param m1: moment in direction 1
+        :param m2: moment in direction 2
+        :param m3: moment in direction 3
+
+        :returns: a Load instance
 
         """
         # TODO: currently only in global coordintaes. Implement
@@ -428,7 +436,8 @@ class Model(object):
         """Returns the node and element dof (number of the dof in a specific element)
         corresponding to the global dof given.
 
-        :dof: global DOF (integer)
+        :param dof: global *dof*
+        :type dof: int
         :returns: node, int
 
         """
@@ -443,7 +452,7 @@ class Model(object):
     def add_hinge(self, node):
         """Add hinge to the specified node. Also supports list of nodes
 
-        :node: Node instance or list of node instances
+        :param node: Node instance or list of node instances
         :returns: TODO
 
         """
@@ -524,9 +533,14 @@ class Model2D(Model):
         self.n_dof_per_node = 3
 
     def Node(self, x, y):
-        """2D implementation of the Node.
+        """
+        2D implementation of the Node.
 
-        :*kwargs: TODO
+        :param x: x position
+        :param y: y position
+        :type x: float
+        :type y: float
+
         :returns: instance of Node
 
         """
@@ -538,10 +552,11 @@ class Model2D(Model):
         return node
 
     def Beam(self, node1, node2):
-        """Define a line between two nodes.
+        """
+        Define a line between two nodes.
 
-        :node1: first node
-        :node2: second node
+        :param node1: first node
+        :param node2: second node
 
         """
         from .elements.beam2d import Beam2D
@@ -552,14 +567,19 @@ class Model2D(Model):
         return line
 
     def distributed_load(self, elements, **kwargs):
-        """Add a distributed load to a list of beam elements.
+        """
+        Add a distributed load to a list of beam elements.
         A list of elements has to be supplied for the first variable. The rest of the
         variables are exactly the same as in the 'distributed_load' function of the
         corresponding elements.
 
-        :elements: list of beams elements
-        :p1: TODO
-        :p2: TODO
+        :param elements: list of beam elements
+        :param p1: value of the force at start node
+        :param p2: value of the force at end node
+        :param direction: direction (default: *2*)
+        :param coord_system: coordinate system (default: global)
+        :type p1: float
+        :type p2: float
         :returns: TODO
 
         """

@@ -183,10 +183,10 @@ class StaticSolver(Solver):
     def calc_nodal_forces(self, result, nodal_displ, K, elem_load):
         """TODO: Docstring for calc_nodal_forces.
 
-        :result: TODO
-        :nodal_displ: TODO
-        :K: TODO
-        :elem_load: TODO
+        :param result: TODO
+        :param nodal_displ: TODO
+        :param K: TODO
+        :param elem_load: TODO
         :returns: TODO
 
         """

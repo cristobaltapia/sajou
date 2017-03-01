@@ -36,10 +36,7 @@ class Display(object):
 class Display_mpl(Display):
     """Docstring for Display_mpl. """
 
-    def __init__(self,
-                 width=10.,
-                 height=10.,
-                 theme='dark',
+    def __init__(self, width=10., height=10., theme='dark',
                  backend='matplotlib'):
         """TODO: to be defined1.
 
@@ -262,17 +259,14 @@ class Display_mpl(Display):
         if self.display_config['supports'] == True:
             for ix, node_i in model.nodes.items():
                 if len(node_i._bc) > 0:
-                    ax = self.plot_support(
-                        ax, dof=node_i._bc.keys(), at=node_i)
+                    ax = self.plot_support(ax, dof=node_i._bc.keys(),
+                                           at=node_i)
 
         ax.axis('equal')
 
         return ax
 
-    def plot_deformed_geometry(self,
-                               result,
-                               ax,
-                               show_undeformed=False,
+    def plot_deformed_geometry(self, result, ax, show_undeformed=False,
                                scale=1.):
         """Plot the system in its deformed configuration.
 
@@ -301,8 +295,8 @@ class Display_mpl(Display):
             n1 = elem._node1.number
             n2 = elem._node2.number
             # Get original coordinates of nodes
-            coords_nodes = get_dataframe_of_node_coords(
-                model=model, nodes=[n1, n2])
+            coords_nodes = get_dataframe_of_node_coords(model=model,
+                                                        nodes=[n1, n2])
             # Get displacements of the nodes
             displ_nodes = result.data['nodal displacements'].loc[[n1, n2]]
             # Calculate position of nodes after load application
@@ -313,18 +307,15 @@ class Display_mpl(Display):
         nodes = model.nodes
         if self.display_config['nodes'] == True:
             # Get original coordinates of nodes
-            coords_nodes = get_dataframe_of_node_coords(
-                model=model, nodes='all')
+            coords_nodes = get_dataframe_of_node_coords(model=model,
+                                                        nodes='all')
             # Get displacements of the nodes
             displ_nodes = result.data['nodal displacements']
             # Calculate position of nodes after load application
             deformed_nodes = coords_nodes + displ_nodes * scale
             # plot nodes
-            ax.scatter(
-                deformed_nodes['x'],
-                deformed_nodes['y'],
-                marker='o',
-                **node_options)
+            ax.scatter(deformed_nodes['x'], deformed_nodes['y'], marker='o',
+                       **node_options)
 
         if show_undeformed == True:
             ax = self.plot_geometry(model=result._model, ax=ax, ls='--')
@@ -387,12 +378,7 @@ class Display_mpl(Display):
 
         return ax
 
-    def _plot_distributed_load_element(self,
-                                       ax,
-                                       model,
-                                       element,
-                                       load,
-                                       scale=1,
+    def _plot_distributed_load_element(self, ax, model, element, load, scale=1,
                                        max_p=1):
         """Plot a distributed load at the corresponding element.
 
@@ -443,12 +429,9 @@ class Display_mpl(Display):
             for arr_i in range(len(nx)):
                 # annotate() is used instead of arrow() because the style
                 # of the arrows is better
-                ax.annotate(
-                    '',
-                    xy=(nx_e[arr_i], ny_e[arr_i]),
-                    xytext=(nx[arr_i], ny[arr_i]),
-                    arrowprops=dict(
-                        arrowstyle='->', color=force_options['color']))
+                ax.annotate('', xy=(nx_e[arr_i], ny_e[arr_i]),
+                            xytext=(nx[arr_i], ny[arr_i]), arrowprops=dict(
+                                arrowstyle='->', color=force_options['color']))
 
         elif load._direction == 'x':
             # Offset from the position of the nodes...
@@ -482,29 +465,20 @@ class Display_mpl(Display):
                 # annotate() is used instead of arrow() because the style
                 # of the arrows is better
                 if load._coord_system == 'local':
-                    ax.annotate(
-                        '',
-                        xy=(nx_e[arr_i], ny_e[arr_i]),
-                        xytext=(nx[arr_i], ny[arr_i]),
-                        arrowprops=dict(
-                            arrowstyle='->', color=force_options['color']))
+                    ax.annotate('', xy=(nx_e[arr_i], ny_e[arr_i]),
+                                xytext=(nx[arr_i], ny[arr_i]),
+                                arrowprops=dict(arrowstyle='->',
+                                                color=force_options['color']))
                 elif load._coord_system == 'global':
-                    ax.annotate(
-                        '',
-                        xy=(nx_e[arr_i], ny_e[arr_i]),
-                        xytext=(nx[arr_i], ny[arr_i]),
-                        arrowprops=dict(
-                            arrowstyle='->', color=force_options['color']))
+                    ax.annotate('', xy=(nx_e[arr_i], ny_e[arr_i]),
+                                xytext=(nx[arr_i], ny[arr_i]),
+                                arrowprops=dict(arrowstyle='->',
+                                                color=force_options['color']))
 
         return ax
 
-    def _plot_distributed_moment_element(self,
-                                         ax,
-                                         model,
-                                         element,
-                                         load,
-                                         scale=1,
-                                         max_p=1):
+    def _plot_distributed_moment_element(self, ax, model, element, load,
+                                         scale=1, max_p=1):
         """Plot a distributed load at the corresponding element.
 
         :ax: TODO
@@ -603,12 +577,12 @@ class Display_mpl(Display):
             # where positive moments are drawn 'below' the beam element.
             d = -d
             # Positive values
-            d_pos = ax_aux.fill_between(
-                x_axis, d, 0, where=d < 0, interpolate=True)
+            d_pos = ax_aux.fill_between(x_axis, d, 0, where=d < 0,
+                                        interpolate=True)
             d_pos = d_pos.get_paths()
             # Negative values
-            d_neg = ax_aux.fill_between(
-                x_axis, d, 0, where=d > 0, interpolate=True)
+            d_neg = ax_aux.fill_between(x_axis, d, 0, where=d > 0,
+                                        interpolate=True)
             d_neg = d_neg.get_paths()
 
             # Plot the patches
@@ -702,54 +676,33 @@ class Display_mpl(Display):
             else:
                 halign = 'right'
 
-            ax.annotate(
-                '{f:.2E}'.format(f=abs(val)),
-                xy=(at.x, at.y),
-                xytext=(-np.sign(val) * 50, 0),
-                color=force_options['color'],
-                ha=halign,
-                va='center',
-                textcoords='offset points',
-                arrowprops=dict(
-                    arrowstyle='->', color=force_options['color'], lw=2.5))
+            ax.annotate('{f:.2E}'.format(f=abs(val)), xy=(at.x, at.y),
+                        xytext=(-np.sign(val) * 50, 0),
+                        color=force_options['color'], ha=halign, va='center',
+                        textcoords='offset points', arrowprops=dict(
+                            arrowstyle='->', color=force_options['color'],
+                            lw=2.5))
         # Force in y direction
         elif dof == 1:
-            ax.annotate(
-                '{f:.2E}'.format(f=abs(val)),
-                xy=(at.x, at.y),
-                xytext=(0, -np.sign(val) * 50),
-                color=force_options['color'],
-                ha='center',
-                va='center',
-                textcoords='offset points',
-                arrowprops=dict(
-                    arrowstyle='->', color=force_options['color'], lw=2.5))
+            ax.annotate('{f:.2E}'.format(f=abs(val)), xy=(at.x, at.y),
+                        xytext=(0, -np.sign(val) * 50),
+                        color=force_options['color'], ha='center', va='center',
+                        textcoords='offset points', arrowprops=dict(
+                            arrowstyle='->', color=force_options['color'],
+                            lw=2.5))
         # Moment
         elif dof == 2:
-            ax.annotate(
-                '{f:.2E}'.format(f=abs(val)),
-                xy=(at.x, at.y),
-                xytext=(20, 20),
-                color=force_options['color'],
-                ha='left',
-                va='center',
-                textcoords='offset points')
+            ax.annotate('{f:.2E}'.format(f=abs(val)), xy=(at.x, at.y),
+                        xytext=(20, 20), color=force_options['color'],
+                        ha='left', va='center', textcoords='offset points')
             if np.sign(val) >= 0.:
-                ax.plot(
-                    [at.x], [at.y],
-                    marker=marker_moment_pos,
-                    markeredgecolor=force_options['color'],
-                    markerfacecolor='None',
-                    ms=40,
-                    markeredgewidth=2)
+                ax.plot([at.x], [at.y], marker=marker_moment_pos,
+                        markeredgecolor=force_options['color'],
+                        markerfacecolor='None', ms=40, markeredgewidth=2)
             else:
-                ax.plot(
-                    [at.x], [at.y],
-                    marker=marker_moment_neg,
-                    markeredgecolor=force_options['color'],
-                    markerfacecolor='None',
-                    ms=40,
-                    markeredgewidth=2)
+                ax.plot([at.x], [at.y], marker=marker_moment_neg,
+                        markeredgecolor=force_options['color'],
+                        markerfacecolor='None', ms=40, markeredgewidth=2)
 
         return ax
 
@@ -773,54 +726,33 @@ class Display_mpl(Display):
             else:
                 halign = 'right'
 
-            ax.annotate(
-                '{f:.2E}'.format(f=abs(val)),
-                xy=(at.x, at.y),
-                xytext=(-np.sign(val) * 50, 0),
-                color=force_options['color'],
-                ha=halign,
-                va='center',
-                textcoords='offset points',
-                arrowprops=dict(
-                    arrowstyle='->', color=force_options['color'], lw=2.5))
+            ax.annotate('{f:.2E}'.format(f=abs(val)), xy=(at.x, at.y),
+                        xytext=(-np.sign(val) * 50, 0),
+                        color=force_options['color'], ha=halign, va='center',
+                        textcoords='offset points', arrowprops=dict(
+                            arrowstyle='->', color=force_options['color'],
+                            lw=2.5))
         # Force in y direction
         elif dof == 1:
-            ax.annotate(
-                '{f:.2E}'.format(f=abs(val)),
-                xy=(at.x, at.y),
-                xytext=(0, -np.sign(val) * 50),
-                color=force_options['color'],
-                ha='center',
-                va='center',
-                textcoords='offset points',
-                arrowprops=dict(
-                    arrowstyle='->', color=force_options['color'], lw=2.5))
+            ax.annotate('{f:.2E}'.format(f=abs(val)), xy=(at.x, at.y),
+                        xytext=(0, -np.sign(val) * 50),
+                        color=force_options['color'], ha='center', va='center',
+                        textcoords='offset points', arrowprops=dict(
+                            arrowstyle='->', color=force_options['color'],
+                            lw=2.5))
         # Moment
         elif dof == 2:
-            ax.annotate(
-                '{f:.2E}'.format(f=abs(val)),
-                xy=(at.x, at.y),
-                xytext=(20, 20),
-                color=force_options['color'],
-                ha='left',
-                va='center',
-                textcoords='offset points')
+            ax.annotate('{f:.2E}'.format(f=abs(val)), xy=(at.x, at.y),
+                        xytext=(20, 20), color=force_options['color'],
+                        ha='left', va='center', textcoords='offset points')
             if np.sign(val) >= 0.:
-                ax.plot(
-                    [at.x], [at.y],
-                    marker=marker_moment_pos,
-                    markeredgecolor=force_options['color'],
-                    markerfacecolor='None',
-                    ms=40,
-                    markeredgewidth=2)
+                ax.plot([at.x], [at.y], marker=marker_moment_pos,
+                        markeredgecolor=force_options['color'],
+                        markerfacecolor='None', ms=40, markeredgewidth=2)
             else:
-                ax.plot(
-                    [at.x], [at.y],
-                    marker=marker_moment_neg,
-                    markeredgecolor=force_options['color'],
-                    markerfacecolor='None',
-                    ms=40,
-                    markeredgewidth=2)
+                ax.plot([at.x], [at.y], marker=marker_moment_neg,
+                        markeredgecolor=force_options['color'],
+                        markerfacecolor='None', ms=40, markeredgewidth=2)
 
         return ax
 

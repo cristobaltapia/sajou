@@ -172,11 +172,8 @@ class StaticSolver(Solver):
         index_label = ['x', 'y']
 
         # Create the data frame
-        df_nodal_displ = pd.DataFrame(
-            data=ar_nodal_displ,
-            index=index_nodes,
-            dtype=np.float64,
-            columns=index_label)
+        df_nodal_displ = pd.DataFrame(data=ar_nodal_displ, index=index_nodes,
+                                      dtype=np.float64, columns=index_label)
 
         return df_nodal_displ
 
@@ -211,11 +208,8 @@ class StaticSolver(Solver):
         index_label = ['fx', 'fy', 'mz']
 
         # Create the data frame
-        df_nodal_forces = pd.DataFrame(
-            data=ar_nodal_forces,
-            index=index_nodes,
-            dtype=np.float64,
-            columns=index_label)
+        df_nodal_forces = pd.DataFrame(data=ar_nodal_forces, index=index_nodes,
+                                       dtype=np.float64, columns=index_label)
 
         result.add_result('nodal forces', df_nodal_forces)
 

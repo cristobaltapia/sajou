@@ -3,8 +3,8 @@
 import numpy as np
 import scipy.sparse as sparse
 
-class CoordSys(object):
 
+class CoordSys(object):
     """Class implementing coordinating systems"""
 
     def __init__(self, type='cartesian'):
@@ -14,13 +14,15 @@ class CoordSys(object):
             - 'cartesian'
             - 'cylindrical'
             - 'spherical'
+
         """
         self._type = type
 
     def from_cart_to_cylindric(self, cart_csys):
-        """Transforms coordinates from cartesian to polar coordinates
+        """
+        Transform coordinates from cartesian to polar coordinates
 
-        :cart_csys: TODO
+        :param cart_csys: TODO
         :returns: TODO
 
         """
@@ -36,23 +38,30 @@ class CoordSys(object):
         pass
 
     def calc_transformation_matrix(self, length, cx, cy, cz):
-        """Calculates the transformation matrix for the current instance of local system
+        """
+        Calculates the transformation matrix for the current instance of local system
+
+        :param length:
+        :param cx:
+        :param cy:
+        :param cz:
+
         :returns: TODO
 
         """
         # TODO: implement for 3D
-        T = np.zeros([6,6], dtype=np.float64)
+        T = np.zeros([6, 6], dtype=np.float64)
 
-        T[0,0] = cx
-        T[0,1] = cy
-        T[1,0] = -cy
-        T[1,1] = cx
-        T[2,2] = 1
-        T[3,3] = cx
-        T[3,4] = cy
-        T[4,3] = -cy
-        T[4,4] = cx
-        T[5,5] = 1
+        T[0, 0] = cx
+        T[0, 1] = cy
+        T[1, 0] = -cy
+        T[1, 1] = cx
+        T[2, 2] = 1
+        T[3, 3] = cx
+        T[3, 4] = cy
+        T[4, 3] = -cy
+        T[4, 4] = cx
+        T[5, 5] = 1
 
         # sparse form
         T_s = sparse.csr_matrix(T)
@@ -60,19 +69,15 @@ class CoordSys(object):
         return T_s
 
     def __str__(self):
-        """
-        Returns the printable string for this object
-        """
+        """Returns the printable string for this object"""
         return 'CSys {t}'.format(t=self._type)
 
     def __repr__(self):
-        """
-        Returns the printable string for this object
-        """
+        """Returns the printable string for this object."""
         return 'CSys {t}'.format(t=self._type)
 
-class Local_Csys_two_points(CoordSys):
 
+class Local_Csys_two_points(CoordSys):
     """Class implementing local coordinate systems"""
 
     def __init__(self, point1, point2, type='cartesian'):
@@ -113,23 +118,20 @@ class Local_Csys_two_points(CoordSys):
         # vector in the 2nd direction
         v3 = np.cross(v1, v2)
         # store in the instance
-        self.coord_system = np.array((v1,v2,v3), dtype=np.float64).T
+        self.coord_system = np.array((v1, v2, v3), dtype=np.float64).T
         # create matrix
-        transformation_matrix = np.vstack((v1/np.linalg.norm(v1), v2/np.linalg.norm(v2), v3/np.linalg.norm(v3))).T
+        transformation_matrix = np.vstack(
+            (v1 / np.linalg.norm(v1), v2 / np.linalg.norm(v2), v3 /
+             np.linalg.norm(v3))).T
 
-        self._v1 = transformation_matrix[0,:]
-        self._v2 = transformation_matrix[1,:]
-        self._v3 = transformation_matrix[2,:]
+        self._v1 = transformation_matrix[0, :]
+        self._v2 = transformation_matrix[1, :]
+        self._v3 = transformation_matrix[2, :]
 
     def __str__(self):
-        """
-        Returns the printable string for this object
-        """
+        """Returns the printable string for this object."""
         return 'Coordinate System: \n {coord}'.format(coord=self.coord_system)
 
     def __repr__(self):
-        """
-        Returns the printable string for this object
-        """
+        """Returns the printable string for this object."""
         return 'Coordinate System: \n {coord}'.format(coord=self.coord_system)
-

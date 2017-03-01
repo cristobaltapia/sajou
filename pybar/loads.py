@@ -48,8 +48,8 @@ class DistributedLoad(Load):
         if coord_system == 'local':
             self._localCSys = elem._localCSys
         elif coord_system == 'global':
-            self._localCSys = Local_Csys_two_points(
-                point1=(0., 0., 0.), point2=(1., 0., 0.))
+            self._localCSys = Local_Csys_two_points(point1=(0., 0., 0.),
+                                                    point2=(1., 0., 0.))
 
         # Detect if distribution is a varying distributed load or not
         if p2 == None:

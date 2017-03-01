@@ -13,6 +13,7 @@ from .materials import Material
 from .nodes import Node2D
 from .sections import BeamSection
 
+
 class Model(object):
     """Defines a model object"""
 
@@ -97,8 +98,8 @@ class Model(object):
         else:
             material_section = material
 
-        section = BeamSection(
-            name=name, material=material_section, data=data, type=type)
+        section = BeamSection(name=name, material=material_section, data=data,
+                              type=type)
         # Add section to the list of beam sections
         self.beam_sections[name] = section
 
@@ -225,9 +226,8 @@ class Model(object):
             # Get the Node Freedom Signature of the current node
             nfs = node.nfs
             #
-            index_i = np.array(
-                [kx for kx in node._loads.keys()],
-                dtype=np.int) + nfmt[node.number]
+            index_i = np.array([kx for kx in node._loads.keys()],
+                               dtype=np.int) + nfmt[node.number]
             P[index_i] = np.array([kx for kx in node._loads.values()])
 
         self._P = P
@@ -306,9 +306,8 @@ class Model(object):
             # Get the Node Freedom Signature of the current node
             nfs = node.nfs
             #
-            index_i = np.array(
-                [kx for kx in node._bc.keys()],
-                dtype=np.int) + nfmt[node.number]
+            index_i = np.array([kx for kx in node._bc.keys()],
+                               dtype=np.int) + nfmt[node.number]
             V[index_i] = np.array([kx for kx in node._bc.values()])
             # Add to the list of restrained DOFs
             self._dof_dirichlet.extend(index_i.tolist())
@@ -682,10 +681,7 @@ def get_dataframe_of_node_coords(model, nodes='all'):
         index_label = ['x', 'y', 'z']
 
     # Append to the Dta Frame
-    df_coords = pd.DataFrame(
-        data=ar_coords,
-        index=index_nodes,
-        dtype=np.float64,
-        columns=index_label)
+    df_coords = pd.DataFrame(data=ar_coords, index=index_nodes,
+                             dtype=np.float64, columns=index_label)
 
     return df_coords

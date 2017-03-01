@@ -5,8 +5,8 @@
 import numpy as np
 import pandas as pd
 
-class Postprocess(object):
 
+class Postprocess(object):
     """Class for managing the postprocessing of results."""
 
     def __init__(self, result):
@@ -17,13 +17,14 @@ class Postprocess(object):
         """
         self._result = result
         self._model = result._model
-        
-    def calc_axial_at(self, pos, element, unit_length=False):
-        """Calculate the axial force of element at position x.
 
-        :pos: TODO
-        :element: TODO
-        :unit_length: boolean. Defines whether the range is [0, 1] or [0, Le] (default)
+    def calc_axial_at(self, pos, element, unit_length=False):
+        """
+        Calculate the axial force of element at position x.
+
+        :param pos: TODO
+        :param element: TODO
+        :param unit_length: boolean. Defines whether the range is [0, 1] or [0, Le] (default)
         :returns: TODO
 
         """
@@ -35,24 +36,20 @@ class Postprocess(object):
         else:
             x_l = pos
 
-        x_l = np.array(
-                [np.ones(pos.shape),
-                x_l,
-                x_l**2,
-                x_l**3]
-                ).T
+        x_l = np.array([np.ones(pos.shape), x_l, x_l**2, x_l**3]).T
 
         # Calculate moment
-        axial = x_l @ element._poly_sec_force[:,0]
+        axial = x_l @ element._poly_sec_force[:, 0]
 
         return axial
 
     def calc_shear_at(self, pos, element, unit_length=False):
-        """Calculate the shear force of element at position x.
+        """
+        Calculate the shear force of element at position x.
 
-        :pos: TODO
-        :element: TODO
-        :unit_length: boolean. Defines whether the range is [0, 1] or [0, Le] (default)
+        :param pos: TODO
+        :param element: TODO
+        :param unit_length: boolean. Defines whether the range is [0, 1] or [0, Le] (default)
         :returns: TODO
 
         """
@@ -64,24 +61,20 @@ class Postprocess(object):
         else:
             x_l = pos
 
-        x_l = np.array(
-                [np.ones(pos.shape),
-                x_l,
-                x_l**2,
-                x_l**3]
-                ).T
+        x_l = np.array([np.ones(pos.shape), x_l, x_l**2, x_l**3]).T
 
         # Calculate moment
-        shear = x_l @ element._poly_sec_force[:,1]
+        shear = x_l @ element._poly_sec_force[:, 1]
 
         return shear
 
     def calc_moment_at(self, pos, element, unit_length=False):
-        """Calculate the moment of element at position x.
+        """
+        Calculate the moment of element at position x.
 
-        :pos: TODO
-        :element: TODO
-        :unit_length: boolean. Defines whether the range is [0, 1] or [0, Le] (default)
+        :param pos: TODO
+        :param element: TODO
+        :param unit_length: boolean. Defines whether the range is [0, 1] or [0, Le] (default)
         :returns: TODO
 
         """
@@ -93,24 +86,20 @@ class Postprocess(object):
         else:
             x_l = pos
 
-        x_l = np.array(
-                [np.ones(pos.shape),
-                x_l,
-                x_l**2,
-                x_l**3]
-                ).T
+        x_l = np.array([np.ones(pos.shape), x_l, x_l**2, x_l**3]).T
 
         # Calculate moment
-        moment = x_l @ element._poly_sec_force[:,2]
+        moment = x_l @ element._poly_sec_force[:, 2]
 
         return moment
 
     def calc_all_internal_forces(self, n=11):
-        """Compute the internal forces at every element of the model.
+        """
+        Compute the internal forces at every element of the model.
         The number of points on which the internal forces are evaluated in each element
         are set by the variable 'n' (default n=11).
 
-        :n: number of points at which the internal forces are evaluated. Must grater than
+        :param n: number of points at which the internal forces are evaluated. Must grater than
         2 (n>=2)
         :returns: TODO
 
@@ -132,26 +121,41 @@ class Postprocess(object):
             pos = np.linspace(0, 1, n, dtype=np.float64) * curr_element._length
             # call a function to calculate the internal forces in a
             # single element
-            moment = self.calc_internal_force_element(curr_element, pos, component='moment')
-            shear = self.calc_internal_force_element(curr_element, pos, component='shear')
-            axial = self.calc_internal_force_element(curr_element, pos, component='axial')
+            moment = self.calc_internal_force_element(curr_element, pos,
+                                                      component='moment')
+            shear = self.calc_internal_force_element(curr_element, pos,
+                                                     component='shear')
+            axial = self.calc_internal_force_element(curr_element, pos,
+                                                     component='axial')
 
             # TODO: rest of the internal forces (shear and axial)
-            res_moment = {'moment':{'data':moment, 'x':pos},
-                          'shear': {'data':shear,  'x':pos},
-                          'axial': {'data':axial,  'x':pos},
-                          }
+            res_moment = {
+                'moment': {
+                    'data': moment,
+                    'x': pos
+                },
+                'shear': {
+                    'data': shear,
+                    'x': pos
+                },
+                'axial': {
+                    'data': axial,
+                    'x': pos
+                },
+            }
             #
             internal_forces[num_e] = res_moment
             # Calculate max and min
-            max_internal_force[num_e] = {'moment':np.max(moment),
-                                         'shear': np.max(shear),
-                                         'axial': np.max(axial)
-                                         }
-            min_internal_force[num_e] = {'moment':np.min(moment),
-                                         'shear': np.min(shear),
-                                         'axial': np.min(axial)
-                                         }
+            max_internal_force[num_e] = {
+                'moment': np.max(moment),
+                'shear': np.max(shear),
+                'axial': np.max(axial)
+            }
+            min_internal_force[num_e] = {
+                'moment': np.min(moment),
+                'shear': np.min(shear),
+                'axial': np.min(axial)
+            }
 
         # Get the maximum of the system
         max_df = pd.DataFrame(max_internal_force)
@@ -163,10 +167,11 @@ class Postprocess(object):
         max_force = max(max_internal_force)
         min_force = min(min_internal_force)
         # Create dictionary with the maximum and minimum data
-        min_max_internal_forces = {'min': min_internal_force,
-                                   'max': max_internal_force,
-                                   'system abs max': abs_max
-                                   }
+        min_max_internal_forces = {
+            'min': min_internal_force,
+            'max': max_internal_force,
+            'system abs max': abs_max
+        }
 
         # Add results to Result object
         result = self._result
@@ -176,17 +181,20 @@ class Postprocess(object):
 
         return internal_forces
 
-    def calc_internal_force_element(self, element, pos, component, unit_length=False):
-        """Compute the internal forces of a given element.
+    def calc_internal_force_element(self, element, pos, component,
+                                    unit_length=False):
+        """
+        Compute the internal forces of a given element.
         The variable 'pos' defines te position where the internal force is calculated. It
         can also be an array, specifying different positions at which the internal forces
         are needed.
 
-        :element: a Beam instance
-        :pos: position of evaluation (float or array)
-        :component: TODO
-        :unit_length: bool, sets wheather the local coordinate 'x' of the beam move between [0,1]
+        :param element: a Beam instance
+        :param pos: position of evaluation (float or array)
+        :param component: TODO
+        :param unit_length: bool, sets wheather the local coordinate 'x' of the beam move between [0,1]
                or [0,Le]
+
         :returns: TODO
 
         """
@@ -200,13 +208,13 @@ class Postprocess(object):
         return internal_force
 
     def calc_all_deflections(self, n=11):
-        """Compute the deflections of every element in the model.
+        """
+        Compute the deflections of every element in the model.
         The number of points at whicn the deflections are calculated is specified in the
         variable 'n' (default n=11).
 
-        :n: number of points at which the deflections are copmuted
+        :param n: number of points at which the deflections are copmuted
         :returns: TODO
 
         """
         pass
-

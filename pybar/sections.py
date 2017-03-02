@@ -4,6 +4,7 @@
 """
 import numpy as np
 
+
 class BeamSection(object):
     """Defines a beam section"""
 
@@ -36,7 +37,7 @@ class BeamSection(object):
 
         """
         if self._type == 'rectangular':
-            props = {'width':self._data[0], 'height':self._data[1]}
+            props = {'width': self._data[0], 'height': self._data[1]}
         else:
             props = 'undefined'
 
@@ -66,7 +67,7 @@ class BeamSection(object):
             return self._data[0]
 
         elif type == 'circular':
-            radius = self._adta[0]
+            radius = self._data[0]
             return np.pi * radius**2
 
     def calc_inertia(self):
@@ -83,17 +84,18 @@ class BeamSection(object):
             I_y = height * width**3 / 12.
             return I_z, I_y
         elif type == 'general':
-            return self._data[1] , 0
+            return self._data[1], 0
 
     def __str__(self):
         """
         Returns the printable string for this object
         """
-        return 'Beam Section: {name}, type: {t}'.format(name=self._name, t=self._type)
+        return 'Beam Section: {name}, type: {t}'.format(name=self._name,
+                                                        t=self._type)
 
     def __repr__(self):
         """
         Returns the printable string for this object
         """
-        return 'Beam Section: {name}, type: {t}'.format(name=self._name, t=self._type)
-
+        return 'Beam Section: {name}, type: {t}'.format(name=self._name,
+                                                        t=self._type)

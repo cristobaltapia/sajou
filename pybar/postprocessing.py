@@ -31,7 +31,7 @@ class Postprocess(object):
         # FIXME: verify first if 'pos' is array
         pos = np.array(pos)
         # Decide which data to use
-        if unit_length == True:
+        if unit_length:
             x_l = pos * element._length
         else:
             x_l = pos
@@ -56,7 +56,7 @@ class Postprocess(object):
         # FIXME: verify first if 'pos' is array
         pos = np.array(pos)
         # Decide which data to use
-        if unit_length == True:
+        if unit_length:
             x_l = pos * element._length
         else:
             x_l = pos

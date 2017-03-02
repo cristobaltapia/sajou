@@ -9,9 +9,9 @@ import numpy as np
 import pandas as pd
 import scipy.sparse as sparse
 
-from .materials import Material
-from .nodes import Node2D
-from .sections import BeamSection
+from pybar.materials import Material
+from pybar.nodes import Node2D
+from pybar.sections import BeamSection
 
 
 class Model(object):

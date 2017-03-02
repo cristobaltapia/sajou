@@ -1,11 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import numpy as np
-import scipy.sparse as sparse
-from scipy.sparse.linalg import dsolve
 import pandas as pd
+import scipy.sparse as sparse
+from pybar.postprocessing import Postprocess
 from scipy.linalg import lu_factor, lu_solve
-from .postprocessing import Postprocess
+from scipy.sparse.linalg import dsolve
+
+
 #import scipy as sp
 """ This module contains the different solvers used by the program.
 """

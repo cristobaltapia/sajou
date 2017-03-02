@@ -2,11 +2,10 @@
 # -*- coding: utf-8 -*-
 import numpy as np
 import scipy.sparse as sparse
-
+from numpy import cumsum
 from pybar import loads
 from pybar.elements.element import Element
 from pybar.utils import Local_Csys_two_points
-from numpy import cumsum
 
 
 class Beam2D(Element):

@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+
 class Element(object):
     """Generic Element object. Parent class for the 2D and 3D implementation."""
 
@@ -17,12 +18,11 @@ class Element(object):
         """
         Returns the printable string for this object
         """
-        return 'Beam {number}: (N{n1}, N{n2})'.format(number=self.number,
-                n1=self._node1.number, n2=self._node2.number)
+        return 'Beam {number}: (N{n1}, N{n2})'.format(
+            number=self.number, n1=self._node1.number, n2=self._node2.number)
 
     def __repr__(self):
         """
         Returns the printable string for this object
         """
         return 'Beam {number}'.format(number=self.number)
-

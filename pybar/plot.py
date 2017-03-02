@@ -4,12 +4,12 @@
 # This fil defines all the functions needed to plot the created structures and the results
 # obtained with the program.
 # TODO: plot hinges
-import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib.patches import Polygon
-from matplotlib.axes import Axes
-from matplotlib.path import Path
+import numpy as np
 import seaborn.apionly as sns
+from matplotlib.axes import Axes
+from matplotlib.patches import Polygon
+from matplotlib.path import Path
 
 
 class Display(object):
@@ -243,12 +243,12 @@ class Display_mpl(Display):
             ax.plot([n1.x, n2.x], [n1.y, n2.y], **elem_options, ls=ls)
 
         nodes = model.nodes
-        if self.display_config['nodes'] == True:
+        if self.display_config['nodes']:
             for num, node in nodes.items():
                 ax.scatter(node.x, node.y, marker='o', **node_options)
 
         # Plot forces if requiered
-        if show_loads == True:
+        if show_loads:
             for ix, node_i in model.nodes.items():
                 for dof, val in node_i._loads.items():
                     ax = self.plot_nodal_force(ax, dof, at=node_i, val=val)
@@ -256,7 +256,7 @@ class Display_mpl(Display):
             ax = self.plot_element_loads(ax, model)
 
         # Plot supports
-        if self.display_config['supports'] == True:
+        if self.display_config['supports']:
             for ix, node_i in model.nodes.items():
                 if len(node_i._bc) > 0:
                     ax = self.plot_support(ax, dof=node_i._bc.keys(),
@@ -276,7 +276,7 @@ class Display_mpl(Display):
         :returns: matplotlib axis
 
         """
-        from .model import get_dataframe_of_node_coords
+        from pybar.model import get_dataframe_of_node_coords
         #
         node_options = self.draw_config['node']
         elem_options = self.draw_config['element']
@@ -305,7 +305,7 @@ class Display_mpl(Display):
             ax.plot(deformed_nodes['x'], deformed_nodes['y'], **elem_options)
 
         nodes = model.nodes
-        if self.display_config['nodes'] == True:
+        if self.display_config['nodes']:
             # Get original coordinates of nodes
             coords_nodes = get_dataframe_of_node_coords(model=model,
                                                         nodes='all')
@@ -317,7 +317,7 @@ class Display_mpl(Display):
             ax.scatter(deformed_nodes['x'], deformed_nodes['y'], marker='o',
                        **node_options)
 
-        if show_undeformed == True:
+        if show_undeformed:
             ax = self.plot_geometry(model=result._model, ax=ax, ls='--')
 
         ax.axis('equal')
@@ -603,7 +603,7 @@ class Display_mpl(Display):
                 ax.add_patch(poly_neg)
 
         # Plot reaction forces
-        if self.display_config['reactions'] == True:
+        if self.display_config['reactions']:
             for ix, node_i in model.nodes.items():
                 for dof, val in node_i.reactions.items():
                     ax = self.plot_nodal_reaction(ax, dof, at=node_i, val=val)

@@ -5,7 +5,8 @@ transfered accordingly to the respective nodes.
 """
 import numpy as np
 import scipy.sparse as sparse
-from .utils import Local_Csys_two_points
+
+from pybar.utils import Local_Csys_two_points
 
 
 class Load(object):
@@ -52,7 +53,7 @@ class DistributedLoad(Load):
                                                     point2=(1., 0., 0.))
 
         # Detect if distribution is a varying distributed load or not
-        if p2 == None:
+        if p2 is None:
             self.is_uniform = True
             p2 = p1
             self._p2 = p1

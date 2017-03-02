@@ -15,7 +15,54 @@ from pybar.sections import BeamSection
 
 
 class Model(object):
-    """Defines a model object"""
+    """Defines a model object
+
+    Parameters
+    ----------
+    name: str
+        name of the model
+    dimensionality: str
+        spacial dimensions used in the model ('2D' or '3D')
+
+    Attributes
+    ----------
+    nfat: dict
+        Node Freedom Allocation Table
+    nodes: dict
+        dictionary with all the nodes of the system
+    beams: dict
+        dictionary with all the beams of the system
+    beam_sections: dict
+        dictionary with the beam sections defined in the model
+    materials: dict
+        dictionary with the materials defined in the model
+    n_nodes: int
+        number of nodes of the system
+    n_beams: int
+        number of beams in the system
+    n_materials: int
+        number of materials defined
+    n_dimensions: int
+        number of spacial dimensions of the model
+    n_dof_per_node: int
+        number of degrees of freedom per node
+    _name: str
+        name of the model
+    _dimensionality: str
+        spacial dimensions used in the model
+    _K: numpy.array
+        global stiffness matrix
+    _P: numpy.array
+        global load vector
+    _V: numpy.array
+        global displacement vector
+    _dof_dirichlet: list
+        number of degrees of freedom with Dirichlet border conditions
+    _nfmt: dict
+        Node Freedom Map Table
+
+
+    """
 
     def __new__(cls, name, dimensionality):
         if cls is Model:
@@ -29,8 +76,10 @@ class Model(object):
     def __init__(self, name, dimensionality):
         """Initialization of model instance.
 
-        :name: TODO
-        :dimensionality: TODO
+        Parameters
+        ----------
+        param name: TODO
+        dimensionality: TODO
 
         """
         self._name = name
@@ -45,7 +94,6 @@ class Model(object):
         self.n_nodes = 0
         self.n_beams = 0
         self.n_materials = 0
-        self._connectivity = None
         self._K = None  # global stiffness matrix
         self._P = None  # load matrix
         self._V = None  # global displacement matrix
@@ -65,10 +113,19 @@ class Model(object):
     def Material(self, name, data, type='isotropic'):
         """Function used to create a Material instance in the model
 
-        :param name: name of the material
-        :param data: data for the material
-        :param type: type of the material
-        :returns: a Material instance
+        Parameters
+        ----------
+        name: str
+            name of the material
+        data:
+            data for the material
+        type: str
+            type of the material
+
+        Returns
+        -------
+        pybar.Material
+            a Material instance
 
         """
         material = Material(name=name, data=data, type=type)
@@ -82,11 +139,20 @@ class Model(object):
     def BeamSection(self, name, material, data, type='rectangular'):
         """Function use to create a BeamSection instance in the model
 
-        :param name: name of the section
-        :param material: material for the section
-        :param data: data (see BeamSection class definition)
-        :param type: type of the section (see BeamSection class definition)
-        :returns: a beam section instance
+        Parameters
+        ----------
+        name: str
+            name of the section
+        material: pybar.Material
+            material for the section
+        data:
+            data (see BeamSection class definition)
+        type:
+            type of the section (see BeamSection class definition)
+        Returns
+        -------
+        returns
+            a beam section instance
 
         """
         # The material can be passed both as a string, corresponding to
@@ -121,39 +187,13 @@ class Model(object):
             'Model: Name: {name}, Nodes: {n_nodes}, Beams: {n_beams}'.format(
                 name=self._name, n_nodes=self.n_nodes, n_beams=self.n_beams))
 
-    def _generate_connectivity_table2D(self):
-        """Generates the connectivity table for the model
-        :returns: numpy array
-
-
-                element | N1 | N2
-                ------------------
-        row -->   0     | 0  |  1
-                  1     | 1  |  2
-                  2     | 0  |  3
-                  .       .     .
-                  .       .     .
-                  .       .     .
-                  9     | 3  |  4
-
-        """
-        # Connectivity matrix for the Beams
-        conn_matrix = np.zeros((len(self.beams), 3), dtype=np.float64)
-        #
-        count = 0
-        for num, curr_line in self.beams.items():
-            conn_matrix[count, 0] = curr_line.number
-            conn_matrix[count, 1] = curr_line._node1.number
-            conn_matrix[count, 2] = curr_line._node2.number
-            count += 1
-
-        self._connectivity = conn_matrix
-
-        return conn_matrix
-
     def _assemble_global_K(self):
         """Assemble the global stiffness matrix using the addition method.
-        :returns: numpy array
+
+        Returns
+        -------
+        numpy.array
+           Global stiffness matrix of the system
 
         """
         # Generate Node Freedom Al[location Table and total number of
@@ -211,7 +251,11 @@ class Model(object):
 
     def _generate_loading_vector(self):
         """Generate the global matrix of applied forces P.
-        :returns: numpy array
+
+        Returns
+        -------
+        numpy.array
+            Loading vector of the system
 
         """
         # number of dof per node
@@ -236,7 +280,11 @@ class Model(object):
 
     def _generate_element_loading_vector(self):
         """Generate the global element vector of forces.
-        :returns: numpy array
+
+        Returns
+        -------
+        numpy.array
+            Loading vector of the system
 
         """
         # number of dof per node
@@ -288,10 +336,13 @@ class Model(object):
         return P
 
     def _generate_displacement_vector(self):
-        """This function generates the global displacement matrix V, containing the border
+        """Generate the global displacement matrix V, containing the border
         conditions applied to each dof.
 
-        :returns: numpy array
+        Returns
+        -------
+        numpy.array
+            Dsiplacement vector of the system
 
         """
         # number of dof per node
@@ -317,32 +368,42 @@ class Model(object):
         return V
 
     def BC(self, node, type='displacement', coord_system='global', **kwargs):
-        """
-        Introduces a border condition to the node.
+        """Introduces a border condition to the node.
 
-        :param node: a Node instance
-        :param type: type of border condition
+        Parameters
+        ----------
+        node: pybar.Node
+            Node to which the border condition will be applied
+        type: str
+            type of border condition
 
             - Options:
                 ``'displacement'``, ``...``
-        :param coord_system: spcifies the coordinate system
+        coord_system:
+            spcifies the coordinate system to be used when applying the BC
+        **kwargs:
+            keyword arguments. At least one of the following parameters must
+            be supplied::
 
-        **Optional arguments:** (**kwargs) At least one of the following parameters must be supplied
+        Keyword Arguments
+        -----------------
+        v1: float
+            displacement in the direction 1
+        v2: float
+            displacement in the direction 2
+        v3: float
+            displacement in the direction 3
+        r1: float
+            rotation in the direction 1
+        r2: float
+            rotation in the direction 2
+        r3: float
+            rotation in the direction 3
 
-        :param v1: displacement in the direction 1
-        :param v2: displacement in the direction 2
-        :param v3: displacement in the direction 3
-        :param r1: rotation in the direction 1
-        :param r2: rotation in the direction 2
-        :param r3: rotation in the direction 3
-        :type v1: float
-        :type v2: float
-        :type v3: float
-        :type r1: float
-        :type r2: float
-        :type r3: float
-
-        :returns: TODO
+        Returns
+        -------
+        bool
+            True if successful
 
         """
         # TODO: currently only in global coordintaes. Implement
@@ -370,7 +431,7 @@ class Model(object):
                 if curr_bc is not None:
                     node.set_BC(dof=dof, val=curr_bc)
 
-        return None
+        return True
 
     # TODO: there has to give a 'Load' class to handle the different
     # type of loads.
@@ -378,20 +439,36 @@ class Model(object):
         """Introduces a Load in the given direction according to the selected coordinate
         system at the specified node.
 
-        :param node: a Node instance
-        :param coordinate: coordinate system
-        :param **kwargs: optional arguments. The BC is defined for the different degree of freedom (*dof*) available to the node.
+        Parameters
+        ----------
+        node: pybar.Node
+            a Node instance
+        coordinate:
+            coordinate system
+        **kwargs:
+            keyword arguments. The BC is defined for the different degree of
+            freedom (*dof*) available to the node.
+            At least one of the following parameters must be supplied::
 
-        **Optional arguments:** (**kwargs) At least one of the following parameters must be supplied
+        Keyword Arguments
+        -----------------
+        f1: float
+            force in direction 1
+        f2: float
+            force in direction 2
+        f3: float
+            force in direction 3
+        m1: float
+            moment in direction 1
+        m2: float
+            moment in direction 2
+        m3: float
+            moment in direction 3
 
-        :param f1: force in direction 1
-        :param f2: force in direction 2
-        :param f3: force in direction 3
-        :param m1: moment in direction 1
-        :param m2: moment in direction 2
-        :param m3: moment in direction 3
-
-        :returns: a Load instance
+        Returns
+        -------
+        pybar.Load
+            the instance of the Load object created
 
         """
         # TODO: currently only in global coordintaes. Implement
@@ -424,7 +501,11 @@ class Model(object):
     def export_model_data(self):
         """Export all the data of the model. This means the nodes, elements,
         border conditions and forces are exported to a ModelData object.
-        :returns: TODO
+
+        Returns
+        -------
+        pybar.model.ModelData
+            the data of the whole analyzed model
 
         """
         model_data = ModelData(self)
@@ -432,12 +513,22 @@ class Model(object):
         return model_data
 
     def get_node_and_dof(self, dof):
-        """Returns the node and element dof (number of the dof in a specific element)
+        """Return the node and element dof (number of the dof in a specific element)
         corresponding to the global dof given.
 
-        :param dof: global *dof*
-        :type dof: int
-        :returns: node, int
+        Parameters
+        ----------
+        dof: int
+            global *dof*
+
+        Returns
+        -------
+        pybar.Node
+            Node correpsonding to the *dof* specified
+        int
+            number of the *dof* of the element corresponding to the global
+            *dof* supplied
+
 
         """
         # Get the node
@@ -451,9 +542,19 @@ class Model(object):
     def add_hinge(self, node):
         """Add hinge to the specified node. Also supports list of nodes
 
-        :param node: Node instance or list of node instances
-        :returns: TODO
+        Parameters
+        ----------
+        node: pybar.Node
+            Node instance or list of node instances
 
+        Returns
+        -------
+        bool
+            TODO
+
+        Todo
+        ----
+        This function still needs work
         """
         #FIXME: not yet implemented!
         if isinstance(node, list):
@@ -461,6 +562,8 @@ class Model(object):
                 node_i.add_hinge()
         else:
             node.add_hinge()
+
+        return True
 
     def __generate_node_freedom_allocation_dict__(self):
         """
@@ -472,7 +575,10 @@ class Model(object):
         Also counts the total number of active DOFs of the system and stores it on the
         variable self.n_active_dof
 
-        :returns: a dictionary
+        Returns
+        -------
+        dict
+            the Node Freedom Allocation Table of the system
 
         """
         n_active_dof = 0
@@ -496,7 +602,10 @@ class Model(object):
         It is assumed that the Node Freedom Allocation Table has already been generated
         using the function __generate_node_freedom_allocation_dict__().
 
-        :returns: TODO
+        Returns
+        -------
+        numpy.array
+            TODO
 
         """
         from numpy import cumsum
@@ -520,10 +629,22 @@ class Model2D(Model):
 
             [1 2 3] = [ux, uy, rz]
 
+    Parameters
+    ----------
+    name: str
+        name of the model
+
+    Attributes
+    ----------
+    n_dimensions: int
+        number of spacial dimensions (2 for Model2D)
+    n_dof_per_node: int
+        number of degrees of freedom per node
+
+
     """
 
     def __init__(self, name, dimensionality='2D'):
-        """TODO: to be defined1. """
         dimensionality = '2D'
         Model.__init__(self, name, dimensionality)
         # Numer of dimensions
@@ -532,15 +653,19 @@ class Model2D(Model):
         self.n_dof_per_node = 3
 
     def Node(self, x, y):
-        """
-        2D implementation of the Node.
+        """2D implementation of the Node.
 
-        :param x: x position
-        :param y: y position
-        :type x: float
-        :type y: float
+        Parameters
+        ----------
+        x: float
+            x position
+        y: float
+            y position
 
-        :returns: instance of Node
+        Returns
+        -------
+        pybar.Node
+            the node created
 
         """
         # A coordinate z=0 is passed to initiate the Node Instance
@@ -551,11 +676,19 @@ class Model2D(Model):
         return node
 
     def Beam(self, node1, node2):
-        """
-        Define a line between two nodes.
+        """Define a line between two nodes.
 
-        :param node1: first node
-        :param node2: second node
+        Parameters
+        ----------
+        node1: pybar.Node
+            first node
+        node2: pybar.Node
+            second node
+
+        Returns
+        -------
+        pybar.Beam
+            the beam element created
 
         """
         from .elements.beam2d import Beam2D
@@ -566,27 +699,36 @@ class Model2D(Model):
         return line
 
     def distributed_load(self, elements, **kwargs):
-        """
-        Add a distributed load to a list of beam elements.
+        """Add a distributed load to a list of beam elements.
+
         A list of elements has to be supplied for the first variable. The rest of the
         variables are exactly the same as in the 'distributed_load' function of the
         corresponding elements.
 
-        :param elements: list of beam elements
-        :param p1: value of the force at start node
-        :param p2: value of the force at end node
-        :param direction: direction (default: *2*)
-        :param coord_system: coordinate system (default: global)
-        :type p1: float
-        :type p2: float
-        :returns: TODO
+        Parameters
+        ----------
+        elements: list
+            list of beam elements
+        p1: float
+            value of the force at start node
+        p2: float
+            value of the force at end node
+        direction: int
+            direction of the applied load (default: *2*)
+        coord_system: str
+            coordinate system (default: global)
+
+        Returns
+        -------
+        bool
+            TODO
 
         """
         for curr_elem in elements:
             # Add distributed load
             curr_elem.distributed_load(**kwargs)
 
-        return 1
+        return True
 
 
 class Model3D(Model):
@@ -647,7 +789,6 @@ class ModelData(object):
         self.n_beams = model.n_beams
         self.n_dimensions = model.n_dimensions
         self.n_materials = model.n_materials
-        self._connectivity = copy(model._connectivity)
         # Number of dof per node. Initialized in the respective models
         self.n_dof_per_node = model.n_dof_per_node
         # Specify dofs that are not active due to border conditions

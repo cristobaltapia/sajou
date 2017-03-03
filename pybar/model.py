@@ -50,11 +50,11 @@ class Model(object):
         name of the model
     _dimensionality: str
         spacial dimensions used in the model
-    _K: numpy.array
+    _K: numpy ndarray
         global stiffness matrix
-    _P: numpy.array
+    _P: numpy ndarray
         global load vector
-    _V: numpy.array
+    _V: numpy ndarray
         global displacement vector
     _dof_dirichlet: list
         number of degrees of freedom with Dirichlet border conditions
@@ -74,14 +74,6 @@ class Model(object):
             return super(Model, cls).__new__(cls, name, dimensionality)
 
     def __init__(self, name, dimensionality):
-        """Initialization of model instance.
-
-        Parameters
-        ----------
-        param name: TODO
-        dimensionality: TODO
-
-        """
         self._name = name
         self._dimensionality = dimensionality
         # Node Freedome Allocation Table:

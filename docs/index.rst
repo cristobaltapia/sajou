@@ -7,8 +7,14 @@ Welcome to PyBar's documentation!
 =================================
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+    :maxdepth: 1
+    :caption: Contents:
+    :name: mastertoc
+
+    install
+    quickstart
+    api
+
 
 
 Introduction
@@ -23,15 +29,4 @@ Indices and tables
 * :ref:`modindex`
 * :ref:`search`
 
-Model module
-------------
 
-.. autoclass:: pybar.model.Model
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-.. autoclass:: pybar.model.Model2D
-   :members:
-   :undoc-members:
-   :show-inheritance:

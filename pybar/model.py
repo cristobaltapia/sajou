@@ -371,11 +371,12 @@ class Model(object):
 
             - Options:
                 ``'displacement'``, ``...``
+
         coord_system:
             spcifies the coordinate system to be used when applying the BC
         **kwargs:
             keyword arguments. At least one of the following parameters must
-            be supplied::
+            be supplied
 
         Keyword Arguments
         -----------------
@@ -428,8 +429,8 @@ class Model(object):
     # TODO: there has to give a 'Load' class to handle the different
     # type of loads.
     def Load(self, node, coord_system='global', **kwargs):
-        """Introduces a Load in the given direction according to the selected coordinate
-        system at the specified node.
+        """Introduces a Load in the given direction according to the selected
+        coordinate system at the specified node.
 
         Parameters
         ----------
@@ -440,7 +441,7 @@ class Model(object):
         **kwargs:
             keyword arguments. The BC is defined for the different degree of
             freedom (*dof*) available to the node.
-            At least one of the following parameters must be supplied::
+            At least one of the following parameters must be supplied:
 
         Keyword Arguments
         -----------------

@@ -15,17 +15,21 @@ class Beam2D(Element):
     This beam element connects two nodes and is based on the Bernoulli beam theory.
     Optionally the rotations on the end nodes can be released to create hinges.
 
-    TODO: fixed problem with release ends and distribuetd loads
+    Parameters
+    ----------
+
+    node1: Node instance
+        first node
+    node2: Node instance
+        second node
+    number: int
+        number of the line
+
+    .. todo: fixed problem with release ends and distribuetd loads
+
     """
 
     def __init__(self, node1, node2, number):
-        """TODO: to be defined1.
-
-        :node1: first node
-        :node2: second node
-        :number: number of the line
-
-        """
         # Instatiate the Element parent class
         Element.__init__(self, number)
         # TODO: accept tuples with coordinates also
@@ -306,20 +310,36 @@ class Beam2D(Element):
         Get an array containing the indices of the used DOFs of the given node of the
         element.
 
-        The array has the following form:
+        Parameters
+        ----------
+
+        node: Node instance
+            the number of the node in the element (element number of the node: 0, 1,
+            2, ... )
+
+        Returns
+        -------
+
+        array of indices:
+
+        Note
+        ----
+
+        The array has the following form::
+
                 [0, 1, 2] --> all DOFs are used
                 [0, 2] --> DOF 0 and 2 are used only (ux and rz)
 
         This array is used to know exactly which DOFs should be used to assemble the global
         stiffness matrix or to retrieve the corresponding displacements.
 
-        For example:
+        Example
+        ---------
+
+        It would be used like this::
 
             i_global_node_1 = e.get_index_list_of_node(n_node_ele) + nfat[global_node_number]
 
-        :node: the number of the node in the element (element number of the node: 0, 1,
-        2... )
-        :returns: array of indices
 
         """
         efs = self.efs[node]
@@ -361,7 +381,10 @@ class Beam2D(Element):
         """This function assembles the stiffness matrix for one individual element. Optionally
         it can take the shear effect into account (second order effect).
 
-        :returns: local stiffness matrix
+        Returns
+        -------
+
+        local stiffness matrix:
 
         """
         from sympy.matrices import Matrix, zeros
@@ -409,11 +432,23 @@ class Beam2D(Element):
 
         The parameters are the same as defined for the class DistributedLoad()
 
-        :p1: TODO
-        :p2: TODO
-        :direction: TODO
-        :coord_system: TODO
-        :returns: TODO
+        Parameters
+        ----------
+
+        p1: float
+            value of the distributed load at the start node
+        p2: float
+            value of the distributed load at the end node
+        direction: str
+            direction of load application. Can be 'x' or 'y'
+        coord_system:
+            coordinate system to which the *direction* parameter applies. It can
+            be 'local' or 'global'
+
+        Returns
+        -------
+
+        a DistributedLoad instance:
 
         """
         dist_load = loads.DistributedLoad(elem=self, **kwargs)
@@ -430,13 +465,27 @@ class Beam2D(Element):
     def distributed_moment(self, **kwargs):
         """Assign a DistributedLoad object to the frame current element.
 
-        The parameters are the same as defined for the class DistributedMoment()
+        Parameters
+        ----------
 
-        :p1: TODO
-        :p2: TODO
-        :direction: TODO
-        :coord_system: TODO
-        :returns: TODO
+        m1: float
+            moment applied at the start end of the beam
+        m2: float
+            moment applied at the end of the beam
+        direction: str
+            direction of application of the moment. Only 'z' is allowed in Beam2D
+        coord_system: str
+            coordinate system to which the 'direction' parameter applies
+
+        Returns
+        -------
+
+        returns: TODO
+
+        Note
+        ----
+
+        The parameters are the same as defined for the class DistributedMoment()
 
         """
         dist_moment = loads.DistributedMoment(elem=self, **kwargs)

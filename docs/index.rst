@@ -13,7 +13,7 @@ Welcome to PyBar's documentation!
 
     install
     quickstart
-    api
+    _pybar/modules
 
 
 

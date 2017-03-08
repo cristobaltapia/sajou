@@ -6,21 +6,36 @@ import numpy as np
 
 
 class BeamSection(object):
-    """Defines a beam section"""
+    """Defines a beam section
+
+    Parameters
+    ----------
+
+    name: str
+        name of the section
+    material: Material instance
+        material of the section defined as an instance of Material object
+    data: tuple
+        properties of the section
+    type: str
+        defines the type of cross-section
+
+            +-------------------------+------------------------------+
+            | type                    | *data* format                |
+            +=========================+==============================+
+            |'rectangular':           |``data=(width, height,)``     |
+            +-------------------------+------------------------------+
+            |'circular':              |``data=(r, )``                |
+            +-------------------------+------------------------------+
+            |'I-section':             |``data=(H, h_f, w_web, w_f)`` |
+            +-------------------------+------------------------------+
+            |'general':               |``data=(A, I_3,)``            |
+            +-------------------------+------------------------------+
+
+    """
+
 
     def __init__(self, name, material, data, type='rectangular'):
-        """Initiates the section
-
-        :name: name of the section
-        :material: material of the section defined as an instance of Material object
-        :data: properties of the section:
-        :type: defines the type of cross-section
-                - rectangular: data=(width, height,)
-                - circular:    data=(r, )
-                - I-section:  data=(H, h_f, w_web, w_f)
-                - general:    data=(A, I_3,)
-
-        """
         self._name = name
         self._material = material
         self._data = data
@@ -33,6 +48,7 @@ class BeamSection(object):
 
     def print_properties(self):
         """Prints the properties of the BeamSection instance
+
         :returns: TODO
 
         """
@@ -45,6 +61,7 @@ class BeamSection(object):
 
     def compute_properties(self):
         """Compute all the mechanical properties for the given section
+
         :returns: TODO
 
         """
@@ -54,6 +71,7 @@ class BeamSection(object):
 
     def calc_area(self):
         """Calculate the area of the section
+
         :returns: TODO
 
         """
@@ -72,6 +90,7 @@ class BeamSection(object):
 
     def calc_inertia(self):
         """Calculate the moment of inertia of the beam section
+
         :returns: Iz, Iy
 
         """

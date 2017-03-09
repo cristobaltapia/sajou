@@ -102,7 +102,7 @@ class Model(object):
         # system.
         self._nfmt = dict()
 
-    def Material(self, name, data, type='isotropic'):
+    def material(self, name, data, type='isotropic'):
         """Function used to create a Material instance in the model
 
         Parameters
@@ -128,7 +128,7 @@ class Model(object):
 
         return material
 
-    def BeamSection(self, name, material, data, type='rectangular'):
+    def beam_section(self, name, material, data, type='rectangular'):
         """Function use to create a BeamSection instance in the model
 
         Parameters
@@ -359,7 +359,7 @@ class Model(object):
 
         return V
 
-    def BC(self, node, type='displacement', coord_system='global', **kwargs):
+    def bc(self, node, type='displacement', coord_system='global', **kwargs):
         """Introduces a border condition to the node.
 
         Parameters
@@ -428,7 +428,7 @@ class Model(object):
 
     # TODO: there has to give a 'Load' class to handle the different
     # type of loads.
-    def Load(self, node, coord_system='global', **kwargs):
+    def load(self, node, coord_system='global', **kwargs):
         """Introduces a Load in the given direction according to the selected
         coordinate system at the specified node.
 
@@ -645,7 +645,7 @@ class Model2D(Model):
         # Number of degrees of freedom per node:
         self.n_dof_per_node = 3
 
-    def Node(self, x, y):
+    def node(self, x, y):
         """2D implementation of the Node.
 
         Parameters
@@ -668,7 +668,7 @@ class Model2D(Model):
 
         return node
 
-    def Beam(self, node1, node2):
+    def beam(self, node1, node2):
         """Define a line between two nodes.
 
         Parameters
@@ -740,7 +740,7 @@ class Model3D(Model):
         Model.__init__(self, name, dimensionality)
         self.n_dof_per_node = 6  # dof per node
 
-    def Node(self, x, y, z):
+    def node(self, x, y, z):
         """
         3D implementation of the Node.
 
@@ -766,7 +766,7 @@ class Model3D(Model):
 
         return node
 
-    def Beam(self, node1, node2):
+    def beam(self, node1, node2):
         """Define a line between two nodes.
 
         :node1: first node

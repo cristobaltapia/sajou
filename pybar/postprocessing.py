@@ -96,12 +96,21 @@ class Postprocess(object):
     def calc_all_internal_forces(self, n=11):
         """
         Compute the internal forces at every element of the model.
+
         The number of points on which the internal forces are evaluated in each element
         are set by the variable 'n' (default n=11).
 
-        :param n: number of points at which the internal forces are evaluated. Must grater than
-        2 (n>=2)
-        :returns: TODO
+        Parameters
+        ----------
+
+        n: int
+            number of points at which the internal forces are evaluated. Must grater than
+            2 (n>=2)
+
+        Returns
+        -------
+
+        ndarray: array with internal forces
 
         """
         # Initialize dictionary for the results

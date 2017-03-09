@@ -15,17 +15,20 @@ class Beam2D(Element):
     This beam element connects two nodes and is based on the Bernoulli beam theory.
     Optionally the rotations on the end nodes can be released to create hinges.
 
-    Parameters
-    ----------
+    Arguments
+    ---------
 
     node1: Node instance
         first node
     node2: Node instance
         second node
     number: int
-        number of the line
+        number of the element
 
-    .. todo: fixed problem with release ends and distribuetd loads
+    Todo
+    ----
+
+    fixed problem with release ends and distribuetd loads
 
     """
 

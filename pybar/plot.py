@@ -527,17 +527,29 @@ class Display_mpl(Display):
     def plot_internal_forces(self, ax, result, component, scale=1):
         """Plot the diagrams of internal forces.
 
-        :ax: matplotlib axis
-        :result: Result object
-        :component: internal force
-            - 'axial'
-            - 'shear'
-            - 'moment'
-        :scale: scale for the member forces (the member forces are already
-        automatically scaled to fit in the display. This is a scale factor
-        that multiplies that automatically calulated factor)
+        Parameters
+        ----------
 
-        :returns: matplotlib axis
+        ax: matplotlib axis
+            the Axis instance where to draw the internal forces
+        result: Result object
+            obtained after solving the system
+        component: str
+            component that want to be displayed. Options are
+
+                - 'axial'
+                - 'shear'
+                - 'moment'
+
+        scale: float
+            scale for the member forces (the member forces are already
+            automatically scaled to fit in the display. This is a scale factor
+            that multiplies that automatically calulated factor)
+
+        Returns
+        -------
+
+        matplotlib axis: the axis with the drawn internal forces
 
         """
         member_force_options_pos = self.draw_config['member force positive']

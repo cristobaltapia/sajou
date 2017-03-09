@@ -725,20 +725,39 @@ class Model2D(Model):
 
 
 class Model3D(Model):
-    """Subclass of the 'Model' class. It is intended to be used for the 3-dimensional
-    models of frame structures."""
+    """
+    Subclass of the 'Model' class. It is intended to be used for the 3-dimensional
+    models of frame structures.
+
+    Allocation of DOFs in each node:
+
+            [1 2 3 4 5 6] = [ux, uy, uz, rx, ry, rz]
+
+    """
 
     def __init__(self, name, dimensionality='3D'):
-        """TODO: to be defined1. """
         dimensionality = '3D'
         Model.__init__(self, name, dimensionality)
         self.n_dof_per_node = 6  # dof per node
 
     def Node(self, x, y, z):
-        """3D implementation of the Node.
+        """
+        3D implementation of the Node.
 
-        :*kwargs: TODO
-        :returns: instance of Node
+        Parameters
+        ----------
+
+        x: float
+            x-position of the node
+        y: float
+            y-position of the node
+        z: float
+            z-position of the node
+
+        Returns
+        -------
+
+        Node: instance of Node
 
         """
         node = Node(x=x, y=y, z=z, number=self.n_nodes)

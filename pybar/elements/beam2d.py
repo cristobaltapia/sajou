@@ -15,8 +15,8 @@ class Beam2D(Element):
     This beam element connects two nodes and is based on the Bernoulli beam theory.
     Optionally the rotations on the end nodes can be released to create hinges.
 
-    Arguments
-    ---------
+    Parameters
+    ----------
 
     node1: Node instance
         first node
@@ -24,6 +24,44 @@ class Beam2D(Element):
         second node
     number: int
         number of the element
+
+    Attributes
+    ----------
+    node1: Node instance
+        first node
+    node2: Node instance
+        second node
+    efs: dict
+        Element freedom signature. Defines the degree of freedom active (dof)
+        in each node.
+    nefmt: dict
+        Node freedom map table of the element.
+    n_active_dof: int
+        number of active *dof*
+    release_end_1: bool
+        Release rotation on the node 1 of the beam
+    release_end_2: bool
+        Release rotation on the node 2 of the beam
+    transformation_matrix: ndarray
+        transformation matrix for the element, from local to global
+    _k_size: int
+        size of the stiffness matrix
+    _nodal_connectivity: dict
+        defines the order of the nodes in the element
+    _length: float
+        length of the element
+    _localCSys: Csys
+        local coordinate system of the element
+    _Ke: ndarray
+        element stiffness matrix (local coordinates)
+    _load_vector_e: ndarray
+        Load vector (global coordinates)
+    _poly_sec_force: ndarray
+        Vector to calculate section forces
+    _beam_section: BeamSection
+        Beam section
+    _loads: list[Load]
+        Loads applied to the frame element
 
     Todo
     ----
@@ -80,10 +118,6 @@ class Beam2D(Element):
 
         # Stiffness matrix (global coordinates)
         self._Ke = None
-        # Load vector (global coordinates)
-        self._load_vector_e = None
-        # Vector to calculate section forces
-        self._poly_sec_force = None
         # Release rotation on the ends of the beam
         self.release_end_1 = False  # first node
         self.release_end_2 = False  # second node

@@ -35,6 +35,8 @@ extensions = [
     'sphinx.ext.coverage',
     'sphinxcontrib.napoleon',
     'sphinx.ext.todo',
+    'matplotlib.sphinxext.plot_directive',
+    'sphinx.ext.doctest',
     'sphinx.ext.mathjax',
 ]
 

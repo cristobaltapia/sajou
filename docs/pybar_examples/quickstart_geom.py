@@ -47,9 +47,9 @@ m.load(node=n3, f2=-5e3)
 m.load(node=n2, f2=-10e3)
 
 # Distributed load
-b1.distributed_load(p1=-2, p2=-1, direction='y', coord_system='local')
+b1.distributed_load(p1=-1, p2=-2, direction='y', coord_system='local')
 
-fig = plt.figure(figsize=(6., 5.3))
+fig = plt.figure(figsize=(6., 5.5))
 ax = fig.add_subplot(111)
 
 disp = Display(theme='publication')

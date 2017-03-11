@@ -3,27 +3,28 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to PyBar's documentation!
-=================================
+PyBar
+=====
+
+Introduction
+------------
+PyBar is a small Finite Element Method (FEM) module, that enables the static computation of 2D structures. At the moment, only beam elements are available, but the idea is to but some more. Three-dimensional support is also planned.
+
+Contents
+--------
 
 .. toctree::
     :maxdepth: 1
-    :caption: Contents:
-    :name: mastertoc
 
     install
     quickstart
-    _pybar/modules
-
-
-
-Introduction
-============
-PyBar is a small Finite Element Method (FEM) module, that enables the static computation of 2D structures. At the moment, only beam elements are available, but the idea is to but some more. Three-dimensional support is also planned.
+    tutorial/index
+    doc/index
+    apiref/index
 
 
 Indices and tables
-==================
+------------------
 
 * :ref:`genindex`
 * :ref:`modindex`

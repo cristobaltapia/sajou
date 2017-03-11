@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+"""
+Defines a 2-dimensional Bernoulli beam element
+"""
 import numpy as np
 import scipy.sparse as sparse
 from numpy import cumsum
@@ -540,8 +543,15 @@ class Beam2D(Element):
         """
         Release the rotation DOF of one or both ends of the beam element.
 
-        :which: specifies the end that should be released. It can be '1', '2' or 'both'
-        :returns: TODO
+        Parameters
+        ----------
+
+        which: int, str
+            specifies the end that should be released. It can be '1', '2' or 'both'
+
+        Returns
+        -------
+        TODO: bool
 
         """
         # Set the respective property to 'True'
@@ -558,8 +568,15 @@ class Beam2D(Element):
     def assign_section(self, beam_section):
         """Assign a beam section instance to the beam
 
-        :beam_section: a BeamSection instance
-        :returns: self
+        Parameters
+        ----------
+
+        beam_section: BeamSection instance
+            section to be assigned
+
+        Returns
+        -------
+        self: the same Beam2D instance
 
         """
         self._beam_section = beam_section

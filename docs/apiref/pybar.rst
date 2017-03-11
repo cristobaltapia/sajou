@@ -1,6 +1,3 @@
-pybar package
-=============
-
 Subpackages
 -----------
 
@@ -23,10 +20,3 @@ Submodules
    pybar.solvers
    pybar.utils
 
-Module contents
----------------
-
-.. automodule:: pybar
-    :members:
-    :undoc-members:
-    :show-inheritance:

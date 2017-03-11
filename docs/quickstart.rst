@@ -1,6 +1,8 @@
 Quick start
 ===========
 
+.. currentmodule:: pybar
+
 Loading the library
 -------------------
 
@@ -13,19 +15,19 @@ That's it! After this, you are ready to start building your model.
 Building the model
 ------------------
 
-A simple frame structure as described in the figure below will be calculated
+A simple frame structure as described in the figure below will be calculated.
 
 .. plot:: pybar_examples/quickstart_geom.py
 
 Geometry
 ********
 
-To build the model a :py:class:`pybar.model.Model` has to be created::
+To build the model a :py:class:`model.Model` has to be created::
 
     # Initialize a Model instance of a 2D model
     m = pb.model(name='Model 1', dimensionality='2D')
 
-The geometry of the problem can then be defined, by means of :py:class:`pybar.nodes.Node`, which is conveniently wrapped in the method :py:meth:`pybar.model.Model2D.beam` of the class :py:class:`pybar.model.Model`::
+The geometry of the problem can then be defined by means of :py:class:`nodes.Node`, which is conveniently wrapped in the method :py:meth:`model.Model2D.beam` of the class :py:class:`model.Model`::
 
     # Add nodes in the specified positions
     n1 = m.node(0, 0)
@@ -33,7 +35,7 @@ The geometry of the problem can then be defined, by means of :py:class:`pybar.no
     n3 = m.node(2000, 2000)
     n4 = m.node(2000, 0)
 
-Beam elements (:py:class:`pybar.elements.beam2d.Beam2D`) are created using a method of the class :py:class:`pybar.model.Model`::
+Beam elements (:py:class:`elements.beam2d.Beam2D`) are created using a method of the class :py:class:`model.Model`::
 
     # Add Beam2D elements
     b1 = m.beam(n1, n2)
@@ -43,8 +45,8 @@ Beam elements (:py:class:`pybar.elements.beam2d.Beam2D`) are created using a met
 Material and cross-section
 **************************
 
-The material is defined by means of the :py:meth:`pybar.model.Model.material` method, which creates an instance of the class :py:class:`pybar.materials.Material`.
-This is then assigned to a Section instance (:py:class:`pybar.sections.BeamSection`) using the :py:meth:`pybar.model.Model.beam_section` method::
+The material is defined by means of the :py:meth:`model.Model.material` method, which creates an instance of the class :py:class:`materials.Material`.
+This is then assigned to a Section instance (:py:class:`sections.BeamSection`) using the :py:meth:`model.Model.beam_section` method::
 
     # Create a material instance
     steel = m.material(name='steel', data=(200e3, ), type='isotropic')
@@ -52,7 +54,7 @@ This is then assigned to a Section instance (:py:class:`pybar.sections.BeamSecti
     section_1 = m.beam_section(name='section 1', material=steel,
                                data=(32e2, 2356e4), type='general')
 
-The above created **Section** now needs to be assigned to a **Beam** instance (:py:class:`pybar.elements.beam2d.Beam2D`)::
+The above created **Section** now needs to be assigned to a **Beam** instance (:py:class:`elements.beam2d.Beam2D`)::
 
 
     # Assign the section to the beam elements
@@ -65,8 +67,8 @@ Applying loads and border conditions
 ************************************
 
 
-PyBar supports the application of both point loads as well as distributed loads. For this, the methods :py:meth:`pybar.model.Model.load` and :py:meth:`py:pybar.elements.beam2d.distributed_load` are used.
-The border conditions (BCs) are defined with the method :py:meth:`pybar.elements.beam2d.distributed_load`::
+PyBar supports the application of both point loads as well as distributed loads. For this, the methods :py:meth:`model.Model.load` and :py:meth:`elements.beam2d.distributed_load` are used.
+The border conditions (BCs) are defined with the method :py:meth:`elements.beam2d.distributed_load`::
 
     # Add border conditions
     m.bc(node=n1, v1=0., v2=0., r3=0.)
@@ -79,23 +81,82 @@ The border conditions (BCs) are defined with the method :py:meth:`pybar.elements
     # Add distributed load
     b1.distributed_load(p1=-2, direction='y', coord_system='local')
 
-.. plot:: pybar_examples/quickstart_loads.py
 
 Visualizing the model
 *********************
 
 A visual inspection of the model is crucial to easily spot problems in the model.
-To see the current state of the model a :py:class:`pybar.plot.Display` instance has to be instantiated and a `Link Matplotlib <http://www.matplotlib.org>`_ axis has to be passed (this might change in the future)::
+To see the current state of the model a :py:class:`plot.Display` instance has to be instantiated and a `Matplotlib <http://www.matplotlib.org>`_ axis has to be passed (this might change in the future)::
 
     # create matplotlib figure and axes
     import matplotlib.pyplot as plt
-    fig = plt.figure(figsize=(20.,14.))
+    fig = plt.figure(figsize=(6.,5.3.))
     ax = fig.add_subplot(111)
 
     # Instatiate a Display object
     disp = pb.Display(theme='dark')
 
     # plot the current state of the model
-    ax = disp.plot_geometry(m, ax)
+    ax = disp.plot_geometry(model=m, ax=ax)
+    plt.show()
+
+A figure similar to the one shown below should be created.
+
+.. plot:: pybar_examples/quickstart_loads.py
+
+Solving the system
+******************
+
+For this example, the static solver (:class:`solvers.StaticSolver`) is used::
+
+    # instance of StaticSolver
+    from pb.solvers import StaticSolver
+    # Define output variables
+    output = ['nodal displacements', 'internal forces', 'end forces']
+    # Create the StaticSolver instance
+    solver = StaticSolver(model=m, output=output)
+    # Solve the system
+    res = solver.solve()
+
+After this, a :class:`solvers.Result` object is created (stored as `res` in the example), which contains the required results of the system.
+
+Postprocessing
+**************
+
+The previously obtained :class:`solvers.Result` object is then used for the post-processing of the model.
+This is done by means of a :class:`postprocessing.Postprocess` object, which can be used to obtain values
+of section forces in a specified element or to plot the results using the above mentioned :class:`plot.Display` class.
+
+Let us begin by extracting values o the moment, shear and axial force along a specified beam (say beam No. 2)::
+
+    # Postprocess the results
+    post = Postprocess(result=res)
+    # get the values at the center of the beam
+    m_0 = post.calc_moment_at(pos=0.5, element=b2, unit_length=True)
+    s_0 = post.calc_shear_at(pos=0.5, element=b2, unit_length=True)
+    a_0 = post.calc_axial_at(pos=0.5, element=b2, unit_length=True)
+
+As can be seen in the code above, the option ``unit_length`` is set to ``True``, which indicates that the values given
+for the ``pos`` parameter must be in the range ``[0, 1]``.
+
+Finally, nice plots can be obtained for the different section forces (moment, shear and axial force)::
+
+    # create the matplotlib figures
+    fig1, ax1 = plt.figure(figsize=(6.5, 5.5))
+    fig2, ax2 = plt.figure(figsize=(6.5, 5.5))
+    fig3, ax3 = plt.figure(figsize=(6.5, 5.5))
+    fig4, ax4 = plt.figure(figsize=(6.5, 5.5))
+
+    # plot the moment along the frame elements
+    ax1 = disp.plot_internal_forces(ax=ax1, result=res, component='moment')
+    # plot the shear force the frame elements
+    ax2 = disp.plot_internal_forces(ax=ax2, result=res, component='shear')
+    # plot the axial force along the frame elements
+    ax3 = disp.plot_internal_forces(ax=ax3, result=res, component='axial')
+    # plot the deformed shape of the structure
+    ax4 = disp.plot_deformed_geometry(ax=ax4, result=res, show_undeformed=True,
+                                    scale=500)
+
+.. plot:: pybar_examples/quickstart_post.py
 
 

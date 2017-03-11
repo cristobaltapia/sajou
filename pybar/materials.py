@@ -6,19 +6,29 @@ properties.
 
 
 class Material(object):
-    """Material properties"""
+    """Material properties
 
-    # TODO: create function to print information of the material
+    Parameters
+    ----------
+
+    name: str
+        name of the material
+    table: tuple
+        properties of the material
+    type: str
+        type of the material:
+
+        - 'isotropic': data = (E, )
+        - 'orthotropic': data = (E_1, E_2, E_3)
+
+    Todo
+    ----
+
+    create function to print information of the material
+
+    """
+
     def __init__(self, name, data, type='isotropic'):
-        """TODO: to be defined1.
-
-        :name: name of the material
-        :table: properties of the material
-        :type: type of the material:
-            - 'isotropic': data = (E, )
-            - 'orthotropic': data = (E_1, E_2, E_3)
-
-        """
         self._name = name
         self._data = data
         self._type = type

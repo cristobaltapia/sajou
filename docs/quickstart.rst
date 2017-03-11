@@ -142,10 +142,15 @@ for the ``pos`` parameter must be in the range ``[0, 1]``.
 Finally, nice plots can be obtained for the different section forces (moment, shear and axial force)::
 
     # create the matplotlib figures
-    fig1, ax1 = plt.figure(figsize=(6.5, 5.5))
-    fig2, ax2 = plt.figure(figsize=(6.5, 5.5))
-    fig3, ax3 = plt.figure(figsize=(6.5, 5.5))
-    fig4, ax4 = plt.figure(figsize=(6.5, 5.5))
+    fig1 = plt.figure(figsize=(6.5, 5.5))
+    fig2 = plt.figure(figsize=(6.5, 5.5))
+    fig3 = plt.figure(figsize=(6.5, 5.5))
+    fig4 = plt.figure(figsize=(6.5, 5.5))
+
+    ax1 = fig1.add_subplot(111)
+    ax2 = fig2.add_subplot(111)
+    ax3 = fig3.add_subplot(111)
+    ax4 = fig4.add_subplot(111)
 
     # plot the moment along the frame elements
     ax1 = disp.plot_internal_forces(ax=ax1, result=res, component='moment')

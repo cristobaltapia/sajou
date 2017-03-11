@@ -45,8 +45,21 @@ Beam elements (:py:class:`elements.beam2d.Beam2D`) are created using a method of
 Material and cross-section
 **************************
 
-The material is defined by means of the :py:meth:`model.Model.material` method, which creates an instance of the class :py:class:`materials.Material`.
-This is then assigned to a Section instance (:py:class:`sections.BeamSection`) using the :py:meth:`model.Model.beam_section` method::
+For this example, the material consist of a steel, with an modulus of elasticity (MOE) equals to 200GPa.
+The cross-section of the beam is defined in a *general* way by giving both the area and moment of inertia
+as a tuple (see :meth:`model.Model.beam_section` to understand how to pass different parameters).
+
++----------+---------+-------+
+| Property | value   | units |
++==========+=========+=======+
+| Area     | 3200    | mm^2  |
++----------+---------+-------+
+| Inertia  | 23.56e6 | mm^4  |
++----------+---------+-------+
+
+The material is defined by means of the :meth:`model.Model.material` method, which creates an instance of the class :class:`materials.Material`.
+This is then assigned to a Section instance (:class:`sections.BeamSection`), using the :meth:`model.Model.beam_section` method and giving the
+parameter ``type='general'``.::
 
     # Create a material instance
     steel = m.material(name='steel', data=(200e3, ), type='isotropic')
@@ -67,16 +80,16 @@ Applying loads and border conditions
 ************************************
 
 
-PyBar supports the application of both point loads as well as distributed loads. For this, the methods :py:meth:`model.Model.load` and :py:meth:`elements.beam2d.distributed_load` are used.
-The border conditions (BCs) are defined with the method :py:meth:`elements.beam2d.distributed_load`::
+PyBar supports the application of both point loads as well as distributed loads. For this, the methods :meth:`model.Model.load` and :meth:`elements.beam2d.distributed_load` are used.
+The border conditions (BCs) are defined with the method :meth:`elements.beam2d.distributed_load`::
 
     # Add border conditions
     m.bc(node=n1, v1=0., v2=0., r3=0.)
     m.bc(node=n4, v1=0., v2=0.)
 
     # Add point Load
-    m.load(node=n2, f2=-20e3)
-    m.load(node=n3, f1=10e3)
+    m.load(node=n2, f2=-5e3)
+    m.load(node=n3, f1=-10e3)
 
     # Add distributed load
     b1.distributed_load(p1=-2, direction='y', coord_system='local')
@@ -86,7 +99,7 @@ Visualizing the model
 *********************
 
 A visual inspection of the model is crucial to easily spot problems in the model.
-To see the current state of the model a :py:class:`plot.Display` instance has to be instantiated and a `Matplotlib <http://www.matplotlib.org>`_ axis has to be passed (this might change in the future)::
+To see the current state of the model a :class:`plot.Display` instance has to be instantiated and a `Matplotlib <http://www.matplotlib.org>`_ axis has to be passed (this might change in the future)::
 
     # create matplotlib figure and axes
     import matplotlib.pyplot as plt

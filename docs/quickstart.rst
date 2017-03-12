@@ -94,7 +94,7 @@ The border conditions (BCs) are defined with the method :meth:`elements.beam2d.d
     m.load(node=n3, f1=-10e3)
 
     # Add distributed load
-    b1.distributed_load(p1=-2, direction='y', coord_system='local')
+    b1.distributed_load(p1=-1, p2=-2, direction='y', coord_system='local')
 
 
 Visualizing the model

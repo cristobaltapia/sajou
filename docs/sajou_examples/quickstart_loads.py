@@ -60,6 +60,7 @@ ax.spines['bottom'].set_smart_bounds(True)
 ax.spines['left'].set_smart_bounds(True)
 ax.xaxis.set_ticks_position('bottom')
 ax.yaxis.set_ticks_position('left')
+ax.set_xlim(xmin=-800, xmax=2500)
 
 
 plt.tight_layout()

@@ -81,6 +81,8 @@ for ax in [ax1, ax2, ax3, ax4]:
     ax.spines['left'].set_smart_bounds(True)
     ax.xaxis.set_ticks_position('bottom')
     ax.yaxis.set_ticks_position('left')
+    ax.set_xlim(xmin=-800, xmax=3000)
+    ax.set_ylim(ymin=-500, ymax=2800)
 
 ax1.set_title('Moment diagram')
 ax2.set_title('Shear force diagram')

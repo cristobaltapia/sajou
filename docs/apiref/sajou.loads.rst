@@ -1,7 +1,7 @@
-pybar.model module
+sajou.loads module
 ==================
 
-.. automodule:: pybar.model
+.. automodule:: sajou.loads
     :members:
     :undoc-members:
     :show-inheritance:

@@ -1,4 +1,4 @@
-pybar.elements package
+sajou.elements package
 ======================
 
 Submodules
@@ -6,14 +6,14 @@ Submodules
 
 .. toctree::
 
-   pybar.elements.beam2d
-   pybar.elements.beam3d
-   pybar.elements.element
+   sajou.elements.beam2d
+   sajou.elements.beam3d
+   sajou.elements.element
 
 Module contents
 ---------------
 
-.. automodule:: pybar.elements
+.. automodule:: sajou.elements
     :members:
     :undoc-members:
     :show-inheritance:

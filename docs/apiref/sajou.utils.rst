@@ -1,7 +1,7 @@
-pybar.nodes module
+sajou.utils module
 ==================
 
-.. automodule:: pybar.nodes
+.. automodule:: sajou.utils
     :members:
     :undoc-members:
     :show-inheritance:

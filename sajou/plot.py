@@ -276,7 +276,7 @@ class Display_mpl(Display):
         :returns: matplotlib axis
 
         """
-        from pybar.model import get_dataframe_of_node_coords
+        from sajou.model import get_dataframe_of_node_coords
         #
         node_options = self.draw_config['node']
         elem_options = self.draw_config['element']

@@ -3,7 +3,7 @@
 import numpy as np
 import pandas as pd
 import scipy.sparse as sparse
-from pybar.postprocessing import Postprocess
+from sajou.postprocessing import Postprocess
 from scipy.linalg import lu_factor, lu_solve
 from scipy.sparse.linalg import dsolve
 

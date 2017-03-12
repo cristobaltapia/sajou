@@ -1,7 +1,7 @@
-pybar.solvers module
+sajou.solvers module
 ====================
 
-.. automodule:: pybar.solvers
+.. automodule:: sajou.solvers
     :members:
     :undoc-members:
     :show-inheritance:

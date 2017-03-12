@@ -1,16 +1,16 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-File to test the module pybar.
+File to test the module sajou.
 Example of the Book "Mechanics of Structures - Variational and computational methods"
 page 284
 """
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import pybar as pb
-from pybar.plot import Display
-from pybar.solvers import StaticSolver
+import sajou as pb
+from sajou.plot import Display
+from sajou.solvers import StaticSolver
 
 m = pb.Model(name='test model', dimensionality='2D')
 

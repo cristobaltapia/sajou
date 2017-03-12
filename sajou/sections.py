@@ -34,7 +34,6 @@ class BeamSection(object):
 
     """
 
-
     def __init__(self, name, material, data, type='rectangular'):
         self._name = name
         self._material = material

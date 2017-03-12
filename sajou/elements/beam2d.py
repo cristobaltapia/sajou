@@ -6,9 +6,9 @@ Defines a 2-dimensional Bernoulli beam element
 import numpy as np
 import scipy.sparse as sparse
 from numpy import cumsum
-from pybar import loads
-from pybar.elements.element import Element
-from pybar.utils import Local_Csys_two_points
+from sajou import loads
+from sajou.elements.element import Element
+from sajou.utils import Local_Csys_two_points
 
 
 class Beam2D(Element):

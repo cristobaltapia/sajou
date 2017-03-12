@@ -4,3 +4,5 @@ scipy
 matplotlib
 seaborn
 sphinx
+sphinx_rtd_theme
+sphinxcontrib-napoleon

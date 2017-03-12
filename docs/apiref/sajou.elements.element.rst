@@ -1,7 +1,7 @@
-pybar.elements.element module
+sajou.elements.element module
 =============================
 
-.. automodule:: pybar.elements.element
+.. automodule:: sajou.elements.element
     :members:
     :undoc-members:
     :show-inheritance:

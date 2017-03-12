@@ -1,5 +1,5 @@
-PyBar
+Sayou
 ========================
 
-Simple program/library to calculate bar structures.
+Sajou is a simple Structural Analysis library for the python language.
 

@@ -9,9 +9,9 @@ import numpy as np
 import pandas as pd
 import scipy.sparse as sparse
 
-from pybar.materials import Material
-from pybar.nodes import Node2D
-from pybar.sections import BeamSection
+from sajou.materials import Material
+from sajou.nodes import Node2D
+from sajou.sections import BeamSection
 
 
 class Model(object):
@@ -116,7 +116,7 @@ class Model(object):
 
         Returns
         -------
-        pybar.Material
+        sajou.Material
             a Material instance
 
         """
@@ -135,7 +135,7 @@ class Model(object):
         ----------
         name: str
             name of the section
-        material: pybar.Material
+        material: sajou.Material
             material for the section
         data:
             data (see BeamSection class definition)
@@ -364,7 +364,7 @@ class Model(object):
 
         Parameters
         ----------
-        node: pybar.Node
+        node: sajou.Node
             Node to which the border condition will be applied
         type: str
             type of border condition
@@ -434,7 +434,7 @@ class Model(object):
 
         Parameters
         ----------
-        node: pybar.Node
+        node: sajou.Node
             a Node instance
         coordinate:
             coordinate system
@@ -460,7 +460,7 @@ class Model(object):
 
         Returns
         -------
-        pybar.Load
+        sajou.Load
             the instance of the Load object created
 
         """
@@ -497,7 +497,7 @@ class Model(object):
 
         Returns
         -------
-        pybar.model.ModelData
+        sajou.model.ModelData
             the data of the whole analyzed model
 
         """
@@ -516,7 +516,7 @@ class Model(object):
 
         Returns
         -------
-        pybar.Node
+        sajou.Node
             Node correpsonding to the *dof* specified
         int
             number of the *dof* of the element corresponding to the global
@@ -537,7 +537,7 @@ class Model(object):
 
         Parameters
         ----------
-        node: pybar.Node
+        node: sajou.Node
             Node instance or list of node instances
 
         Returns
@@ -657,7 +657,7 @@ class Model2D(Model):
 
         Returns
         -------
-        pybar.Node
+        sajou.Node
             the node created
 
         """
@@ -673,14 +673,14 @@ class Model2D(Model):
 
         Parameters
         ----------
-        node1: pybar.Node
+        node1: sajou.Node
             first node
-        node2: pybar.Node
+        node2: sajou.Node
             second node
 
         Returns
         -------
-        pybar.Beam
+        sajou.Beam
             the beam element created
 
         """

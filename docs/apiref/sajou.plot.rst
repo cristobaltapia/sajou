@@ -1,7 +1,7 @@
-pybar.plot module
+sajou.plot module
 =================
 
-.. automodule:: pybar.plot
+.. automodule:: sajou.plot
     :members:
     :undoc-members:
     :show-inheritance:

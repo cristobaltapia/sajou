@@ -6,7 +6,7 @@ transfered accordingly to the respective nodes.
 import numpy as np
 import scipy.sparse as sparse
 
-from pybar.utils import Local_Csys_two_points
+from sajou.utils import Local_Csys_two_points
 
 
 class Load(object):

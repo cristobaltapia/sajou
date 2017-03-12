@@ -1,7 +1,7 @@
-pybar.materials module
+sajou.materials module
 ======================
 
-.. automodule:: pybar.materials
+.. automodule:: sajou.materials
     :members:
     :undoc-members:
     :show-inheritance:

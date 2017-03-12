@@ -1,14 +1,14 @@
 Quick start
 ===========
 
-.. currentmodule:: pybar
+.. currentmodule:: sajou
 
 Loading the library
 -------------------
 
-To use **pybar** simply import the library as you would usually do::
+To use **sajou** simply import the library as you would usually do::
 
-    import pybar as pb
+    import sajou as pb
 
 That's it! After this, you are ready to start building your model.
 
@@ -17,7 +17,7 @@ Building the model
 
 A simple frame structure as described in the figure below will be calculated.
 
-.. plot:: pybar_examples/quickstart_geom.py
+.. plot:: sajou_examples/quickstart_geom.py
 
 Geometry
 ********
@@ -52,9 +52,11 @@ as a tuple (see :meth:`model.Model.beam_section` to understand how to pass diffe
 +----------+---------+-------+
 | Property | value   | units |
 +==========+=========+=======+
-| Area     | 3200    | mm^2  |
+| MOE      | 200     | GPa   |
 +----------+---------+-------+
-| Inertia  | 23.56e6 | mm^4  |
+| Area     | 3.2e3   | mm^2  |
++----------+---------+-------+
+| Inertia  | 2.356e7 | mm^4  |
 +----------+---------+-------+
 
 The material is defined by means of the :meth:`model.Model.material` method, which creates an instance of the class :class:`materials.Material`.
@@ -65,7 +67,7 @@ parameter ``type='general'``.::
     steel = m.material(name='steel', data=(200e3, ), type='isotropic')
     # Create a beam section
     section_1 = m.beam_section(name='section 1', material=steel,
-                               data=(32e2, 2356e4), type='general')
+                               data=(32e2, 2.356e7), type='general')
 
 The above created **Section** now needs to be assigned to a **Beam** instance (:py:class:`elements.beam2d.Beam2D`)::
 
@@ -115,7 +117,7 @@ To see the current state of the model a :class:`plot.Display` instance has to be
 
 A figure similar to the one shown below should be created.
 
-.. plot:: pybar_examples/quickstart_loads.py
+.. plot:: sajou_examples/quickstart_loads.py
 
 Solving the system
 ******************
@@ -175,6 +177,6 @@ Finally, nice plots can be obtained for the different section forces (moment, sh
     ax4 = disp.plot_deformed_geometry(ax=ax4, result=res, show_undeformed=True,
                                     scale=500)
 
-.. plot:: pybar_examples/quickstart_post.py
+.. plot:: sajou_examples/quickstart_post.py
 
 

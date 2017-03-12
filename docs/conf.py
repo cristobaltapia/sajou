@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# PyBar documentation build configuration file, created by
+# Sajou documentation build configuration file, created by
 # sphinx-quickstart on Sun Feb 26 15:52:22 2017.
 #
 # This file is execfile()d with the current directory set to its
@@ -57,7 +57,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = 'PyBar'
+project = 'Sajou'
 copyright = '2017, Cristóbal Tapia Camú'
 author = 'Cristóbal Tapia Camú'
 
@@ -119,7 +119,7 @@ html_sidebars = {
 # -- Options for HTMLHelp output ------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'PyBardoc'
+htmlhelp_basename = 'Sajoudoc'
 
 # -- Options for LaTeX output ---------------------------------------------
 
@@ -145,7 +145,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'PyBar.tex', 'PyBar Documentation', 'Cristóbal Tapia Camú',
+    (master_doc, 'Sajou.tex', 'Sajou Documentation', 'Cristóbal Tapia Camú',
      'manual'),
 ]
 
@@ -153,7 +153,7 @@ latex_documents = [
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
-man_pages = [(master_doc, 'pybar', 'PyBar Documentation', [author], 1)]
+man_pages = [(master_doc, 'sajou', 'Sajou Documentation', [author], 1)]
 
 # -- Options for Texinfo output -------------------------------------------
 
@@ -161,7 +161,7 @@ man_pages = [(master_doc, 'pybar', 'PyBar Documentation', [author], 1)]
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'PyBar', 'PyBar Documentation', author, 'PyBar',
+    (master_doc, 'Sajou', 'Sajou Documentation', author, 'Sajou',
      'One line description of project.', 'Miscellaneous'),
 ]
 

@@ -1,5 +1,5 @@
 Python API reference
 ====================
 
-.. include:: pybar.rst
+.. include:: sajou.rst
 

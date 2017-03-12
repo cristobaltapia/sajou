@@ -1,7 +1,7 @@
-pybar.sections module
+sajou.sections module
 =====================
 
-.. automodule:: pybar.sections
+.. automodule:: sajou.sections
     :members:
     :undoc-members:
     :show-inheritance:

@@ -1,7 +1,7 @@
-pybar.postprocessing module
+sajou.postprocessing module
 ===========================
 
-.. automodule:: pybar.postprocessing
+.. automodule:: sajou.postprocessing
     :members:
     :undoc-members:
     :show-inheritance:

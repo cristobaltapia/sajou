@@ -1,7 +1,7 @@
-pybar.elements.beam2d module
+sajou.elements.beam2d module
 ============================
 
-.. automodule:: pybar.elements.beam2d
+.. automodule:: sajou.elements.beam2d
     :members:
     :undoc-members:
     :show-inheritance:

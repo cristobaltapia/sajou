@@ -19,6 +19,23 @@ class Display(object):
     This class is not intended to be used directly, but rather their sublclasses, which
     implement different plotting backends (at the moent only matplotlib).
 
+    Parameters
+    ----------
+
+    width: float
+        width of the window in pixels
+    height: float
+        height of the window in pixels
+    theme: str
+        color theme used for the plots. Options are: 'dark', 'light'
+        and 'publication'
+    backend: str
+        backend used to display the results
+
+        - 'matplotlib'
+        - 'python-occ' (not implemented yet)
+        - 'mayavi' (not implemented yet)
+
     """
 
     def __new__(cls, backend='matplotlib', **kwargs):
@@ -34,21 +51,23 @@ class Display(object):
 
 
 class Display_mpl(Display):
-    """Docstring for Display_mpl. """
+    """Matplotlib backend for the visualization
+
+    Parameters
+    ----------
+
+    width: float
+        width of the window in pixels
+    height: float
+        height of the window in pixels
+    theme: str
+        color theme used for the plots. Options are: 'dark', 'light'
+        and 'publication'
+
+    """
 
     def __init__(self, width=10., height=10., theme='dark',
                  backend='matplotlib'):
-        """TODO: to be defined1.
-
-        :width: width of the window in pixels
-        :height: height of the window in pixels
-        :theme: TODO
-        :backend: backend used to display the results
-            - 'matplotlib'
-            - 'python-occ' (not implemented yet)
-            - 'mayavi' (not implemented yet)
-
-        """
         Display.__init__(self, backend)
 
         self._width = width
@@ -224,9 +243,18 @@ class Display_mpl(Display):
     def plot_geometry(self, model, ax, ls='-', **kwargs):
         """Plot the geometry of the model passed.
 
-        :model: TODO
-        :ax: a matplotlib axis object
-        :returns: TODO
+        Parameters
+        ----------
+
+        model: sajou.Model
+            Model to plot
+        ax: a matplotlib axis object
+            Axis where to draw to
+
+        Returns
+        -------
+        matplotlib axis:
+            the same axis object given
 
         """
         node_options = self.draw_config['node']
@@ -274,10 +302,21 @@ class Display_mpl(Display):
                                scale=1.):
         """Plot the system in its deformed configuration.
 
-        :result:
-        :ax: matplotlib axis instance
-        :scale: scale used to plot the deformations
-        :returns: matplotlib axis
+        Parameters
+        ----------
+
+        result: Result object
+            result object returned by the Solver
+        ax: matplotlib axis
+            Axis where to draw to
+        scale: float
+            scale used to plot the deformations
+
+        Return
+        ------
+
+        matplotlib axis:
+            the same axis object passed
 
         """
         from sajou.model import get_dataframe_of_node_coords
@@ -330,11 +369,22 @@ class Display_mpl(Display):
 
     def plot_element_loads(self, ax, model):
         """Plot the element loads.
+
         Element loads like uniformly distributed loads are drawn accordinlgy.
 
-        :ax: TODO
-        :result: TODO
-        :returns: TODO
+        Parameters
+        ----------
+
+        ax: matplotlib axis
+            axis where to draw to
+        result: Result object
+            Result object returned by the Solver
+
+        Returns
+        -------
+
+        matplotlib axis:
+            the same axis originally passed
 
         """
         elems_with_loads = {
@@ -386,11 +436,23 @@ class Display_mpl(Display):
                                        max_p=1):
         """Plot a distributed load at the corresponding element.
 
-        :ax: TODO
-        :model: TODO
-        :element:
-        :load: TODO
-        :returns: TODO
+        Parameters
+        ----------
+
+        ax: matplotlib axis
+            axis where to draw to
+        model: Model object
+            Model containing the element
+        element: Element object
+            element for which the distributed loads will be drawn
+        load: Load object
+            The Load object that wants to be drawn
+
+        Returns
+        -------
+
+        matplotlib axis:
+            the same axis passed
 
         """
         # Get the draw options for the forces
@@ -485,11 +547,23 @@ class Display_mpl(Display):
                                          scale=1, max_p=1):
         """Plot a distributed load at the corresponding element.
 
-        :ax: TODO
-        :model: TODO
-        :element:
-        :load: TODO
-        :returns: TODO
+        Parameters
+        ----------
+
+        ax: matplotlib axis
+            axis where to draw to
+        model: Model object
+            Model used
+        element: Element object
+            Element for which the distributed moment is drawn
+        load: Load object
+            Load that wants to be drawn
+
+        Returns
+        -------
+
+        matplotlib axis:
+            the same axis passed
 
         """
         # Get the draw options for the forces
@@ -553,7 +627,8 @@ class Display_mpl(Display):
         Returns
         -------
 
-        matplotlib axis: the axis with the drawn internal forces
+        matplotlib axis:
+            the axis with the drawn internal forces
 
         """
         member_force_options_pos = self.draw_config['member force positive']
@@ -632,10 +707,21 @@ class Display_mpl(Display):
     def plot_support(self, ax, dof, at):
         """Plot the respective support
 
-        :ax: matplotlib axis
-        :dof: DOF that are restrained
-        :at: node at which the contraints are applied
-        :returns: matplotlib Axis object
+        Parameters
+        ----------
+
+        ax: matplotlib axis
+            The axis where the supports will be drawn
+        dof: ndarray, list[int]
+            DOF that are restrained
+        at: Node object
+            node at which the contraints are applied
+
+        Returns
+        -------
+
+        matplotlib Axis
+            the same axis passed
 
         """
         support_options = self.draw_config['support']
@@ -675,11 +761,23 @@ class Display_mpl(Display):
     def plot_nodal_force(self, ax, dof, at, val):
         """TODO: Docstring for plot_forces.
 
-        :ax: matplotlib axis
-        :dof: Degree of freedom to which the force is being applied
-        :at: node at which the load is applied
-        :val: value of the force
-        :returns: TODO
+        Parameters
+        ----------
+
+        ax: matplotlib axis
+            the axis where to draw to
+        dof: int
+            Degree of freedom to which the force is being applied
+        at: Node object
+            node at which the load is applied
+        val: float
+            value of the force
+
+        Returns
+        -------
+
+        matplotlib Axis
+            the same axis passed as asrgument
 
         """
         # Get the draw options for the forces
@@ -725,11 +823,23 @@ class Display_mpl(Display):
     def plot_nodal_reaction(self, ax, dof, at, val):
         """Plot the nodal reactions of the system
 
-        :ax: matplotlib axis
-        :dof: Degree of freedom to which the force is being applied
-        :at: node at which the load is applied
-        :val: value of the reaction
-        :returns: TODO
+        Parameters
+        ----------
+
+        ax: matplotlib axis
+            The axis where to draw to
+        dof: int
+            Degree of freedom to which the force is being applied
+        at: Node object
+            node at which the load is applied
+        val: float
+            value of the reaction
+
+        Returns
+        -------
+
+        matplotlib Axis
+            the same Axis passed as argument
 
         """
         # Get the draw options for the forces
@@ -774,22 +884,40 @@ class Display_mpl(Display):
 
 
 def range_with_ratio(x1, x2, n, a):
-    """Create an array with numbers increasing their relative distance according to a.
+    """Create an array with numbers increasing their relative distance
+    according to the ratio 'a'.
 
-    The range is divided such that
-        Length = l_1 + l_2 + ... + l_n
+    The range is divided such that:
 
-        where
+    .. math::
 
-        l_i = l_i-1 + b
+        \ell_{tot} = l_1 + l_2 + ... + l_n
 
-        b = (Length - (Length/n * a)) / n
+    where:
 
-    :x1: begin of the range
-    :x2: end of the range
-    :n: number ofpoints
-    :a: ration between the beginning and end
-    :returns: array
+    .. math::
+
+        l_i &= l_i - 1 + b \\
+
+        b &= \\frac{\ell_{tot} - (\\frac{\ell_{tot}}{n} \cdot a)}{n}
+
+    Parameters
+    ----------
+
+    x1: float
+        begin of the range
+    x2: float
+        end of the range
+    n: int
+        number of points
+    a: float
+        ratio between the beginning and end
+
+    Returns
+    -------
+
+    ndarray
+        a range with increasingly separated values
 
     """
     # base array

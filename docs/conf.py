@@ -39,10 +39,14 @@ extensions = [
     'matplotlib.sphinxext.plot_directive',
     'sphinx.ext.autosummary',
     'sphinx.ext.doctest',
-    'sphinx.ext.mathjax',
+    #'sphinx.ext.mathjax',
+    'sphinx.ext.imgmath',
 ]
 
 todo_include_todos = True
+
+# Latex preamble in html
+imgmath_latex_preamble = '\usepackage[]{amsmath}'
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -148,6 +152,7 @@ latex_documents = [
     (master_doc, 'Sajou.tex', 'Sajou Documentation', 'Cristóbal Tapia Camú',
      'manual'),
 ]
+
 
 # -- Options for manual page output ---------------------------------------
 

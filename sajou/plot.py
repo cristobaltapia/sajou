@@ -77,7 +77,8 @@ class Display_mpl(Display):
                     'color': "#12191f"
                 },
                 'grid': {
-                    'color': 'white'
+                    'color': 'white',
+                    'ls': ':',
                 },
                 'element': {
                     'color': palette[4],
@@ -114,7 +115,8 @@ class Display_mpl(Display):
                     'color': 'white'
                 },
                 'grid': {
-                    'color': 'black'
+                    'color': 'black',
+                    'ls': ':',
                 },
                 'element': {
                     'color': 'black',
@@ -153,7 +155,8 @@ class Display_mpl(Display):
                     'color': "#dee5ec"
                 },
                 'grid': {
-                    'color': 'black'
+                    'color': 'black',
+                    'ls': ':',
                 },
                 'element': {
                     'color': palette[4],
@@ -191,7 +194,8 @@ class Display_mpl(Display):
                     'color': "#dee5ec"
                 },
                 'grid': {
-                    'color': 'black'
+                    'color': 'black',
+                    'ls': ':',
                 },
                 'element': {
                     'color': palette[4],

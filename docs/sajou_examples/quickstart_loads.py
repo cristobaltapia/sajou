@@ -8,10 +8,9 @@ page 284
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import sajou as pb
-from sajou.plot import Display
+import sajou as sj
 
-m = pb.Model(name='test model', dimensionality='2D')
+m = sj.Model(name='test model', dimensionality='2D')
 
 # add nodes
 n1 = m.node(0., 0.)
@@ -52,7 +51,7 @@ b1.distributed_load(p1=-1, p2=-2, direction='y', coord_system='local')
 fig = plt.figure(figsize=(6., 5.5))
 ax = fig.add_subplot(111)
 
-disp = Display(theme='dark')
+disp = sj.Display(theme='dark')
 
 ax = disp.plot_geometry(ax=ax, model=m)
 ax.spines['right'].set_color('none')

@@ -8,7 +8,7 @@ Loading the library
 
 To use **sajou** simply import the library as you would usually do::
 
-    import sajou as pb
+    import sajou as sj
 
 That's it! After this, you are ready to start building your model.
 
@@ -25,7 +25,7 @@ Geometry
 To build the model a :py:class:`model.Model` has to be created::
 
     # Initialize a Model instance of a 2D model
-    m = pb.model(name='Model 1', dimensionality='2D')
+    m = sj.model(name='Model 1', dimensionality='2D')
 
 The geometry of the problem can then be defined by means of :py:class:`nodes.Node`, which is conveniently wrapped in the method :py:meth:`model.Model2D.beam` of the class :py:class:`model.Model`::
 
@@ -109,7 +109,7 @@ To see the current state of the model a :class:`plot.Display` instance has to be
     ax = fig.add_subplot(111)
 
     # Instatiate a Display object
-    disp = pb.Display(theme='dark')
+    disp = sj.Display(theme='dark')
 
     # plot the current state of the model
     ax = disp.plot_geometry(model=m, ax=ax)
@@ -125,7 +125,7 @@ Solving the system
 For this example, the static solver (:class:`solvers.StaticSolver`) is used::
 
     # instance of StaticSolver
-    from pb.solvers import StaticSolver
+    from sj.solvers import StaticSolver
     # Define output variables
     output = ['nodal displacements', 'internal forces', 'end forces']
     # Create the StaticSolver instance

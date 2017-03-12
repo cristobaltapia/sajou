@@ -8,11 +8,10 @@ page 284
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import sajou as pb
-from sajou.plot import Display
+import sajou as sj
 from sajou.solvers import StaticSolver
 
-m = pb.Model(name='test model', dimensionality='2D')
+m = sj.Model(name='test model', dimensionality='2D')
 
 # add nodes
 n1 = m.node(0., 0.)
@@ -57,7 +56,7 @@ solver = StaticSolver(model=m, output=output)
 # Solve the system
 res = solver.solve()
 
-disp = Display(theme='dark')
+disp = sj.Display(theme='dark')
 
 fig1 = plt.figure(figsize=(6.5, 5.5))
 fig2 = plt.figure(figsize=(6.5, 5.5))

@@ -22,12 +22,12 @@ A simple frame structure as described in the figure below will be calculated.
 Geometry
 ********
 
-To build the model a :py:class:`model.Model` has to be created::
+To build the model a :class:`model.Model` has to be created::
 
     # Initialize a Model instance of a 2D model
     m = sj.model(name='Model 1', dimensionality='2D')
 
-The geometry of the problem can then be defined by means of :py:class:`nodes.Node`, which is conveniently wrapped in the method :py:meth:`model.Model2D.beam` of the class :py:class:`model.Model`::
+The geometry of the problem can then be defined by means of :class:`nodes.Node`, which is conveniently wrapped in the method :meth:`model.Model2D.node` of the class :class:`model.Model`::
 
     # Add nodes in the specified positions
     n1 = m.node(0, 0)
@@ -35,7 +35,7 @@ The geometry of the problem can then be defined by means of :py:class:`nodes.Nod
     n3 = m.node(2000, 2000)
     n4 = m.node(2000, 0)
 
-Beam elements (:py:class:`elements.beam2d.Beam2D`) are created using a method of the class :py:class:`model.Model`::
+Beam elements (:class:`elements.beam2d.Beam2D`) are created using a method of the class :class:`model.Model`::
 
     # Add Beam2D elements
     b1 = m.beam(n1, n2)

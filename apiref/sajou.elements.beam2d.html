@@ -1,0 +1,534 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>sajou.elements.beam2d module &mdash; Sajou 0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="Sajou 0.1 documentation" href="../index.html"/>
+        <link rel="up" title="sajou.elements package" href="sajou.elements.html"/>
+        <link rel="next" title="sajou.elements.beam3d module" href="sajou.elements.beam3d.html"/>
+        <link rel="prev" title="sajou.elements package" href="sajou.elements.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Sajou
+          
+
+          
+            
+            <img src="../_static/logo.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../install.html">Installation instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quick start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/index.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../doc/index.html">Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">Python API reference</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Sajou</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">Python API reference</a> &raquo;</li>
+        
+          <li><a href="sajou.elements.html">sajou.elements package</a> &raquo;</li>
+        
+      <li>sajou.elements.beam2d module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/apiref/sajou.elements.beam2d.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-sajou.elements.beam2d">
+<span id="sajou-elements-beam2d-module"></span><h1>sajou.elements.beam2d module<a class="headerlink" href="#module-sajou.elements.beam2d" title="Permalink to this headline">¶</a></h1>
+<p>Defines a 2-dimensional Bernoulli beam element</p>
+<dl class="class">
+<dt id="sajou.elements.beam2d.Beam2D">
+<em class="property">class </em><code class="descclassname">sajou.elements.beam2d.</code><code class="descname">Beam2D</code><span class="sig-paren">(</span><em>node1</em>, <em>node2</em>, <em>number</em><span class="sig-paren">)</span><a class="headerlink" href="#sajou.elements.beam2d.Beam2D" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="sajou.elements.element.html#sajou.elements.element.Element" title="sajou.elements.element.Element"><code class="xref py py-class docutils literal"><span class="pre">sajou.elements.element.Element</span></code></a></p>
+<p>Two-dimensional Bernoulli Beam element.</p>
+<p>This beam element connects two nodes and is based on the Bernoulli beam theory.
+Optionally the rotations on the end nodes can be released to create hinges.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>node1</strong> (<em>Node instance</em>) &#8211; first node</li>
+<li><strong>node2</strong> (<em>Node instance</em>) &#8211; second node</li>
+<li><strong>number</strong> (<em>int</em>) &#8211; number of the element</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="sajou.elements.beam2d.Beam2D.node1">
+<code class="descname">node1</code><a class="headerlink" href="#sajou.elements.beam2d.Beam2D.node1" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>Node instance</em> &#8211; first node</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="sajou.elements.beam2d.Beam2D.node2">
+<code class="descname">node2</code><a class="headerlink" href="#sajou.elements.beam2d.Beam2D.node2" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>Node instance</em> &#8211; second node</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="sajou.elements.beam2d.Beam2D.efs">
+<code class="descname">efs</code><a class="headerlink" href="#sajou.elements.beam2d.Beam2D.efs" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>dict</em> &#8211; Element freedom signature. Defines the degree of freedom active (dof)
+in each node.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="sajou.elements.beam2d.Beam2D.nefmt">
+<code class="descname">nefmt</code><a class="headerlink" href="#sajou.elements.beam2d.Beam2D.nefmt" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>dict</em> &#8211; Node freedom map table of the element.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="sajou.elements.beam2d.Beam2D.n_active_dof">
+<code class="descname">n_active_dof</code><a class="headerlink" href="#sajou.elements.beam2d.Beam2D.n_active_dof" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>int</em> &#8211; number of active <em>dof</em></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="sajou.elements.beam2d.Beam2D.release_end_1">
+<code class="descname">release_end_1</code><a class="headerlink" href="#sajou.elements.beam2d.Beam2D.release_end_1" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>bool</em> &#8211; Release rotation on the node 1 of the beam</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="sajou.elements.beam2d.Beam2D.release_end_2">
+<code class="descname">release_end_2</code><a class="headerlink" href="#sajou.elements.beam2d.Beam2D.release_end_2" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>bool</em> &#8211; Release rotation on the node 2 of the beam</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="sajou.elements.beam2d.Beam2D.transformation_matrix">
+<code class="descname">transformation_matrix</code><a class="headerlink" href="#sajou.elements.beam2d.Beam2D.transformation_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>ndarray</em> &#8211; transformation matrix for the element, from local to global</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="sajou.elements.beam2d.Beam2D._k_size">
+<code class="descname">_k_size</code><a class="headerlink" href="#sajou.elements.beam2d.Beam2D._k_size" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>int</em> &#8211; size of the stiffness matrix</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="sajou.elements.beam2d.Beam2D._nodal_connectivity">
+<code class="descname">_nodal_connectivity</code><a class="headerlink" href="#sajou.elements.beam2d.Beam2D._nodal_connectivity" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>dict</em> &#8211; defines the order of the nodes in the element</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="sajou.elements.beam2d.Beam2D._length">
+<code class="descname">_length</code><a class="headerlink" href="#sajou.elements.beam2d.Beam2D._length" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>float</em> &#8211; length of the element</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="sajou.elements.beam2d.Beam2D._localCSys">
+<code class="descname">_localCSys</code><a class="headerlink" href="#sajou.elements.beam2d.Beam2D._localCSys" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>Csys</em> &#8211; local coordinate system of the element</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="sajou.elements.beam2d.Beam2D._Ke">
+<code class="descname">_Ke</code><a class="headerlink" href="#sajou.elements.beam2d.Beam2D._Ke" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>ndarray</em> &#8211; element stiffness matrix (local coordinates)</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="sajou.elements.beam2d.Beam2D._load_vector_e">
+<code class="descname">_load_vector_e</code><a class="headerlink" href="#sajou.elements.beam2d.Beam2D._load_vector_e" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>ndarray</em> &#8211; Load vector (global coordinates)</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="sajou.elements.beam2d.Beam2D._poly_sec_force">
+<code class="descname">_poly_sec_force</code><a class="headerlink" href="#sajou.elements.beam2d.Beam2D._poly_sec_force" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>ndarray</em> &#8211; Vector to calculate section forces</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="sajou.elements.beam2d.Beam2D._beam_section">
+<code class="descname">_beam_section</code><a class="headerlink" href="#sajou.elements.beam2d.Beam2D._beam_section" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>BeamSection</em> &#8211; Beam section</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="sajou.elements.beam2d.Beam2D._loads">
+<code class="descname">_loads</code><a class="headerlink" href="#sajou.elements.beam2d.Beam2D._loads" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>list[Load]</em> &#8211; Loads applied to the frame element</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="sajou.elements.beam2d.Beam2D.assemble_Ke">
+<code class="descname">assemble_Ke</code><span class="sig-paren">(</span><em>second_order=False</em><span class="sig-paren">)</span><a class="headerlink" href="#sajou.elements.beam2d.Beam2D.assemble_Ke" title="Permalink to this definition">¶</a></dt>
+<dd><p>Assemble the element stiffness matrix &#8216;Ke&#8217; in local and global coordinates.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Second_order:</th><td class="field-body">boolean</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">local stiffness matrix</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="sajou.elements.beam2d.Beam2D.assemble_sym_K">
+<code class="descname">assemble_sym_K</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#sajou.elements.beam2d.Beam2D.assemble_sym_K" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function assembles the stiffness matrix for one individual element. Optionally
+it can take the shear effect into account (second order effect).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">local stiffness matrix</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="sajou.elements.beam2d.Beam2D.assign_section">
+<code class="descname">assign_section</code><span class="sig-paren">(</span><em>beam_section</em><span class="sig-paren">)</span><a class="headerlink" href="#sajou.elements.beam2d.Beam2D.assign_section" title="Permalink to this definition">¶</a></dt>
+<dd><p>Assign a beam section instance to the beam</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>beam_section</strong> (<em>BeamSection instance</em>) &#8211; section to be assigned</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>self</strong></td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">the same Beam2D instance</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="sajou.elements.beam2d.Beam2D.distributed_load">
+<code class="descname">distributed_load</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#sajou.elements.beam2d.Beam2D.distributed_load" title="Permalink to this definition">¶</a></dt>
+<dd><p>Assign a DistributedLoad object to the frame current element.</p>
+<p>The parameters are the same as defined for the class DistributedLoad()</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>p1</strong> (<em>float</em>) &#8211; value of the distributed load at the start node</li>
+<li><strong>p2</strong> (<em>float</em>) &#8211; value of the distributed load at the end node</li>
+<li><strong>direction</strong> (<em>str</em>) &#8211; direction of load application. Can be &#8216;x&#8217; or &#8216;y&#8217;</li>
+<li><strong>coord_system</strong> &#8211; coordinate system to which the <em>direction</em> parameter applies. It can
+be &#8216;local&#8217; or &#8216;global&#8217;</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">a DistributedLoad instance</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="sajou.elements.beam2d.Beam2D.distributed_moment">
+<code class="descname">distributed_moment</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#sajou.elements.beam2d.Beam2D.distributed_moment" title="Permalink to this definition">¶</a></dt>
+<dd><p>Assign a DistributedLoad object to the frame current element.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>m1</strong> (<em>float</em>) &#8211; moment applied at the start end of the beam</li>
+<li><strong>m2</strong> (<em>float</em>) &#8211; moment applied at the end of the beam</li>
+<li><strong>direction</strong> (<em>str</em>) &#8211; direction of application of the moment. Only &#8216;z&#8217; is allowed in Beam2D</li>
+<li><strong>coord_system</strong> (<em>str</em>) &#8211; coordinate system to which the &#8216;direction&#8217; parameter applies</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>returns</strong></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">TODO</p>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The parameters are the same as defined for the class DistributedMoment()</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="sajou.elements.beam2d.Beam2D.get_index_array_of_node">
+<code class="descname">get_index_array_of_node</code><span class="sig-paren">(</span><em>node</em><span class="sig-paren">)</span><a class="headerlink" href="#sajou.elements.beam2d.Beam2D.get_index_array_of_node" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get an array containing the indices of the used DOFs of the given node of the
+element.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>node</strong> (<em>Node instance</em>) &#8211; the number of the node in the element (element number of the node: 0, 1,
+2, ... )</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">array of indices</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>The array has the following form:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">--&gt;</span> <span class="nb">all</span> <span class="n">DOFs</span> <span class="n">are</span> <span class="n">used</span>
+<span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">--&gt;</span> <span class="n">DOF</span> <span class="mi">0</span> <span class="ow">and</span> <span class="mi">2</span> <span class="n">are</span> <span class="n">used</span> <span class="n">only</span> <span class="p">(</span><span class="n">ux</span> <span class="ow">and</span> <span class="n">rz</span><span class="p">)</span>
+</pre></div>
+</div>
+<p class="last">This array is used to know exactly which DOFs should be used to assemble the global
+stiffness matrix or to retrieve the corresponding displacements.</p>
+</div>
+<p class="rubric">Example</p>
+<p>It would be used like this:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">i_global_node_1</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">get_index_list_of_node</span><span class="p">(</span><span class="n">n_node_ele</span><span class="p">)</span> <span class="o">+</span> <span class="n">nfat</span><span class="p">[</span><span class="n">global_node_number</span><span class="p">]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="sajou.elements.beam2d.Beam2D.release_end">
+<code class="descname">release_end</code><span class="sig-paren">(</span><em>which</em><span class="sig-paren">)</span><a class="headerlink" href="#sajou.elements.beam2d.Beam2D.release_end" title="Permalink to this definition">¶</a></dt>
+<dd><p>Release the rotation DOF of one or both ends of the beam element.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>which</strong> (<em>int</em><em>, </em><em>str</em>) &#8211; specifies the end that should be released. It can be &#8216;1&#8217;, &#8216;2&#8217; or &#8216;both&#8217;</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>TODO</strong></td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="sajou.elements.beam3d.html" class="btn btn-neutral float-right" title="sajou.elements.beam3d module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="sajou.elements.html" class="btn btn-neutral" title="sajou.elements package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Cristóbal Tapia Camú.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

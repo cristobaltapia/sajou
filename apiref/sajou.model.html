@@ -1,0 +1,743 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>sajou.model module &mdash; Sajou 0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="Sajou 0.1 documentation" href="../index.html"/>
+        <link rel="up" title="Python API reference" href="index.html"/>
+        <link rel="next" title="sajou.nodes module" href="sajou.nodes.html"/>
+        <link rel="prev" title="sajou.materials module" href="sajou.materials.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Sajou
+          
+
+          
+            
+            <img src="../_static/logo.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../install.html">Installation instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quick start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/index.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../doc/index.html">Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">Python API reference</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Sajou</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">Python API reference</a> &raquo;</li>
+        
+      <li>sajou.model module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/apiref/sajou.model.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-sajou.model">
+<span id="sajou-model-module"></span><h1>sajou.model module<a class="headerlink" href="#module-sajou.model" title="Permalink to this headline">¶</a></h1>
+<p>Defines the model classes for 2D and 3D models.</p>
+<dl class="class">
+<dt id="sajou.model.Model">
+<em class="property">class </em><code class="descclassname">sajou.model.</code><code class="descname">Model</code><span class="sig-paren">(</span><em>name</em>, <em>dimensionality</em><span class="sig-paren">)</span><a class="headerlink" href="#sajou.model.Model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Defines a model object</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>name</strong> (<em>str</em>) &#8211; name of the model</li>
+<li><strong>dimensionality</strong> (<em>str</em>) &#8211; spacial dimensions used in the model (&#8216;2D&#8217; or &#8216;3D&#8217;)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="sajou.model.Model.nfat">
+<code class="descname">nfat</code><a class="headerlink" href="#sajou.model.Model.nfat" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>dict</em> &#8211; Node Freedom Allocation Table</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="sajou.model.Model.nodes">
+<code class="descname">nodes</code><a class="headerlink" href="#sajou.model.Model.nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>dict</em> &#8211; dictionary with all the nodes of the system</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="sajou.model.Model.beams">
+<code class="descname">beams</code><a class="headerlink" href="#sajou.model.Model.beams" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>dict</em> &#8211; dictionary with all the beams of the system</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="sajou.model.Model.beam_sections">
+<code class="descname">beam_sections</code><a class="headerlink" href="#sajou.model.Model.beam_sections" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>dict</em> &#8211; dictionary with the beam sections defined in the model</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="sajou.model.Model.materials">
+<code class="descname">materials</code><a class="headerlink" href="#sajou.model.Model.materials" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>dict</em> &#8211; dictionary with the materials defined in the model</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="sajou.model.Model.n_nodes">
+<code class="descname">n_nodes</code><a class="headerlink" href="#sajou.model.Model.n_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>int</em> &#8211; number of nodes of the system</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="sajou.model.Model.n_beams">
+<code class="descname">n_beams</code><a class="headerlink" href="#sajou.model.Model.n_beams" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>int</em> &#8211; number of beams in the system</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="sajou.model.Model.n_materials">
+<code class="descname">n_materials</code><a class="headerlink" href="#sajou.model.Model.n_materials" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>int</em> &#8211; number of materials defined</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="sajou.model.Model.n_dimensions">
+<code class="descname">n_dimensions</code><a class="headerlink" href="#sajou.model.Model.n_dimensions" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>int</em> &#8211; number of spacial dimensions of the model</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="sajou.model.Model.n_dof_per_node">
+<code class="descname">n_dof_per_node</code><a class="headerlink" href="#sajou.model.Model.n_dof_per_node" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>int</em> &#8211; number of degrees of freedom per node</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="sajou.model.Model._name">
+<code class="descname">_name</code><a class="headerlink" href="#sajou.model.Model._name" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>str</em> &#8211; name of the model</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="sajou.model.Model._dimensionality">
+<code class="descname">_dimensionality</code><a class="headerlink" href="#sajou.model.Model._dimensionality" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>str</em> &#8211; spacial dimensions used in the model</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="sajou.model.Model._K">
+<code class="descname">_K</code><a class="headerlink" href="#sajou.model.Model._K" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>numpy ndarray</em> &#8211; global stiffness matrix</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="sajou.model.Model._P">
+<code class="descname">_P</code><a class="headerlink" href="#sajou.model.Model._P" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>numpy ndarray</em> &#8211; global load vector</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="sajou.model.Model._V">
+<code class="descname">_V</code><a class="headerlink" href="#sajou.model.Model._V" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>numpy ndarray</em> &#8211; global displacement vector</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="sajou.model.Model._dof_dirichlet">
+<code class="descname">_dof_dirichlet</code><a class="headerlink" href="#sajou.model.Model._dof_dirichlet" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>list</em> &#8211; number of degrees of freedom with Dirichlet border conditions</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="sajou.model.Model._nfmt">
+<code class="descname">_nfmt</code><a class="headerlink" href="#sajou.model.Model._nfmt" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>dict</em> &#8211; Node Freedom Map Table</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="sajou.model.Model.add_hinge">
+<code class="descname">add_hinge</code><span class="sig-paren">(</span><em>node</em><span class="sig-paren">)</span><a class="headerlink" href="#sajou.model.Model.add_hinge" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add hinge to the specified node. Also supports list of nodes</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>node</strong> (<em>sajou.Node</em>) &#8211; Node instance or list of node instances</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">TODO</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="sajou.model.Model.bc">
+<code class="descname">bc</code><span class="sig-paren">(</span><em>node</em>, <em>type='displacement'</em>, <em>coord_system='global'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#sajou.model.Model.bc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Introduces a border condition to the node.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>node</strong> (<em>sajou.Node</em>) &#8211; Node to which the border condition will be applied</li>
+<li><strong>type</strong> (<em>str</em>) &#8211; <p>type of border condition</p>
+<ul>
+<li><dl class="first docutils">
+<dt>Options:</dt>
+<dd><code class="docutils literal"><span class="pre">'displacement'</span></code>, <code class="docutils literal"><span class="pre">...</span></code></dd>
+</dl>
+</li>
+</ul>
+</li>
+<li><strong>coord_system</strong> &#8211; spcifies the coordinate system to be used when applying the BC</li>
+<li><strong>**kwargs</strong> &#8211; keyword arguments. At least one of the following parameters must
+be supplied</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body"><ul class="first simple">
+<li><strong>v1</strong> (<em>float</em>) &#8211; displacement in the direction 1</li>
+<li><strong>v2</strong> (<em>float</em>) &#8211; displacement in the direction 2</li>
+<li><strong>v3</strong> (<em>float</em>) &#8211; displacement in the direction 3</li>
+<li><strong>r1</strong> (<em>float</em>) &#8211; rotation in the direction 1</li>
+<li><strong>r2</strong> (<em>float</em>) &#8211; rotation in the direction 2</li>
+<li><strong>r3</strong> (<em>float</em>) &#8211; rotation in the direction 3</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">True if successful</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">bool</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="sajou.model.Model.beam_section">
+<code class="descname">beam_section</code><span class="sig-paren">(</span><em>name</em>, <em>material</em>, <em>data</em>, <em>type='rectangular'</em><span class="sig-paren">)</span><a class="headerlink" href="#sajou.model.Model.beam_section" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function use to create a BeamSection instance in the model</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>name</strong> (<em>str</em>) &#8211; name of the section</li>
+<li><strong>material</strong> (<em>sajou.Material</em>) &#8211; material for the section</li>
+<li><strong>data</strong> &#8211; data (see BeamSection class definition)</li>
+<li><strong>type</strong> &#8211; type of the section (see BeamSection class definition)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">a beam section instance</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">returns</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="sajou.model.Model.export_model_data">
+<code class="descname">export_model_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#sajou.model.Model.export_model_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Export all the data of the model. This means the nodes, elements,
+border conditions and forces are exported to a ModelData object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">the data of the whole analyzed model</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#sajou.model.ModelData" title="sajou.model.ModelData">sajou.model.ModelData</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="sajou.model.Model.get_node_and_dof">
+<code class="descname">get_node_and_dof</code><span class="sig-paren">(</span><em>dof</em><span class="sig-paren">)</span><a class="headerlink" href="#sajou.model.Model.get_node_and_dof" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the node and element dof (number of the dof in a specific element)
+corresponding to the global dof given.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>dof</strong> (<em>int</em>) &#8211; global <em>dof</em></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><ul class="simple">
+<li><em>sajou.Node</em> &#8211; Node correpsonding to the <em>dof</em> specified</li>
+<li><em>int</em> &#8211; number of the <em>dof</em> of the element corresponding to the global
+<em>dof</em> supplied</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="sajou.model.Model.load">
+<code class="descname">load</code><span class="sig-paren">(</span><em>node</em>, <em>coord_system='global'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#sajou.model.Model.load" title="Permalink to this definition">¶</a></dt>
+<dd><p>Introduces a Load in the given direction according to the selected
+coordinate system at the specified node.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>node</strong> (<em>sajou.Node</em>) &#8211; a Node instance</li>
+<li><strong>coordinate</strong> &#8211; coordinate system</li>
+<li><strong>**kwargs</strong> &#8211; keyword arguments. The BC is defined for the different degree of
+freedom (<em>dof</em>) available to the node.
+At least one of the following parameters must be supplied:</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body"><ul class="first simple">
+<li><strong>f1</strong> (<em>float</em>) &#8211; force in direction 1</li>
+<li><strong>f2</strong> (<em>float</em>) &#8211; force in direction 2</li>
+<li><strong>f3</strong> (<em>float</em>) &#8211; force in direction 3</li>
+<li><strong>m1</strong> (<em>float</em>) &#8211; moment in direction 1</li>
+<li><strong>m2</strong> (<em>float</em>) &#8211; moment in direction 2</li>
+<li><strong>m3</strong> (<em>float</em>) &#8211; moment in direction 3</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">the instance of the Load object created</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">sajou.Load</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="sajou.model.Model.material">
+<code class="descname">material</code><span class="sig-paren">(</span><em>name</em>, <em>data</em>, <em>type='isotropic'</em><span class="sig-paren">)</span><a class="headerlink" href="#sajou.model.Model.material" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function used to create a Material instance in the model</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>name</strong> (<em>str</em>) &#8211; name of the material</li>
+<li><strong>data</strong> &#8211; data for the material</li>
+<li><strong>type</strong> (<em>str</em>) &#8211; type of the material</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">a Material instance</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">sajou.Material</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="sajou.model.Model2D">
+<em class="property">class </em><code class="descclassname">sajou.model.</code><code class="descname">Model2D</code><span class="sig-paren">(</span><em>name</em>, <em>dimensionality='2D'</em><span class="sig-paren">)</span><a class="headerlink" href="#sajou.model.Model2D" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#sajou.model.Model" title="sajou.model.Model"><code class="xref py py-class docutils literal"><span class="pre">sajou.model.Model</span></code></a></p>
+<p>Subclass of the &#8216;Model&#8217; class. It is intended to be used for the 2-dimensional
+models of frame structures.</p>
+<p>Allocation of DOFs in each node:</p>
+<blockquote>
+<div>[1 2 3] = [ux, uy, rz]</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>name</strong> (<em>str</em>) &#8211; name of the model</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="sajou.model.Model2D.n_dimensions">
+<code class="descname">n_dimensions</code><a class="headerlink" href="#sajou.model.Model2D.n_dimensions" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>int</em> &#8211; number of spacial dimensions (2 for Model2D)</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="sajou.model.Model2D.n_dof_per_node">
+<code class="descname">n_dof_per_node</code><a class="headerlink" href="#sajou.model.Model2D.n_dof_per_node" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>int</em> &#8211; number of degrees of freedom per node</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="sajou.model.Model2D.beam">
+<code class="descname">beam</code><span class="sig-paren">(</span><em>node1</em>, <em>node2</em><span class="sig-paren">)</span><a class="headerlink" href="#sajou.model.Model2D.beam" title="Permalink to this definition">¶</a></dt>
+<dd><p>Define a line between two nodes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>node1</strong> (<em>sajou.Node</em>) &#8211; first node</li>
+<li><strong>node2</strong> (<em>sajou.Node</em>) &#8211; second node</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">the beam element created</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">sajou.Beam</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="sajou.model.Model2D.distributed_load">
+<code class="descname">distributed_load</code><span class="sig-paren">(</span><em>elements</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#sajou.model.Model2D.distributed_load" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a distributed load to a list of beam elements.</p>
+<p>A list of elements has to be supplied for the first variable. The rest of the
+variables are exactly the same as in the &#8216;distributed_load&#8217; function of the
+corresponding elements.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>elements</strong> (<em>list</em>) &#8211; list of beam elements</li>
+<li><strong>p1</strong> (<em>float</em>) &#8211; value of the force at start node</li>
+<li><strong>p2</strong> (<em>float</em>) &#8211; value of the force at end node</li>
+<li><strong>direction</strong> (<em>int</em>) &#8211; direction of the applied load (default: <em>2</em>)</li>
+<li><strong>coord_system</strong> (<em>str</em>) &#8211; coordinate system (default: global)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">TODO</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">bool</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="sajou.model.Model2D.node">
+<code class="descname">node</code><span class="sig-paren">(</span><em>x</em>, <em>y</em><span class="sig-paren">)</span><a class="headerlink" href="#sajou.model.Model2D.node" title="Permalink to this definition">¶</a></dt>
+<dd><p>2D implementation of the Node.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>x</strong> (<em>float</em>) &#8211; x position</li>
+<li><strong>y</strong> (<em>float</em>) &#8211; y position</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">the node created</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">sajou.Node</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="sajou.model.Model3D">
+<em class="property">class </em><code class="descclassname">sajou.model.</code><code class="descname">Model3D</code><span class="sig-paren">(</span><em>name</em>, <em>dimensionality='3D'</em><span class="sig-paren">)</span><a class="headerlink" href="#sajou.model.Model3D" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#sajou.model.Model" title="sajou.model.Model"><code class="xref py py-class docutils literal"><span class="pre">sajou.model.Model</span></code></a></p>
+<p>Subclass of the &#8216;Model&#8217; class. It is intended to be used for the 3-dimensional
+models of frame structures.</p>
+<p>Allocation of DOFs in each node:</p>
+<blockquote>
+<div>[1 2 3 4 5 6] = [ux, uy, uz, rx, ry, rz]</div></blockquote>
+<dl class="method">
+<dt id="sajou.model.Model3D.beam">
+<code class="descname">beam</code><span class="sig-paren">(</span><em>node1</em>, <em>node2</em><span class="sig-paren">)</span><a class="headerlink" href="#sajou.model.Model3D.beam" title="Permalink to this definition">¶</a></dt>
+<dd><p>Define a line between two nodes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Node1:</th><td class="field-body">first node</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Node2:</th><td class="field-body">second node</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="sajou.model.Model3D.node">
+<code class="descname">node</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>z</em><span class="sig-paren">)</span><a class="headerlink" href="#sajou.model.Model3D.node" title="Permalink to this definition">¶</a></dt>
+<dd><p>3D implementation of the Node.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>x</strong> (<em>float</em>) &#8211; x-position of the node</li>
+<li><strong>y</strong> (<em>float</em>) &#8211; y-position of the node</li>
+<li><strong>z</strong> (<em>float</em>) &#8211; z-position of the node</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>Node</strong></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">instance of Node</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="sajou.model.ModelData">
+<em class="property">class </em><code class="descclassname">sajou.model.</code><code class="descname">ModelData</code><span class="sig-paren">(</span><em>model</em><span class="sig-paren">)</span><a class="headerlink" href="#sajou.model.ModelData" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Object to store the data of a model object. It is used to pass it to the results object</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="sajou.model.get_dataframe_of_node_coords">
+<code class="descclassname">sajou.model.</code><code class="descname">get_dataframe_of_node_coords</code><span class="sig-paren">(</span><em>model</em>, <em>nodes='all'</em><span class="sig-paren">)</span><a class="headerlink" href="#sajou.model.get_dataframe_of_node_coords" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a pandas dataframe with coordinates of selected nodes of the model</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Nodes:</th><td class="field-body">list of nodes or &#8216;all&#8217;</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">TODO</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="sajou.nodes.html" class="btn btn-neutral float-right" title="sajou.nodes module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="sajou.materials.html" class="btn btn-neutral" title="sajou.materials module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Cristóbal Tapia Camú.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

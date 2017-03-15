@@ -14,7 +14,7 @@ like moments and axial forces of beams, in an easy manner.
 
 Although currently only 2D models are implemented, the code has been designed with 3D support in mind, and will be implemented at
 some point in the future.
-In a similar way, the element library should be expanded in the future, implementing diverse useful elements like plates or shells.
+In a similar way, the element library should be expanded in the future, implementing diverse and useful elements like plates or shells.
 
 .. note:: Sajou is currently in a very early stage of development. As such, expect major bugs, radical
     changes in the API, inexplicably burn down of your computer and sudden deaths of kittens. Use under your own

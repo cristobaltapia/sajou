@@ -8,7 +8,7 @@ Using ``pip``
 
 On any oparating system::
 
-    pip install github.com/cristobaltapia/sajou
+    pip install git+https://github.com/cristobaltapia/sajou
 
 Dependencies
 ------------

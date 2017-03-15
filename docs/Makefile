@@ -4,7 +4,7 @@
 # You can set these variables from the command line.
 SPHINXOPTS    = -a -E
 SPHINXBUILD   = sphinx-build
-SPHINXPROJ    = PyBar
+SPHINXPROJ    = Sajou
 SOURCEDIR     = .
 BUILDDIR      = _build
 
@@ -18,3 +18,4 @@ help:
 # "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
 %: Makefile
 	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
+

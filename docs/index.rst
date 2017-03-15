@@ -24,7 +24,7 @@ Contents
 --------
 
 .. toctree::
-    :maxdepth: 1
+    :maxdepth: 4
 
     install
     quickstart

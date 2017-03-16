@@ -1,3 +1,4 @@
+
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
@@ -39,14 +40,9 @@ extensions = [
     'matplotlib.sphinxext.plot_directive',
     'sphinx.ext.autosummary',
     'sphinx.ext.doctest',
-    #'sphinx.ext.mathjax',
-    'sphinx.ext.imgmath',
+    'sphinx.ext.mathjax',
+    #'sphinx.ext.imgmath',
 ]
-
-todo_include_todos = True
-
-# Latex preamble in html
-imgmath_latex_preamble = '\usepackage[]{amsmath}'
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -99,9 +95,9 @@ todo_include_todos = False
 #
 # html_theme = "nature"
 # html_style = 'custom.css'
-html_theme = "sphinx_rtd_theme"
 
 html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
+html_theme = "sphinx_rtd_theme"
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -126,6 +122,10 @@ html_sidebars = {
 htmlhelp_basename = 'Sajoudoc'
 
 # -- Options for LaTeX output ---------------------------------------------
+
+# Latex preamble in html
+imgmath_latex_preamble = '\usepackage[]{amsmath}'
+
 
 latex_elements = {
     # The paper size ('letterpaper' or 'a4paper').

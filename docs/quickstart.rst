@@ -22,12 +22,12 @@ A simple frame structure as described in the figure below will be calculated.
 Geometry
 ********
 
-To build the model a :class:`model.Model` has to be created::
+To build the model a :class:`.Model` has to be created::
 
     # Initialize a Model instance of a 2D model
     m = sj.model(name='Model 1', dimensionality='2D')
 
-The geometry of the problem can then be defined by means of :class:`nodes.Node`, which is conveniently wrapped in the method :meth:`model.Model2D.node` of the class :class:`model.Model`::
+The geometry of the problem can then be defined by means of :class:`.Node`, which is conveniently wrapped in the method :meth:`.Model2D.node` of the class :class:`.Model`::
 
     # Add nodes in the specified positions
     n1 = m.node(0, 0)
@@ -35,7 +35,7 @@ The geometry of the problem can then be defined by means of :class:`nodes.Node`,
     n3 = m.node(2000, 2000)
     n4 = m.node(2000, 0)
 
-Beam elements (:class:`elements.beam2d.Beam2D`) are created using a method of the class :class:`model.Model`::
+Beam elements (:class:`.Beam2D`) are created using a method of the class :class:`model.Model`::
 
     # Add Beam2D elements
     b1 = m.beam(n1, n2)
@@ -45,9 +45,9 @@ Beam elements (:class:`elements.beam2d.Beam2D`) are created using a method of th
 Material and cross-section
 **************************
 
-For this example, the material consist of a steel, with an modulus of elasticity (MOE) equals to 200GPa.
+For this example, the material consist of a steel, with an modulus of elasticity (MOE) equals to 200 GPa.
 The cross-section of the beam is defined in a *general* way by giving both the area and moment of inertia
-as a tuple (see :meth:`model.Model.beam_section` to understand how to pass different parameters).
+as a tuple (see :class:`sections.BeamSection` to understand how to pass different parameters).
 
 +----------+---------+-------+
 | Property | value   | units |
@@ -59,9 +59,9 @@ as a tuple (see :meth:`model.Model.beam_section` to understand how to pass diffe
 | Inertia  | 2.356e7 | mm^4  |
 +----------+---------+-------+
 
-The material is defined by means of the :meth:`model.Model.material` method, which creates an instance of the class :class:`materials.Material`.
-This is then assigned to a Section instance (:class:`sections.BeamSection`), using the :meth:`model.Model.beam_section` method and giving the
-parameter ``type='general'``.::
+The material is defined by means of the :meth:`.Model.material` method, which creates an instance of the class :class:`.Material`.
+This is then assigned to a :class:`.BeamSection` instance, using the :meth:`.Model.beam_section` method and giving the
+parameter ``type='general'``::
 
     # Create a material instance
     steel = m.material(name='steel', data=(200e3, ), type='isotropic')
@@ -69,7 +69,7 @@ parameter ``type='general'``.::
     section_1 = m.beam_section(name='section 1', material=steel,
                                data=(32e2, 2.356e7), type='general')
 
-The above created **Section** now needs to be assigned to a **Beam** instance (:py:class:`elements.beam2d.Beam2D`)::
+The above created :class:`.BeamSection` now needs to be assigned to a :class:`.Beam2D` instance::
 
 
     # Assign the section to the beam elements
@@ -82,8 +82,8 @@ Applying loads and border conditions
 ************************************
 
 
-PyBar supports the application of both point loads as well as distributed loads. For this, the methods :meth:`model.Model.load` and :meth:`elements.beam2d.distributed_load` are used.
-The border conditions (BCs) are defined with the method :meth:`elements.beam2d.distributed_load`::
+Sajou supports the application of both point loads as well as distributed loads. For this, the methods :meth:`.Model.load` and :meth:`.Beam2D.distributed_load` are used.
+The border conditions (BCs) are defined with the method :meth:`.Beam2D.distributed_load`::
 
     # Add border conditions
     m.bc(node=n1, v1=0., v2=0., r3=0.)
@@ -101,7 +101,7 @@ Visualizing the model
 *********************
 
 A visual inspection of the model is crucial to easily spot problems in the model.
-To see the current state of the model a :class:`plot.Display` instance has to be instantiated and a `Matplotlib <http://www.matplotlib.org>`_ axis has to be passed (this might change in the future)::
+To see the current state of the model a :class:`.Display` instance has to be instantiated and a `Matplotlib <http://www.matplotlib.org>`_ axis has to be passed (this might change in the future)::
 
     # create matplotlib figure and axes
     import matplotlib.pyplot as plt
@@ -122,7 +122,7 @@ A figure similar to the one shown below should be created.
 Solving the system
 ******************
 
-For this example, the static solver (:class:`solvers.StaticSolver`) is used::
+For this example, the static solver (:class:`.StaticSolver`) is used::
 
     # instance of StaticSolver
     from sj.solvers import StaticSolver
@@ -133,14 +133,14 @@ For this example, the static solver (:class:`solvers.StaticSolver`) is used::
     # Solve the system
     res = solver.solve()
 
-After this, a :class:`solvers.Result` object is created (stored as `res` in the example), which contains the required results of the system.
+After this, a :class:`.Result` object is created (stored as ``res`` in the example), which contains the required results of the system.
 
 Postprocessing
 **************
 
-The previously obtained :class:`solvers.Result` object is then used for the post-processing of the model.
-This is done by means of a :class:`postprocessing.Postprocess` object, which can be used to obtain values
-of section forces in a specified element or to plot the results using the above mentioned :class:`plot.Display` class.
+The previously obtained :class:`.Result` object is then used for the post-processing of the model.
+This is done by means of a :class:`.Postprocess` object, which can be used to obtain values
+of section forces in a specified element or to plot the results using the above mentioned :class:`.Display` class.
 
 Let us begin by extracting values o the moment, shear and axial force along a specified beam (say beam No. 2)::
 

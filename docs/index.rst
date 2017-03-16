@@ -16,7 +16,7 @@ Although currently only 2D models are implemented, the code has been designed wi
 some point in the future.
 In a similar way, the element library should be expanded in the future, implementing diverse and useful elements like plates or shells.
 
-.. note:: Sajou is currently in a very early stage of development. As such, expect major bugs, radical
+.. warning:: Sajou is currently in a very early stage of development. As such, expect major bugs, radical
     changes in the API, inexplicably burn down of your computer and sudden deaths of kittens. Use under your own
     responsability.
 

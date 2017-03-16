@@ -891,14 +891,13 @@ def range_with_ratio(x1, x2, n, a):
 
     .. math::
 
-        \ell_{tot} = l_1 + l_2 + ... + l_n
+        \ell_{tot} = \\ell_1 + \\ell_2 + ... + \\ell_n
 
     where:
 
     .. math::
 
-        l_i &= l_i - 1 + b \\
-
+        \\ell_i &= \\ell_i - 1 + b \\\\
         b &= \\frac{\ell_{tot} - (\\frac{\ell_{tot}}{n} \cdot a)}{n}
 
     Parameters

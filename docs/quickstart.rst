@@ -96,6 +96,7 @@ The border conditions (BCs) are defined with the method :meth:`.Beam2D.distribut
     # Add distributed load
     b1.distributed_load(p1=-1, p2=-2, direction='y', coord_system='local')
 
+.. seealso:: Concentrated and distributed moments are also supported. See the methods :meth:`.Model.load` and :meth:`.Beam2D.distributed_moment`
 
 Visualizing the model
 *********************
@@ -122,7 +123,7 @@ A figure similar to the one shown below should be created.
 Solving the system
 ******************
 
-For this example, the static solver (:class:`.StaticSolver`) is used::
+For this example, the implemented static solver (:class:`.StaticSolver`) is used::
 
     # instance of StaticSolver
     from sj.solvers import StaticSolver
@@ -138,9 +139,9 @@ After this, a :class:`.Result` object is created (stored as ``res`` in the examp
 Postprocessing
 **************
 
-The previously obtained :class:`.Result` object is then used for the post-processing of the model.
-This is done by means of a :class:`.Postprocess` object, which can be used to obtain values
-of section forces in a specified element or to plot the results using the above mentioned :class:`.Display` class.
+The previously obtained :class:`.Result` object is then used in the post-processing of the model.
+This is done by means of a :class:`.Postprocess` object, which defines several methods to obtain values
+of section forces in a specified element and to plot the results using the above mentioned :class:`.Display` class.
 
 Let us begin by extracting values o the moment, shear and axial force along a specified beam (say beam No. 2)::
 
@@ -153,6 +154,10 @@ Let us begin by extracting values o the moment, shear and axial force along a sp
 
 As can be seen in the code above, the option ``unit_length`` is set to ``True``, which indicates that the values given
 for the ``pos`` parameter must be in the range ``[0, 1]``.
+
+.. note:: The ``pos`` parameter of the :meth:`.calc_moment_at` also accept an array-like argument, so that the
+    result can be obtained at different points over the beam element at once.
+    This also holds for the :meth:`.calc_shear_at` and :meth:`.calc_axial_at` methods.
 
 Finally, nice plots can be obtained for the different section forces (moment, shear and axial force)::
 

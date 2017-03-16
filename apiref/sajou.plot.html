@@ -94,28 +94,12 @@
               
             
             
-              <ul class="current">
+              <ul>
 <li class="toctree-l1"><a class="reference internal" href="../install.html">Installation instructions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quick start</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tutorial/index.html">Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../doc/index.html">Documentation</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="index.html">Python API reference</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="index.html#subpackages">Subpackages</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="index.html#submodules">Submodules</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="sajou.loads.html">sajou.loads module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="sajou.materials.html">sajou.materials module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="sajou.model.html">sajou.model module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="sajou.nodes.html">sajou.nodes module</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">sajou.plot module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="sajou.postprocessing.html">sajou.postprocessing module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="sajou.sections.html">sajou.sections module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="sajou.solvers.html">sajou.solvers module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="sajou.utils.html">sajou.utils module</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="index.html#module-sajou">Module contents</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">Python API reference</a></li>
 </ul>
 
             
@@ -428,13 +412,12 @@ that multiplies that automatically calulated factor)</li>
 according to the ratio &#8216;a&#8217;.</p>
 <p>The range is divided such that:</p>
 <div class="math">
-<p><img src="../_images/math/b81e227633117d1b5804a431cd885f646d6d396c.png" alt="\ell_{tot} = l_1 + l_2 + ... + l_n"/></p>
-</div><p>where:</p>
+\[\ell_{tot} = \ell_1 + \ell_2 + ... + \ell_n\]</div>
+<p>where:</p>
 <div class="math">
-<p><img src="../_images/math/e6c9c3912798b6797008d4a989cd688a173b9725.png" alt="l_i &amp;= l_i - 1 + b \
-
-b &amp;= \frac{\ell_{tot} - (\frac{\ell_{tot}}{n} \cdot a)}{n}"/></p>
-</div><table class="docutils field-list" frame="void" rules="none">
+\[\begin{split}\ell_i &amp;= \ell_i - 1 + b \\
+b &amp;= \frac{\ell_{tot} - (\frac{\ell_{tot}}{n} \cdot a)}{n}\end{split}\]</div>
+<table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
@@ -512,6 +495,7 @@ b &amp;= \frac{\ell_{tot} - (\frac{\ell_{tot}}{n} \cdot a)}{n}"/></p>
       <script type="text/javascript" src="../_static/jquery.js"></script>
       <script type="text/javascript" src="../_static/underscore.js"></script>
       <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
   
 

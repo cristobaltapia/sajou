@@ -163,202 +163,6 @@ class Model(object):
 
         return section
 
-    def __str__(self):
-        """
-        Printable string
-        """
-        return str(
-            'Model: Name: {name}, Nodes: {n_nodes}, Beams: {n_beams}'.format(
-                name=self._name, n_nodes=self.n_nodes, n_beams=self.n_beams))
-
-    def __repr__(self):
-        """
-        Returns the printable string for this object
-        """
-        return str(
-            'Model: Name: {name}, Nodes: {n_nodes}, Beams: {n_beams}'.format(
-                name=self._name, n_nodes=self.n_nodes, n_beams=self.n_beams))
-
-    def _assemble_global_K(self):
-        """Assemble the global stiffness matrix using the addition method.
-
-        Returns
-        -------
-        numpy.array
-           Global stiffness matrix of the system
-
-        """
-        # Generate Node Freedom Al[location Table and total number of
-        # active DOFs of the system
-        self.__generate_node_freedom_allocation_dict__()
-        # Generate Node Freedom Map dictionary
-        self.__generate_node_freedom_map_dict__()
-        # number of dof per node
-        n_dof = self.n_active_dof
-        # Initialize the global stiffness matrix
-        K = np.zeros([n_dof, n_dof], dtype=np.float64)
-        # Fill the global stiffness matrix
-        for n_elem, element in self.beams.items():
-            # Get nodes of the respective element
-            nodes_elem = element._nodal_connectivity
-            # Assemble element stiffness matrix
-            element.assemble_Ke()
-            # List to store the global system indices
-            g_i = []
-            # List of indices of used element DOFs
-            g_e = []
-            # For each node in the current element
-            for n_node_e, node in nodes_elem.items():
-                # Get Element Freedom Signature
-                efs = element.efs[n_node_e]
-                # Number of active DOF in the node of the element
-                active_dof = np.sum(efs)
-                if active_dof > 0:
-                    # Get value of th Node Freedom Assign Table for the
-                    # current node
-                    nfat_node = self.nfmt[node.number]
-                    # Get NFS of the node in the element
-                    enfs_node = element.enfmt[n_node_e]
-                    # for the total of used DOF in the node
-                    index_base = element.get_index_array_of_node(n_node_e)
-                    active_nodes = nfat_node + index_base
-                    # Extend the list
-                    g_i.extend(active_nodes)
-                    #
-                    index_base_e = element.get_index_array_of_node(n_node_e)
-                    active_nodes_e = enfs_node + index_base_e
-                    g_e.extend(active_nodes_e)
-
-            # Convert list to numpy array in order to broadcast more
-            # easily to the global stiffness matrix
-            g_i = np.array(g_i)
-            g_e = np.array(g_e)
-            # Add the contributions to the respective DOFs in global system
-            K[g_i[:, None], g_i] += element._Ke[g_e[:, None], g_e]
-
-        # Generate sparse matrix
-        K_s = sparse.csr_matrix(K)
-
-        return K_s
-
-    def _generate_loading_vector(self):
-        """Generate the global matrix of applied forces P.
-
-        Returns
-        -------
-        numpy.array
-            Loading vector of the system
-
-        """
-        # number of dof per node
-        n_dof = self.n_active_dof
-        # Get the node freedom allocation map table
-        nfmt = self.nfmt
-        # Initialize a zero vector of the size of the total number of
-        # dof
-        P = np.zeros(n_dof, dtype=np.float64)
-        # Assign the values corresponding to the loads in each dof
-        for ix, node in self.nodes.items():
-            # Get the Node Freedom Signature of the current node
-            nfs = node.nfs
-            #
-            index_i = np.array([kx for kx in node._loads.keys()],
-                               dtype=np.int) + nfmt[node.number]
-            P[index_i] = np.array([kx for kx in node._loads.values()])
-
-        self._P = P
-
-        return P
-
-    def _generate_element_loading_vector(self):
-        """Generate the global element vector of forces.
-
-        Returns
-        -------
-        numpy.array
-            Loading vector of the system
-
-        """
-        # number of dof per node
-        n_dof = self.n_active_dof
-        # Initialize a zero vector of the size of the total number of
-        # DOF
-        P = np.zeros(n_dof, dtype=np.float64)
-
-        # Add loads applied to the elements (distributed loads)
-        for ix, element in self.beams.items():
-            # Check if the element has element loads defined
-            if len(element._loads) > 0:
-                # Get nodes of the respective element
-                nodes_elem = element._nodal_connectivity
-                # List of indices of the global system
-                g_i = []
-                # List of indices of active element DOFs
-                g_e = []
-                # For each node in the current element
-                for n_node_e, node in nodes_elem.items():
-                    # Get Element Freedom Signature
-                    efs = element.efs[n_node_e]
-                    # Number of active DOF in the node of the element
-                    active_dof = np.sum(efs)
-
-                    if active_dof > 0:
-                        # Get value of th Node Freedom Assign Table for the
-                        # current node
-                        nfat_node = self.nfmt[node.number]
-                        # Get node freedom signature of the node in the element
-                        enfs_node = element.enfmt[n_node_e]
-                        # Get the corresponding active indices of the
-                        # node in the element
-                        index_base = element.get_index_array_of_node(n_node_e)
-                        active_nodes = nfat_node + index_base
-                        # Extend the list
-                        g_i.extend(active_nodes)
-                        #
-                        index_base_e = element.get_index_array_of_node(
-                            n_node_e)
-                        active_nodes_e = enfs_node + index_base_e
-                        g_e.extend(active_nodes_e)
-
-                # Add to the global load vector
-                P[g_i] += element._load_vector_e[g_e]
-
-        self._P = P
-
-        return P
-
-    def _generate_displacement_vector(self):
-        """Generate the global displacement matrix V, containing the border
-        conditions applied to each dof.
-
-        Returns
-        -------
-        numpy.array
-            Dsiplacement vector of the system
-
-        """
-        # number of dof per node
-        n_dof = self.n_active_dof
-        # Get the node freedom allocation map table
-        nfmt = self.nfmt
-        # Initialize a zero vector of the size of the total number of
-        # dof
-        V = np.zeros(self.n_nodes * self.n_dof_per_node, dtype=np.float64)
-        # Assign the values corresponding to the loads in each dof
-        for ix, node in self.nodes.items():
-            # Get the Node Freedom Signature of the current node
-            nfs = node.nfs
-            #
-            index_i = np.array([kx for kx in node._bc.keys()],
-                               dtype=np.int) + nfmt[node.number]
-            V[index_i] = np.array([kx for kx in node._bc.values()])
-            # Add to the list of restrained DOFs
-            self._dof_dirichlet.extend(index_i.tolist())
-
-        self._V = V
-
-        return V
-
     def bc(self, node, type='displacement', coord_system='global', **kwargs):
         """Introduces a border condition to the node.
 
@@ -558,6 +362,186 @@ class Model(object):
 
         return True
 
+    def _assemble_global_K(self):
+        """Assemble the global stiffness matrix using the addition method.
+
+        Returns
+        -------
+        numpy.array
+           Global stiffness matrix of the system
+
+        """
+        # Generate Node Freedom Al[location Table and total number of
+        # active DOFs of the system
+        self.__generate_node_freedom_allocation_dict__()
+        # Generate Node Freedom Map dictionary
+        self.__generate_node_freedom_map_dict__()
+        # number of dof per node
+        n_dof = self.n_active_dof
+        # Initialize the global stiffness matrix
+        K = np.zeros([n_dof, n_dof], dtype=np.float64)
+        # Fill the global stiffness matrix
+        for n_elem, element in self.beams.items():
+            # Get nodes of the respective element
+            nodes_elem = element._nodal_connectivity
+            # Assemble element stiffness matrix
+            element.assemble_Ke()
+            # List to store the global system indices
+            g_i = []
+            # List of indices of used element DOFs
+            g_e = []
+            # For each node in the current element
+            for n_node_e, node in nodes_elem.items():
+                # Get Element Freedom Signature
+                efs = element.efs[n_node_e]
+                # Number of active DOF in the node of the element
+                active_dof = np.sum(efs)
+                if active_dof > 0:
+                    # Get value of th Node Freedom Assign Table for the
+                    # current node
+                    nfat_node = self.nfmt[node.number]
+                    # Get NFS of the node in the element
+                    enfs_node = element.enfmt[n_node_e]
+                    # for the total of used DOF in the node
+                    index_base = element.get_index_array_of_node(n_node_e)
+                    active_nodes = nfat_node + index_base
+                    # Extend the list
+                    g_i.extend(active_nodes)
+                    #
+                    index_base_e = element.get_index_array_of_node(n_node_e)
+                    active_nodes_e = enfs_node + index_base_e
+                    g_e.extend(active_nodes_e)
+
+            # Convert list to numpy array in order to broadcast more
+            # easily to the global stiffness matrix
+            g_i = np.array(g_i)
+            g_e = np.array(g_e)
+            # Add the contributions to the respective DOFs in global system
+            K[g_i[:, None], g_i] += element._Ke[g_e[:, None], g_e]
+
+        # Generate sparse matrix
+        K_s = sparse.csr_matrix(K)
+
+        return K_s
+
+    def _generate_loading_vector(self):
+        """Generate the global matrix of applied forces P.
+
+        Returns
+        -------
+        numpy.array
+            Loading vector of the system
+
+        """
+        # number of dof per node
+        n_dof = self.n_active_dof
+        # Get the node freedom allocation map table
+        nfmt = self.nfmt
+        # Initialize a zero vector of the size of the total number of
+        # dof
+        P = np.zeros(n_dof, dtype=np.float64)
+        # Assign the values corresponding to the loads in each dof
+        for ix, node in self.nodes.items():
+            # Get the Node Freedom Signature of the current node
+            nfs = node.nfs
+            #
+            index_i = np.array([kx for kx in node._loads.keys()],
+                               dtype=np.int) + nfmt[node.number]
+            P[index_i] = np.array([kx for kx in node._loads.values()])
+
+        self._P = P
+
+        return P
+
+    def _generate_element_loading_vector(self):
+        """Generate the global element vector of forces.
+
+        Returns
+        -------
+        numpy.array
+            Loading vector of the system
+
+        """
+        # number of dof per node
+        n_dof = self.n_active_dof
+        # Initialize a zero vector of the size of the total number of
+        # DOF
+        P = np.zeros(n_dof, dtype=np.float64)
+
+        # Add loads applied to the elements (distributed loads)
+        for ix, element in self.beams.items():
+            # Check if the element has element loads defined
+            if len(element._loads) > 0:
+                # Get nodes of the respective element
+                nodes_elem = element._nodal_connectivity
+                # List of indices of the global system
+                g_i = []
+                # List of indices of active element DOFs
+                g_e = []
+                # For each node in the current element
+                for n_node_e, node in nodes_elem.items():
+                    # Get Element Freedom Signature
+                    efs = element.efs[n_node_e]
+                    # Number of active DOF in the node of the element
+                    active_dof = np.sum(efs)
+
+                    if active_dof > 0:
+                        # Get value of th Node Freedom Assign Table for the
+                        # current node
+                        nfat_node = self.nfmt[node.number]
+                        # Get node freedom signature of the node in the element
+                        enfs_node = element.enfmt[n_node_e]
+                        # Get the corresponding active indices of the
+                        # node in the element
+                        index_base = element.get_index_array_of_node(n_node_e)
+                        active_nodes = nfat_node + index_base
+                        # Extend the list
+                        g_i.extend(active_nodes)
+                        #
+                        index_base_e = element.get_index_array_of_node(
+                            n_node_e)
+                        active_nodes_e = enfs_node + index_base_e
+                        g_e.extend(active_nodes_e)
+
+                # Add to the global load vector
+                P[g_i] += element._load_vector_e[g_e]
+
+        self._P = P
+
+        return P
+
+    def _generate_displacement_vector(self):
+        """Generate the global displacement matrix V, containing the border
+        conditions applied to each dof.
+
+        Returns
+        -------
+        numpy.array
+            Dsiplacement vector of the system
+
+        """
+        # number of dof per node
+        n_dof = self.n_active_dof
+        # Get the node freedom allocation map table
+        nfmt = self.nfmt
+        # Initialize a zero vector of the size of the total number of
+        # dof
+        V = np.zeros(self.n_nodes * self.n_dof_per_node, dtype=np.float64)
+        # Assign the values corresponding to the loads in each dof
+        for ix, node in self.nodes.items():
+            # Get the Node Freedom Signature of the current node
+            nfs = node.nfs
+            #
+            index_i = np.array([kx for kx in node._bc.keys()],
+                               dtype=np.int) + nfmt[node.number]
+            V[index_i] = np.array([kx for kx in node._bc.values()])
+            # Add to the list of restrained DOFs
+            self._dof_dirichlet.extend(index_i.tolist())
+
+        self._V = V
+
+        return V
+
     def __generate_node_freedom_allocation_dict__(self):
         """
         Generate the Node Freedom Allocation Table.
@@ -611,6 +595,22 @@ class Model(object):
         self.nfmt = nfmt
 
         return nfmt
+
+    def __str__(self):
+        """
+        Printable string
+        """
+        return str(
+            'Model: Name: {name}, Nodes: {n_nodes}, Beams: {n_beams}'.format(
+                name=self._name, n_nodes=self.n_nodes, n_beams=self.n_beams))
+
+    def __repr__(self):
+        """
+        Returns the printable string for this object
+        """
+        return str(
+            'Model: Name: {name}, Nodes: {n_nodes}, Beams: {n_beams}'.format(
+                name=self._name, n_nodes=self.n_nodes, n_beams=self.n_beams))
 
 
 class Model2D(Model):

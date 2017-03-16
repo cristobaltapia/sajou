@@ -177,6 +177,213 @@ class Beam2D(Element):
 
         return Ke
 
+    def get_index_array_of_node(self, node):
+        """
+        Get an array containing the indices of the used DOFs of the given node of the
+        element.
+
+        Parameters
+        ----------
+
+        node: Node instance
+            the number of the node in the element (element number of the node: 0, 1,
+            2, ... )
+
+        Returns
+        -------
+
+        array of indices:
+
+        Note
+        ----
+
+        The array has the following form::
+
+                [0, 1, 2] --> all DOFs are used
+                [0, 2] --> DOF 0 and 2 are used only (ux and rz)
+
+        This array is used to know exactly which DOFs should be used to assemble the global
+        stiffness matrix or to retrieve the corresponding displacements.
+
+        Example
+        ---------
+
+        It would be used like this::
+
+            i_global_node_1 = e.get_index_list_of_node(n_node_ele) + nfat[global_node_number]
+
+
+        """
+        efs = self.efs[node]
+
+        return np.arange(len(efs))[efs > 0]
+
+    def assemble_sym_K(self):
+        """This function assembles the stiffness matrix for one individual element. Optionally
+        it can take the shear effect into account (second order effect).
+
+        Returns
+        -------
+
+        local stiffness matrix:
+
+        """
+        from sympy.matrices import Matrix, zeros
+        # Modulus of elasticity
+        E = self._beam_section._material._data[0]
+        # Area of the section
+        EA = self._beam_section._area * E
+        # Inertias
+        EI = self._beam_section._Iz * E
+        # Length of the element
+        L = self._length
+
+        # Initialize stiffness matrix
+        k = zeros(6, 6)
+
+        k[0, 0] = k[3, 3] = EA / L
+        k[1, 1] = k[4, 4] = 12. * EI / (L * L * L)
+        k[2, 2] = k[5, 5] = 4. * EI / L
+        k[2, 1] = k[1, 2] = 6 * EI / L**2
+        k[3, 0] = k[0, 3] = -EA / L
+        k[4, 1] = k[1, 4] = -12. * EI / (L * L * L)
+        k[4, 2] = k[2, 4] = -6. * EI / L**2
+        k[5, 1] = k[1, 5] = 6. * EI / L**2
+        k[5, 2] = k[2, 5] = 2. * EI / L
+        k[5, 4] = k[4, 5] = -6. * EI / L**2
+
+        # transform to global coordinates
+        #T = element.transformation_matrix
+
+        self._Ke_local = k
+
+        # transform to global coordinates
+        T = Matrix(self.transformation_matrix)
+
+        aux = k.multiply(T)
+        TT = T.T
+        Ke = TT.multiply(aux)
+
+        self._Ke = Ke
+
+        return k
+
+    def distributed_load(self, **kwargs):
+        """Assign a DistributedLoad object to the frame current element.
+
+        The parameters are the same as defined for the class DistributedLoad()
+
+        Parameters
+        ----------
+
+        p1: float
+            value of the distributed load at the start node
+        p2: float
+            value of the distributed load at the end node
+        direction: str
+            direction of load application. Can be 'x' or 'y'
+        coord_system:
+            coordinate system to which the *direction* parameter applies. It can
+            be 'local' or 'global'
+
+        Returns
+        -------
+
+        a DistributedLoad instance:
+
+        """
+        dist_load = loads.DistributedLoad(elem=self, **kwargs)
+
+        # Add this DistributedLoad instance to the list of loads of the
+        # element
+        self._loads.append(dist_load)
+        # Append the load vector (in global coordinates)
+        self._load_vector_e += dist_load._load_vector_global
+        self._poly_sec_force += dist_load._poly_sec_force
+
+        return 1
+
+    def distributed_moment(self, **kwargs):
+        """Assign a DistributedLoad object to the frame current element.
+
+        Parameters
+        ----------
+
+        m1: float
+            moment applied at the start end of the beam
+        m2: float
+            moment applied at the end of the beam
+        direction: str
+            direction of application of the moment. Only 'z' is allowed in Beam2D
+        coord_system: str
+            coordinate system to which the 'direction' parameter applies
+
+        Returns
+        -------
+
+        returns: TODO
+
+        Note
+        ----
+
+        The parameters are the same as defined for the class DistributedMoment()
+
+        """
+        dist_moment = loads.DistributedMoment(elem=self, **kwargs)
+
+        # Add this DistributedLoad instance to the list of loads of the
+        # element
+        self._loads.append(dist_moment)
+        # Append the load vector (in global coordinates)
+        self._load_vector_e += dist_moment._load_vector_global
+        self._poly_sec_force += dist_moment._poly_sec_force
+
+        return 1
+
+    def release_end(self, which):
+        """
+        Release the rotation DOF of one or both ends of the beam element.
+
+        Parameters
+        ----------
+
+        which: int, str
+            specifies the end that should be released. It can be '1', '2' or 'both'
+
+        Returns
+        -------
+        TODO: bool
+
+        """
+        # Set the respective property to 'True'
+        if which == 1:
+            self.release_end_1 = True
+        elif which == 2:
+            self.release_end_2 = True
+        elif which == 'both':
+            self.release_end_1 = True
+            self.release_end_2 = True
+
+        return 1
+
+    def assign_section(self, beam_section):
+        """Assign a beam section instance to the beam
+
+        Parameters
+        ----------
+
+        beam_section: BeamSection instance
+            section to be assigned
+
+        Returns
+        -------
+        self: the same Beam2D instance
+
+        """
+        self._beam_section = beam_section
+
+        return self
+
     def _assemble_Ke(self):
         """
         Assemble the element stiffness matrix in local coordinates for the Bernoulli beam.
@@ -345,47 +552,6 @@ class Beam2D(Element):
 
         return v_j
 
-    def get_index_array_of_node(self, node):
-        """
-        Get an array containing the indices of the used DOFs of the given node of the
-        element.
-
-        Parameters
-        ----------
-
-        node: Node instance
-            the number of the node in the element (element number of the node: 0, 1,
-            2, ... )
-
-        Returns
-        -------
-
-        array of indices:
-
-        Note
-        ----
-
-        The array has the following form::
-
-                [0, 1, 2] --> all DOFs are used
-                [0, 2] --> DOF 0 and 2 are used only (ux and rz)
-
-        This array is used to know exactly which DOFs should be used to assemble the global
-        stiffness matrix or to retrieve the corresponding displacements.
-
-        Example
-        ---------
-
-        It would be used like this::
-
-            i_global_node_1 = e.get_index_list_of_node(n_node_ele) + nfat[global_node_number]
-
-
-        """
-        efs = self.efs[node]
-
-        return np.arange(len(efs))[efs > 0]
-
     def _generate_element_node_freedom_map_dict(self):
         """
         Generate the Node Freedom Map Table of the element.
@@ -417,168 +583,3 @@ class Beam2D(Element):
 
         return enfmt
 
-    def assemble_sym_K(self):
-        """This function assembles the stiffness matrix for one individual element. Optionally
-        it can take the shear effect into account (second order effect).
-
-        Returns
-        -------
-
-        local stiffness matrix:
-
-        """
-        from sympy.matrices import Matrix, zeros
-        # Modulus of elasticity
-        E = self._beam_section._material._data[0]
-        # Area of the section
-        EA = self._beam_section._area * E
-        # Inertias
-        EI = self._beam_section._Iz * E
-        # Length of the element
-        L = self._length
-
-        # Initialize stiffness matrix
-        k = zeros(6, 6)
-
-        k[0, 0] = k[3, 3] = EA / L
-        k[1, 1] = k[4, 4] = 12. * EI / (L * L * L)
-        k[2, 2] = k[5, 5] = 4. * EI / L
-        k[2, 1] = k[1, 2] = 6 * EI / L**2
-        k[3, 0] = k[0, 3] = -EA / L
-        k[4, 1] = k[1, 4] = -12. * EI / (L * L * L)
-        k[4, 2] = k[2, 4] = -6. * EI / L**2
-        k[5, 1] = k[1, 5] = 6. * EI / L**2
-        k[5, 2] = k[2, 5] = 2. * EI / L
-        k[5, 4] = k[4, 5] = -6. * EI / L**2
-
-        # transform to global coordinates
-        #T = element.transformation_matrix
-
-        self._Ke_local = k
-
-        # transform to global coordinates
-        T = Matrix(self.transformation_matrix)
-
-        aux = k.multiply(T)
-        TT = T.T
-        Ke = TT.multiply(aux)
-
-        self._Ke = Ke
-
-        return k
-
-    def distributed_load(self, **kwargs):
-        """Assign a DistributedLoad object to the frame current element.
-
-        The parameters are the same as defined for the class DistributedLoad()
-
-        Parameters
-        ----------
-
-        p1: float
-            value of the distributed load at the start node
-        p2: float
-            value of the distributed load at the end node
-        direction: str
-            direction of load application. Can be 'x' or 'y'
-        coord_system:
-            coordinate system to which the *direction* parameter applies. It can
-            be 'local' or 'global'
-
-        Returns
-        -------
-
-        a DistributedLoad instance:
-
-        """
-        dist_load = loads.DistributedLoad(elem=self, **kwargs)
-
-        # Add this DistributedLoad instance to the list of loads of the
-        # element
-        self._loads.append(dist_load)
-        # Append the load vector (in global coordinates)
-        self._load_vector_e += dist_load._load_vector_global
-        self._poly_sec_force += dist_load._poly_sec_force
-
-        return 1
-
-    def distributed_moment(self, **kwargs):
-        """Assign a DistributedLoad object to the frame current element.
-
-        Parameters
-        ----------
-
-        m1: float
-            moment applied at the start end of the beam
-        m2: float
-            moment applied at the end of the beam
-        direction: str
-            direction of application of the moment. Only 'z' is allowed in Beam2D
-        coord_system: str
-            coordinate system to which the 'direction' parameter applies
-
-        Returns
-        -------
-
-        returns: TODO
-
-        Note
-        ----
-
-        The parameters are the same as defined for the class DistributedMoment()
-
-        """
-        dist_moment = loads.DistributedMoment(elem=self, **kwargs)
-
-        # Add this DistributedLoad instance to the list of loads of the
-        # element
-        self._loads.append(dist_moment)
-        # Append the load vector (in global coordinates)
-        self._load_vector_e += dist_moment._load_vector_global
-        self._poly_sec_force += dist_moment._poly_sec_force
-
-        return 1
-
-    def release_end(self, which):
-        """
-        Release the rotation DOF of one or both ends of the beam element.
-
-        Parameters
-        ----------
-
-        which: int, str
-            specifies the end that should be released. It can be '1', '2' or 'both'
-
-        Returns
-        -------
-        TODO: bool
-
-        """
-        # Set the respective property to 'True'
-        if which == 1:
-            self.release_end_1 = True
-        elif which == 2:
-            self.release_end_2 = True
-        elif which == 'both':
-            self.release_end_1 = True
-            self.release_end_2 = True
-
-        return 1
-
-    def assign_section(self, beam_section):
-        """Assign a beam section instance to the beam
-
-        Parameters
-        ----------
-
-        beam_section: BeamSection instance
-            section to be assigned
-
-        Returns
-        -------
-        self: the same Beam2D instance
-
-        """
-        self._beam_section = beam_section
-
-        return self

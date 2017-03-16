@@ -5,25 +5,38 @@ import scipy.sparse as sparse
 
 
 class CoordSys(object):
-    """Class implementing coordinating systems"""
+    """Class implementing coordinating systems
+
+    Parameters
+    ----------
+
+    type: str
+        type of the coordinate system
+
+        - 'cartesian'
+        - 'cylindrical'
+        - 'spherical'
+
+    """
 
     def __init__(self, type='cartesian'):
-        """TODO: to be defined1.
-
-        :type: type of the coordinate system
-            - 'cartesian'
-            - 'cylindrical'
-            - 'spherical'
-
-        """
         self._type = type
 
     def from_cart_to_cylindric(self, cart_csys):
         """
         Transform coordinates from cartesian to polar coordinates
 
-        :param cart_csys: TODO
-        :returns: TODO
+        Parameters
+        ----------
+
+        cart_csys: CoordSys instance
+            Coordintate system
+
+        Returns
+        -------
+
+        CoordSys instance:
+            TODO
 
         """
         pass
@@ -31,8 +44,16 @@ class CoordSys(object):
     def from_cylindric_to_cart(self, cylindric_csys):
         """Trnsforms coordinates from polar to cartesian coordinates
 
-        :polar_csys: TODO
-        :returns: TODO
+        Parameters
+        ----------
+        polar_csys: CoordSys instance
+            TODO
+
+        Returns
+        -------
+
+        CoordSys instance:
+            TODO
 
         """
         pass
@@ -41,12 +62,23 @@ class CoordSys(object):
         """
         Calculates the transformation matrix for the current instance of local system
 
-        :param length:
-        :param cx:
-        :param cy:
-        :param cz:
+        Parameters
+        ----------
 
-        :returns: TODO
+        length: float
+            length of the beam element
+        cx: float
+            directive cosinus
+        cy: float
+            directive cosinus
+        cz: float
+            directive cosinus
+
+        Returns
+        -------
+
+        ndarray:
+            transsformation matrix
 
         """
         # TODO: implement for 3D
@@ -78,14 +110,21 @@ class CoordSys(object):
 
 
 class Local_Csys_two_points(CoordSys):
-    """Class implementing local coordinate systems"""
+    """Class implementing local coordinate systems
+
+    Parameters
+    ----------
+
+    point1: ndarray
+        first point
+    point2: ndarray
+        second point
+    type: str
+        type of the coordinate system
+
+    """
 
     def __init__(self, point1, point2, type='cartesian'):
-        """Initiates an instance
-
-        :type: TODO
-
-        """
         # TODO: implement a function to rotate a coordinate system
         CoordSys.__init__(self, type=type)
 

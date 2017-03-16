@@ -280,6 +280,10 @@ The border conditions (BCs) are defined with the method <a class="reference inte
 <span class="n">b1</span><span class="o">.</span><span class="n">distributed_load</span><span class="p">(</span><span class="n">p1</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">p2</span><span class="o">=-</span><span class="mi">2</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="n">coord_system</span><span class="o">=</span><span class="s1">&#39;local&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last">Concentrated and distributed moments are also supported. See the methods <a class="reference internal" href="apiref/sajou.model.html#sajou.model.Model.load" title="sajou.model.Model.load"><code class="xref py py-meth docutils literal"><span class="pre">Model.load()</span></code></a> and <a class="reference internal" href="apiref/sajou.elements.beam2d.html#sajou.elements.beam2d.Beam2D.distributed_moment" title="sajou.elements.beam2d.Beam2D.distributed_moment"><code class="xref py py-meth docutils literal"><span class="pre">Beam2D.distributed_moment()</span></code></a></p>
+</div>
 </div>
 <div class="section" id="visualizing-the-model">
 <h3>Visualizing the model<a class="headerlink" href="#visualizing-the-model" title="Permalink to this headline">¶</a></h3>
@@ -306,7 +310,7 @@ To see the current state of the model a <a class="reference internal" href="apir
 </div>
 <div class="section" id="solving-the-system">
 <h3>Solving the system<a class="headerlink" href="#solving-the-system" title="Permalink to this headline">¶</a></h3>
-<p>For this example, the static solver (<a class="reference internal" href="apiref/sajou.solvers.html#sajou.solvers.StaticSolver" title="sajou.solvers.StaticSolver"><code class="xref py py-class docutils literal"><span class="pre">StaticSolver</span></code></a>) is used:</p>
+<p>For this example, the implemented static solver (<a class="reference internal" href="apiref/sajou.solvers.html#sajou.solvers.StaticSolver" title="sajou.solvers.StaticSolver"><code class="xref py py-class docutils literal"><span class="pre">StaticSolver</span></code></a>) is used:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># instance of StaticSolver</span>
 <span class="kn">from</span> <span class="nn">sj.solvers</span> <span class="k">import</span> <span class="n">StaticSolver</span>
 <span class="c1"># Define output variables</span>
@@ -321,9 +325,9 @@ To see the current state of the model a <a class="reference internal" href="apir
 </div>
 <div class="section" id="postprocessing">
 <h3>Postprocessing<a class="headerlink" href="#postprocessing" title="Permalink to this headline">¶</a></h3>
-<p>The previously obtained <a class="reference internal" href="apiref/sajou.solvers.html#sajou.solvers.Result" title="sajou.solvers.Result"><code class="xref py py-class docutils literal"><span class="pre">Result</span></code></a> object is then used for the post-processing of the model.
-This is done by means of a <a class="reference internal" href="apiref/sajou.postprocessing.html#sajou.postprocessing.Postprocess" title="sajou.postprocessing.Postprocess"><code class="xref py py-class docutils literal"><span class="pre">Postprocess</span></code></a> object, which can be used to obtain values
-of section forces in a specified element or to plot the results using the above mentioned <a class="reference internal" href="apiref/sajou.plot.html#sajou.plot.Display" title="sajou.plot.Display"><code class="xref py py-class docutils literal"><span class="pre">Display</span></code></a> class.</p>
+<p>The previously obtained <a class="reference internal" href="apiref/sajou.solvers.html#sajou.solvers.Result" title="sajou.solvers.Result"><code class="xref py py-class docutils literal"><span class="pre">Result</span></code></a> object is then used in the post-processing of the model.
+This is done by means of a <a class="reference internal" href="apiref/sajou.postprocessing.html#sajou.postprocessing.Postprocess" title="sajou.postprocessing.Postprocess"><code class="xref py py-class docutils literal"><span class="pre">Postprocess</span></code></a> object, which defines several methods to obtain values
+of section forces in a specified element and to plot the results using the above mentioned <a class="reference internal" href="apiref/sajou.plot.html#sajou.plot.Display" title="sajou.plot.Display"><code class="xref py py-class docutils literal"><span class="pre">Display</span></code></a> class.</p>
 <p>Let us begin by extracting values o the moment, shear and axial force along a specified beam (say beam No. 2):</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># Postprocess the results</span>
 <span class="n">post</span> <span class="o">=</span> <span class="n">Postprocess</span><span class="p">(</span><span class="n">result</span><span class="o">=</span><span class="n">res</span><span class="p">)</span>
@@ -335,6 +339,12 @@ of section forces in a specified element or to plot the results using the above 
 </div>
 <p>As can be seen in the code above, the option <code class="docutils literal"><span class="pre">unit_length</span></code> is set to <code class="docutils literal"><span class="pre">True</span></code>, which indicates that the values given
 for the <code class="docutils literal"><span class="pre">pos</span></code> parameter must be in the range <code class="docutils literal"><span class="pre">[0,</span> <span class="pre">1]</span></code>.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The <code class="docutils literal"><span class="pre">pos</span></code> parameter of the <a class="reference internal" href="apiref/sajou.postprocessing.html#sajou.postprocessing.Postprocess.calc_moment_at" title="sajou.postprocessing.Postprocess.calc_moment_at"><code class="xref py py-meth docutils literal"><span class="pre">calc_moment_at()</span></code></a> also accept an array-like argument, so that the
+result can be obtained at different points over the beam element at once.
+This also holds for the <a class="reference internal" href="apiref/sajou.postprocessing.html#sajou.postprocessing.Postprocess.calc_shear_at" title="sajou.postprocessing.Postprocess.calc_shear_at"><code class="xref py py-meth docutils literal"><span class="pre">calc_shear_at()</span></code></a> and <a class="reference internal" href="apiref/sajou.postprocessing.html#sajou.postprocessing.Postprocess.calc_axial_at" title="sajou.postprocessing.Postprocess.calc_axial_at"><code class="xref py py-meth docutils literal"><span class="pre">calc_axial_at()</span></code></a> methods.</p>
+</div>
 <p>Finally, nice plots can be obtained for the different section forces (moment, shear and axial force):</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># create the matplotlib figures</span>
 <span class="n">fig1</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mf">6.5</span><span class="p">,</span> <span class="mf">5.5</span><span class="p">))</span>

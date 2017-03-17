@@ -25,7 +25,7 @@ Geometry
 To build the model a :class:`.Model` has to be created::
 
     # Initialize a Model instance of a 2D model
-    m = sj.model(name='Model 1', dimensionality='2D')
+    m = sj.Model(name='Model 1', dimensionality='2D')
 
 The geometry of the problem can then be defined by means of :class:`.Node`, which is conveniently wrapped in the method :meth:`.Model2D.node` of the class :class:`.Model`::
 

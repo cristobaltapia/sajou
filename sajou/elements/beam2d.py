@@ -76,6 +76,7 @@ class Beam2D(Element):
     def __init__(self, node1, node2, number):
         # Instatiate the Element parent class
         Element.__init__(self, number)
+        self._kind = 'Beam2D'
         # TODO: accept tuples with coordinates also
         self._node1 = node1
         self._node2 = node2
@@ -176,97 +177,6 @@ class Beam2D(Element):
         self.n_active_dof = np.sum(sum_dof)
 
         return Ke
-
-    def get_index_array_of_node(self, node):
-        """
-        Get an array containing the indices of the used DOFs of the given node of the
-        element.
-
-        Parameters
-        ----------
-
-        node: Node instance
-            the number of the node in the element (element number of the node: 0, 1,
-            2, ... )
-
-        Returns
-        -------
-
-        array of indices:
-
-        Note
-        ----
-
-        The array has the following form::
-
-                [0, 1, 2] --> all DOFs are used
-                [0, 2] --> DOF 0 and 2 are used only (ux and rz)
-
-        This array is used to know exactly which DOFs should be used to assemble the global
-        stiffness matrix or to retrieve the corresponding displacements.
-
-        Example
-        ---------
-
-        It would be used like this::
-
-            i_global_node_1 = e.get_index_list_of_node(n_node_ele) + nfat[global_node_number]
-
-
-        """
-        efs = self.efs[node]
-
-        return np.arange(len(efs))[efs > 0]
-
-    def assemble_sym_K(self):
-        """This function assembles the stiffness matrix for one individual element. Optionally
-        it can take the shear effect into account (second order effect).
-
-        Returns
-        -------
-
-        local stiffness matrix:
-
-        """
-        from sympy.matrices import Matrix, zeros
-        # Modulus of elasticity
-        E = self._beam_section._material._data[0]
-        # Area of the section
-        EA = self._beam_section._area * E
-        # Inertias
-        EI = self._beam_section._Iz * E
-        # Length of the element
-        L = self._length
-
-        # Initialize stiffness matrix
-        k = zeros(6, 6)
-
-        k[0, 0] = k[3, 3] = EA / L
-        k[1, 1] = k[4, 4] = 12. * EI / (L * L * L)
-        k[2, 2] = k[5, 5] = 4. * EI / L
-        k[2, 1] = k[1, 2] = 6 * EI / L**2
-        k[3, 0] = k[0, 3] = -EA / L
-        k[4, 1] = k[1, 4] = -12. * EI / (L * L * L)
-        k[4, 2] = k[2, 4] = -6. * EI / L**2
-        k[5, 1] = k[1, 5] = 6. * EI / L**2
-        k[5, 2] = k[2, 5] = 2. * EI / L
-        k[5, 4] = k[4, 5] = -6. * EI / L**2
-
-        # transform to global coordinates
-        #T = element.transformation_matrix
-
-        self._Ke_local = k
-
-        # transform to global coordinates
-        T = Matrix(self.transformation_matrix)
-
-        aux = k.multiply(T)
-        TT = T.T
-        Ke = TT.multiply(aux)
-
-        self._Ke = Ke
-
-        return k
 
     def distributed_load(self, **kwargs):
         """Assign a DistributedLoad object to the frame current element.

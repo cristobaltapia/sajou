@@ -1,15 +1,19 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-#
-# This fil defines all the functions needed to plot the created structures and the results
-# obtained with the program.
-# TODO: plot hinges
+"""
+Define all the functions needed to plot the created structures and the results
+
+TODO: plot hinges
+"""
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn.apionly as sns
 from matplotlib.axes import Axes
 from matplotlib.patches import Polygon
 from matplotlib.path import Path
+
+from .plot_elements_mpl import plot_element
+from sajou.model import (get_dataframe_of_node_coords, get_node_coords)
 
 
 class Display(object):
@@ -264,15 +268,16 @@ class Display_mpl(Display):
         force_options = self.draw_config['force']
         support_options = self.draw_config['support']
         show_loads = kwargs.get('show_loads', self.display_config['forces'])
+        # add line style to the 'elem_options' dictionary
+        elem_options['ls'] = ls
 
         # set background color
         ax.set_axis_bgcolor(background_options['color'])
         ax.grid(True, **grid_options)
 
-        for num, elem in model.beams.items():
-            n1 = elem._node1
-            n2 = elem._node2
-            ax.plot([n1.x, n2.x], [n1.y, n2.y], **elem_options, ls=ls)
+        # call the plot function for each element
+        for num, elem in model.elements.items():
+            plot_element(elem, ax, elem_options)
 
         nodes = model.nodes
         if self.display_config['nodes']:
@@ -319,8 +324,7 @@ class Display_mpl(Display):
             the same axis object passed
 
         """
-        from sajou.model import get_dataframe_of_node_coords
-        #
+        # get the style configurations
         node_options = self.draw_config['node']
         elem_options = self.draw_config['element']
         background_options = self.draw_config['background']
@@ -334,37 +338,52 @@ class Display_mpl(Display):
         ax.set_axis_bgcolor(background_options['color'])
         ax.grid(True, **grid_options)
 
-        for num, elem in model.beams.items():
-            n1 = elem._node1.number
-            n2 = elem._node2.number
-            # Get original coordinates of nodes
-            coords_nodes = get_dataframe_of_node_coords(model=model,
-                                                        nodes=[n1, n2])
-            # Get displacements of the nodes
-            displ_nodes = result.data['nodal displacements'].loc[[n1, n2]]
-            # Calculate position of nodes after load application
-            deformed_nodes = coords_nodes + displ_nodes * scale
+        # Draw each deformed element
+        for num, elem in model.elements.items():
+            # get node coordinates and displacements
+            displ_nodes = get_element_deformed_node_coords(elem, result, scale)
+            # convert to ndarray
+            node_def = np.array([(d[0], d[1]) for k, d in displ_nodes.items()])
             # Plot deformed element
-            ax.plot(deformed_nodes['x'], deformed_nodes['y'], **elem_options)
+            ax.plot(node_def[:, 0], node_def[:, 1], **elem_options)
 
         nodes = model.nodes
         if self.display_config['nodes']:
             # Get original coordinates of nodes
-            coords_nodes = get_dataframe_of_node_coords(model=model,
-                                                        nodes='all')
-            # Get displacements of the nodes
-            displ_nodes = result.data['nodal displacements']
-            # Calculate position of nodes after load application
-            deformed_nodes = coords_nodes + displ_nodes * scale
+            coords_nodes = get_deformed_node_coords(nodes='all', result=result,
+                                                    scale=scale)
+            # convert to ndarray
+            node_def = np.array([(d[0], d[1]) for k, d in displ_nodes.items()])
             # plot nodes
-            ax.scatter(deformed_nodes['x'], deformed_nodes['y'], marker='o',
-                       **node_options)
+            ax.plot(node_def[:, 0], node_def[:, 1], marker='o', **node_options)
 
         if show_undeformed:
             ax = self.plot_geometry(model=result._model, ax=ax, ls='--')
 
         ax.axis('equal')
 
+        return ax
+
+    def plot_deformed_element(self, element, result, ax):
+        """Plot the given element in its deformed state
+
+        Parameters
+        ----------
+
+        element: Element instance
+            The element to be plotted
+        result: Result instance
+            The result obtained after solving the system
+        ax: matplotlib Axis
+            the axis where to plot the deformed element to
+
+        Returns
+        -------
+
+        matplotlib Axis:
+            the axis used to plot the element
+
+        """
         return ax
 
     def plot_element_loads(self, ax, model):
@@ -432,176 +451,6 @@ class Display_mpl(Display):
 
         return ax
 
-    def _plot_distributed_load_element(self, ax, model, element, load, scale=1,
-                                       max_p=1):
-        """Plot a distributed load at the corresponding element.
-
-        Parameters
-        ----------
-
-        ax: matplotlib axis
-            axis where to draw to
-        model: Model object
-            Model containing the element
-        element: Element object
-            element for which the distributed loads will be drawn
-        load: Load object
-            The Load object that wants to be drawn
-
-        Returns
-        -------
-
-        matplotlib axis:
-            the same axis passed
-
-        """
-        # Get the draw options for the forces
-        force_options = self.draw_config['force']
-        #
-        size = scale * 0.08
-        #
-        n1 = element._node1
-        n2 = element._node2
-        p1 = load._p1
-        p2 = load._p2
-        # Number of arrows
-        n_arrows = (element._length * 2) // size
-        # Generate points on the element line
-        nx_e = np.linspace(n1.x, n2.x, n_arrows)
-        ny_e = np.linspace(n1.y, n2.y, n_arrows)
-
-        if load._direction == 'y':
-            # Generate points on the element line
-            nx_e = np.linspace(n1.x, n2.x, n_arrows)
-            ny_e = np.linspace(n1.y, n2.y, n_arrows)
-            # Offset from the position of the nodes...
-            T = element.transformation_matrix
-            # Differentiate between local and global coordinates
-            # - For local coordinates
-            if load._coord_system == 'local':
-                offset = T.T.dot(
-                    np.array([0, -p1, 0, 0, -p2, 0]) * scale / max_p * 0.2)
-            # - For global coordinates
-            elif load._coord_system == 'global':
-                offset = np.array([0, -p1, 0, 0, -p2, 0]) * scale / max_p * 0.2
-
-            n1_o = np.array(n1[:]) + offset[:3]
-            n2_o = np.array(n2[:]) + offset[3:]
-            # Generate points for the arrows with offset
-            nx = np.linspace(n1_o[0], n2_o[0], n_arrows)
-            ny = np.linspace(n1_o[1], n2_o[1], n_arrows)
-            ax.plot(nx, ny, color=force_options['color'])
-            # Plot arrows
-            for arr_i in range(len(nx)):
-                # annotate() is used instead of arrow() because the style
-                # of the arrows is better
-                ax.annotate('', xy=(nx_e[arr_i], ny_e[arr_i]),
-                            xytext=(nx[arr_i], ny[arr_i]), arrowprops=dict(
-                                arrowstyle='->', color=force_options['color']))
-
-        elif load._direction == 'x':
-            # Offset from the position of the nodes...
-            # FIXME: ... according to the system coordinate chosen
-            T = element.transformation_matrix
-            # Differentiate between local and global coordinates
-            # - For local coordinates
-            if load._coord_system == 'local':
-                # Generate points on the element line
-                nx_e = range_with_ratio(n1.x, n2.x, n_arrows, p1 / p2)
-                ny_e = range_with_ratio(n1.y, n2.y, n_arrows, p1 / p2)
-                offset = T.T.dot(
-                    np.array([-p1, 0, 0, -p2, 0, 0]) * size / max_p * 0.8)
-            # - For global coordinates
-            elif load._coord_system == 'global':
-                # Generate points on the element line
-                nx_e = np.linspace(n1.x, n2.x, n_arrows)
-                ny_e = np.linspace(n1.y, n2.y, n_arrows)
-                offset = np.array([-p1, 0, 0, -p2, 0, 0]) * scale / max_p * 0.2
-
-            n1_o = np.array(n1[:]) + offset[:3]
-            n2_o = np.array(n2[:]) + offset[3:]
-            # Generate points for the arrows with offset
-            nx = range_with_ratio(n1_o[0], n2_o[0], n_arrows, p1 / p2)
-            ny = range_with_ratio(n1_o[1], n2_o[1], n_arrows, p1 / p2)
-            if load._coord_system == 'global':
-                ax.plot(nx, ny, color=force_options['color'])
-
-            # Plot arrows
-            for arr_i in range(len(nx)):
-                # annotate() is used instead of arrow() because the style
-                # of the arrows is better
-                if load._coord_system == 'local':
-                    ax.annotate('', xy=(nx_e[arr_i], ny_e[arr_i]),
-                                xytext=(nx[arr_i], ny[arr_i]),
-                                arrowprops=dict(arrowstyle='->',
-                                                color=force_options['color']))
-                elif load._coord_system == 'global':
-                    ax.annotate('', xy=(nx_e[arr_i], ny_e[arr_i]),
-                                xytext=(nx[arr_i], ny[arr_i]),
-                                arrowprops=dict(arrowstyle='->',
-                                                color=force_options['color']))
-
-        return ax
-
-    def _plot_distributed_moment_element(self, ax, model, element, load,
-                                         scale=1, max_p=1):
-        """Plot a distributed load at the corresponding element.
-
-        Parameters
-        ----------
-
-        ax: matplotlib axis
-            axis where to draw to
-        model: Model object
-            Model used
-        element: Element object
-            Element for which the distributed moment is drawn
-        load: Load object
-            Load that wants to be drawn
-
-        Returns
-        -------
-
-        matplotlib axis:
-            the same axis passed
-
-        """
-        # Get the draw options for the forces
-        force_options = self.draw_config['force']
-        #
-        size = scale * 0.08
-        #
-        n1 = element._node1
-        n2 = element._node2
-        m1 = load._m1
-        m2 = load._m2
-        # Number of arrows
-        n_arrows = (element._length * 2) // size
-        # Generate points on the element line
-        nx_e = np.linspace(n1.x, n2.x, n_arrows)
-        ny_e = np.linspace(n1.y, n2.y, n_arrows)
-
-        if load._direction == 'z' and load._coord_system == 'local':
-            # Offset from the position of the nodes...
-            # FIXME: ... according to the system coordinate chosen
-            T = element.transformation_matrix
-            # Generate points for the arrows with offset
-            nx_e = range_with_ratio(n1.x, n2.x, n_arrows, m1 / m2)
-            ny_e = range_with_ratio(n1.y, n2.y, n_arrows, m1 / m2)
-
-            # Plot arrows
-            ax.plot(
-                nx_e,
-                ny_e,
-                marker=marker_moment_pos,
-                ls='None',
-                ms=20,
-                markeredgewidth=1.5,
-                markeredgecolor=force_options['color'],
-                markerfacecolor='None', )
-
-        return ax
-
     def plot_internal_forces(self, ax, result, component, scale=1):
         """Plot the diagrams of internal forces.
 
@@ -654,7 +503,7 @@ class Display_mpl(Display):
         # Plot the specified diagram
         # Transform the results from the local coordinates to global
         # coordinates
-        for num, elem in model.beams.items():
+        for num, elem in model.elements.items():
             # Get the transformation matrix
             T = elem.transformation_matrix[0:2, 0:2]
             # Get the positions at which the internal forces were
@@ -881,6 +730,252 @@ class Display_mpl(Display):
                         markerfacecolor='None', ms=40, markeredgewidth=2)
 
         return ax
+
+    def _plot_distributed_load_element(self, ax, model, element, load, scale=1,
+                                       max_p=1):
+        """Plot a distributed load at the corresponding element.
+
+        Parameters
+        ----------
+
+        ax: matplotlib axis
+            axis where to draw to
+        model: Model object
+            Model containing the element
+        element: Element object
+            element for which the distributed loads will be drawn
+        load: Load object
+            The Load object that wants to be drawn
+
+        Returns
+        -------
+
+        matplotlib axis:
+            the same axis passed
+
+        """
+        # Get the draw options for the forces
+        force_options = self.draw_config['force']
+        #
+        size = scale * 0.08
+        #
+        n1 = element._node1
+        n2 = element._node2
+        p1 = load._p1
+        p2 = load._p2
+        # Number of arrows
+        n_arrows = (element._length * 2) // size
+        # Generate points on the element line
+        nx_e = np.linspace(n1.x, n2.x, n_arrows)
+        ny_e = np.linspace(n1.y, n2.y, n_arrows)
+
+        if load._direction == 'y':
+            # Generate points on the element line
+            nx_e = np.linspace(n1.x, n2.x, n_arrows)
+            ny_e = np.linspace(n1.y, n2.y, n_arrows)
+            # Offset from the position of the nodes...
+            T = element.transformation_matrix
+            # Differentiate between local and global coordinates
+            # - For local coordinates
+            if load._coord_system == 'local':
+                offset = T.T.dot(
+                    np.array([0, -p1, 0, 0, -p2, 0]) * scale / max_p * 0.2)
+            # - For global coordinates
+            elif load._coord_system == 'global':
+                offset = np.array([0, -p1, 0, 0, -p2, 0]) * scale / max_p * 0.2
+
+            n1_o = np.array(n1[:]) + offset[:3]
+            n2_o = np.array(n2[:]) + offset[3:]
+            # Generate points for the arrows with offset
+            nx = np.linspace(n1_o[0], n2_o[0], n_arrows)
+            ny = np.linspace(n1_o[1], n2_o[1], n_arrows)
+            ax.plot(nx, ny, color=force_options['color'])
+            # Plot arrows
+            for arr_i in range(len(nx)):
+                # annotate() is used instead of arrow() because the style
+                # of the arrows is better
+                ax.annotate('', xy=(nx_e[arr_i], ny_e[arr_i]),
+                            xytext=(nx[arr_i], ny[arr_i]), arrowprops=dict(
+                                arrowstyle='->', color=force_options['color']))
+
+        elif load._direction == 'x':
+            # Offset from the position of the nodes...
+            # FIXME: ... according to the system coordinate chosen
+            T = element.transformation_matrix
+            # Differentiate between local and global coordinates
+            # - For local coordinates
+            if load._coord_system == 'local':
+                # Generate points on the element line
+                nx_e = range_with_ratio(n1.x, n2.x, n_arrows, p1 / p2)
+                ny_e = range_with_ratio(n1.y, n2.y, n_arrows, p1 / p2)
+                offset = T.T.dot(
+                    np.array([-p1, 0, 0, -p2, 0, 0]) * size / max_p * 0.8)
+            # - For global coordinates
+            elif load._coord_system == 'global':
+                # Generate points on the element line
+                nx_e = np.linspace(n1.x, n2.x, n_arrows)
+                ny_e = np.linspace(n1.y, n2.y, n_arrows)
+                offset = np.array([-p1, 0, 0, -p2, 0, 0]) * scale / max_p * 0.2
+
+            n1_o = np.array(n1[:]) + offset[:3]
+            n2_o = np.array(n2[:]) + offset[3:]
+            # Generate points for the arrows with offset
+            nx = range_with_ratio(n1_o[0], n2_o[0], n_arrows, p1 / p2)
+            ny = range_with_ratio(n1_o[1], n2_o[1], n_arrows, p1 / p2)
+            if load._coord_system == 'global':
+                ax.plot(nx, ny, color=force_options['color'])
+
+            # Plot arrows
+            for arr_i in range(len(nx)):
+                # annotate() is used instead of arrow() because the style
+                # of the arrows is better
+                if load._coord_system == 'local':
+                    ax.annotate('', xy=(nx_e[arr_i], ny_e[arr_i]),
+                                xytext=(nx[arr_i], ny[arr_i]),
+                                arrowprops=dict(arrowstyle='->',
+                                                color=force_options['color']))
+                elif load._coord_system == 'global':
+                    ax.annotate('', xy=(nx_e[arr_i], ny_e[arr_i]),
+                                xytext=(nx[arr_i], ny[arr_i]),
+                                arrowprops=dict(arrowstyle='->',
+                                                color=force_options['color']))
+
+        return ax
+
+    def _plot_distributed_moment_element(self, ax, model, element, load,
+                                         scale=1, max_p=1):
+        """Plot a distributed load at the corresponding element.
+
+        Parameters
+        ----------
+
+        ax: matplotlib axis
+            axis where to draw to
+        model: Model object
+            Model used
+        element: Element object
+            Element for which the distributed moment is drawn
+        load: Load object
+            Load that wants to be drawn
+
+        Returns
+        -------
+
+        matplotlib axis:
+            the same axis passed
+
+        """
+        # Get the draw options for the forces
+        force_options = self.draw_config['force']
+        #
+        size = scale * 0.08
+        #
+        n1 = element._node1
+        n2 = element._node2
+        m1 = load._m1
+        m2 = load._m2
+        # Number of arrows
+        n_arrows = (element._length * 2) // size
+        # Generate points on the element line
+        nx_e = np.linspace(n1.x, n2.x, n_arrows)
+        ny_e = np.linspace(n1.y, n2.y, n_arrows)
+
+        if load._direction == 'z' and load._coord_system == 'local':
+            # Offset from the position of the nodes...
+            # FIXME: ... according to the system coordinate chosen
+            T = element.transformation_matrix
+            # Generate points for the arrows with offset
+            nx_e = range_with_ratio(n1.x, n2.x, n_arrows, m1 / m2)
+            ny_e = range_with_ratio(n1.y, n2.y, n_arrows, m1 / m2)
+
+            # Plot arrows
+            ax.plot(
+                nx_e,
+                ny_e,
+                marker=marker_moment_pos,
+                ls='None',
+                ms=20,
+                markeredgewidth=1.5,
+                markeredgecolor=force_options['color'],
+                markerfacecolor='None', )
+
+        return ax
+
+
+def get_element_deformed_node_coords(element, result, scale=1):
+    """Get the deformed coordinates of the nodes of the given element
+
+    Parameters
+    ----------
+
+    element: ELement instance
+        Element from which the deformed position of its nodes will be computed
+    result: Result object
+        results obtained from the solver
+    sacele: float
+        scale applied to the deformations (default to 1)
+
+    Returns
+    -------
+
+    dict:
+        node deformed coordinates
+
+    """
+    # get the nodes
+    nodes_e = element._nodal_connectivity
+    # List of the nodes in the element
+    list_nodes = [node for k, node in nodes_e.items()]
+    # Get original coordinates of nodes
+    coord_nodes = get_node_coords(model=result._model, nodes=list_nodes)
+    # Get displacements of the nodes
+    node_displ = result.data['nodal displacements']
+
+    # FIXME: make this compatible for 3D
+    displ_nodes = dict()
+    for n in list_nodes:
+        displ_nodes[n.number] = coord_nodes[n.number] + node_displ[n.number][:2] * scale
+
+    return displ_nodes
+
+
+def get_deformed_node_coords(nodes, result, scale=1):
+    """Get the deformed coordinates of the given nodes
+
+    Parameters
+    ----------
+
+    nodes: List[Node], str
+        Node from which the deformed position will be computed
+    result: Result object
+        results obtained from the solver
+    sacele: float
+        scale applied to the deformations (default to 1)
+
+    Returns
+    -------
+
+    dict:
+        node deformed coordinates
+
+    """
+    model = result._model
+    if nodes == 'all':
+        list_nodes = [node for k, node in model.nodes.items()]
+    else:
+        list_nodes = nodes
+
+    # Get original coordinates of nodes
+    coord_nodes = get_node_coords(model=result._model, nodes=list_nodes)
+    # Get displacements of the nodes
+    node_displ = result.data['nodal displacements']
+
+    # FIXME: make this compatible for 3D
+    displ_nodes = dict()
+    for n in list_nodes:
+        displ_nodes[n.number] = coord_nodes[n.number] + node_displ[n.number][:2] * scale
+
+    return displ_nodes
 
 
 def range_with_ratio(x1, x2, n, a):

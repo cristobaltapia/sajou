@@ -146,38 +146,33 @@ class StaticSolver(Solver):
         return result
 
     def process_nodal_displ(self, nodal_displ):
-        """Return nodal displacements as a pandas DataFrame instance.
-        Each column represents a DOF and the index correspond to the respective node
-        number.
+        """Return nodal displacements as a dictionary instance.
 
         :nodal_displ: TODO
         :returns: TODO
 
         """
-        n_dimensions = self._model.n_dimensions
-
+        # generate a list of the nodes of the system
         nodes = [n for i, n in self._model.nodes.items()]
+        # get the node freedom map table of the model
+        nfmt = self._model.nfmt
+        # get the node freedom allocation table
+        nfat = self._model.nfat
 
-        # Initialize numpy array
-        ar_nodal_displ = np.zeros((len(nodes), n_dimensions), dtype=np.float64)
-        index_nodes = np.zeros(len(nodes), dtype=np.int)
+        # initialize empty dictionary
+        dict_displ = dict()
 
         # Loop for each node of the model
-        # TODO: implement 3D case
-        for ix, curr_node in enumerate(nodes):
-            ix_node = curr_node.number
-            aux_arr = np.array(
-                [nodal_displ[ix_node * 3], nodal_displ[ix_node * 3 + 1]])
-            ar_nodal_displ[ix, :] = aux_arr
-            index_nodes[ix] = curr_node.number
+        for node_i in nodes:
+            # the the index of the node
+            ix_node = node_i.number
+            # get the indices for the node's DOFs on the global system
+            ix_i = nfmt[ix_node]
+            ix_f = ix_i + node_i.n_dof
+            # get the displacements for the specified node
+            dict_displ[ix_node] = nodal_displ[ix_i: ix_f]
 
-        index_label = ['x', 'y']
-
-        # Create the data frame
-        df_nodal_displ = pd.DataFrame(data=ar_nodal_displ, index=index_nodes,
-                                      dtype=np.float64, columns=index_label)
-
-        return df_nodal_displ
+        return dict_displ
 
     def calc_nodal_forces(self, result, nodal_displ, K, elem_load):
         """TODO: Docstring for calc_nodal_forces.

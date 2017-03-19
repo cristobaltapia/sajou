@@ -2,4 +2,5 @@
 Sajou is a simple Structural Analysis library for Python.
 """
 from .model import Model
-from .plot import Display
+from .plot.display import Display
+from .postprocessing import Postprocess

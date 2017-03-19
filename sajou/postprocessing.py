@@ -227,3 +227,23 @@ class Postprocess(object):
 
         """
         pass
+
+    def calc_node_new_coord(self):
+        """Calculate the new coordinates of the nodes in the deformed state
+        :returns: TODO
+
+        """
+        # get the nodes
+        nodes_coords = self._result['nodal displacements']
+        # initilize array for the numbers of the nodes in the element
+        arr_nodes = np.zeros(len(nodes_coords))
+        for key, node_i in nodes_coords.items():
+            arr_nodes[key] = node_i.number
+
+        # Get original coordinates of nodes
+        coords_nodes = get_dataframe_of_node_coords(model=result._model,
+                                                    nodes=arr_nodes)
+        # Get displacements of the nodes
+        displ_nodes = result.data['nodal displacements'].loc[arr_nodes]
+
+        return coords_nodes, displ_nodes

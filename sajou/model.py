@@ -38,7 +38,7 @@ class Model(object):
         dictionary with the materials defined in the model
     n_nodes: int
         number of nodes of the system
-    n_beams: int
+    n_elements: int
         number of beams in the system
     n_materials: int
         number of materials defined
@@ -77,14 +77,16 @@ class Model(object):
         self._name = name
         self._dimensionality = dimensionality
         # Node Freedome Allocation Table:
-        #
         self.nfat = dict()
+        #
         self.nodes = dict()
+        self.elements = dict()
         self.beams = dict()
         self.beam_sections = dict()
         self.materials = dict()
+        #
         self.n_nodes = 0
-        self.n_beams = 0
+        self.n_elements = 0
         self.n_materials = 0
         self._K = None  # global stiffness matrix
         self._P = None  # load matrix
@@ -574,10 +576,11 @@ class Model(object):
         """
         Generate the Node Freedom Map Table of the system.
 
-        The Node Freedom Map Table is a dictionary that contains the index, relative to
-        the global system, to which each node's first active DOF contributes.
-        It is assumed that the Node Freedom Allocation Table has already been generated
-        using the function __generate_node_freedom_allocation_dict__().
+        The Node Freedom Map Table is a dictionary that contains the index,
+        relative to the global system, to which each node's first active DOF
+        contributes.
+        It is assumed that the Node Freedom Allocation Table has already been
+        generated using the function __generate_node_freedom_allocation_dict__().
 
         Returns
         -------
@@ -585,12 +588,18 @@ class Model(object):
             TODO
 
         """
-        from numpy import cumsum
         # Obtain the number of active DOFs in each node:
-        n_active_dof = [sum(node.nfs) for n_node, node in self.nodes.items()]
+        n_active_dof = {n: sum(node.nfs) for n, node in self.nodes.items()}
+        # get the list of the node numbers
+        n_num = [n for n, node in self.nodes.items()]
+        # order the list
+        n_sorted = np.sort(n_num)
         # Obtain the cumulative sum
-        nfmt = cumsum(n_active_dof, dtype=np.int) - n_active_dof[0]
-        # TODO: make this a dictionary
+        nfmt = dict()
+        cumsum = 0
+        for n in n_sorted:
+            cumsum += n_active_dof[n]
+            nfmt[n] = cumsum - n_active_dof[n]
 
         self.nfmt = nfmt
 
@@ -601,17 +610,19 @@ class Model(object):
         Printable string
         """
         return str(
-            'Model: Name: {name}, Nodes: {n_nodes}, Beams: {n_beams}'.format(
-                name=self._name, n_nodes=self.n_nodes, n_beams=self.n_beams))
+            'Model: Name: {name}, Nodes: {n_nodes}, Elements: {n_elements}'.format(
+                name=self._name, n_nodes=self.n_nodes, n_elements=self.n_elements))
 
     def __repr__(self):
         """
         Returns the printable string for this object
         """
         return str(
-            'Model: Name: {name}, Nodes: {n_nodes}, Beams: {n_beams}'.format(
-                name=self._name, n_nodes=self.n_nodes, n_beams=self.n_beams))
+            'Model: Name: {name}, Nodes: {n_nodes}, Beams: {n_elements}'.format(
+                name=self._name, n_nodes=self.n_nodes, n_elements=self.n_elements))
 
+
+from sajou.elements import (Beam2D, Spring2D)
 
 class Model2D(Model):
     """
@@ -669,7 +680,7 @@ class Model2D(Model):
         return node
 
     def beam(self, node1, node2):
-        """Define a line between two nodes.
+        """Define a beam element between two nodes.
 
         Parameters
         ----------
@@ -684,12 +695,44 @@ class Model2D(Model):
             the beam element created
 
         """
-        from .elements.beam2d import Beam2D
-        line = Beam2D(node1=node1, node2=node2, number=self.n_beams)
-        self.beams[line.number] = line
-        self.n_beams += 1
+        beam = Beam2D(node1=node1, node2=node2, number=self.n_elements)
+        self.beams[beam.number] = beam
+        # add to the element repository of the model
+        self.elements[beam.number] = beam
+        # add to the element counter
+        self.n_elements += 1
 
-        return line
+        return beam
+
+    def spring(self, node1, node2, K):
+        """Define a spring element between two nodes
+
+        Parameters
+        ----------
+
+        node1: Node instance
+            first node
+        node2: Node instance
+            second node
+        K: float
+            elastic constant of the spring
+
+        Returns
+        -------
+
+        sajou.Sprinf2D:
+            A Sprind 2D instance
+
+        """
+        spring = Spring2D(node1=node1, node2=node2, number=self.n_elements)
+        # assign the elastic constant
+        spring.assign_elastic_constant(K)
+        # add to the element repository of the model
+        self.elements[spring.number] = spring
+        # add to the element counter
+        self.n_elements += 1
+
+        return spring
 
     def distributed_load(self, elements, **kwargs):
         """Add a distributed load to a list of beam elements.
@@ -773,9 +816,9 @@ class Model3D(Model):
         :node2: second node
 
         """
-        line = Beam3D(node1=node1, node2=node2, number=self.n_beams)
+        line = Beam3D(node1=node1, node2=node2, number=self.n_elements)
         self.beams[line.number] = line
-        self.n_beams += 1
+        self.n_elements += 1
 
         return line
 
@@ -795,10 +838,11 @@ class ModelData(object):
         self._dimensionality = model._dimensionality
         self.nodes = copy(model.nodes)
         self.beams = copy(model.beams)
+        self.elements = copy(model.elements)
         self.beam_sections = copy(model.beam_sections)
         self.materials = copy(model.materials)
         self.n_nodes = model.n_nodes
-        self.n_beams = model.n_beams
+        self.n_elements = model.n_elements
         self.n_dimensions = model.n_dimensions
         self.n_materials = model.n_materials
         # Number of dof per node. Initialized in the respective models
@@ -810,8 +854,17 @@ class ModelData(object):
 def get_dataframe_of_node_coords(model, nodes='all'):
     """Return a pandas dataframe with coordinates of selected nodes of the model
 
-    :nodes: list of nodes or 'all'
-    :returns: TODO
+    Parameters
+    ----------
+
+    nodes: list, str
+        list of nodes or 'all'
+
+    Returns
+    -------
+
+    DataFrame:
+        DataFrame with the coordinates of the nodes
 
     """
     dimensions = model.n_dimensions
@@ -838,3 +891,35 @@ def get_dataframe_of_node_coords(model, nodes='all'):
                              dtype=np.float64, columns=index_label)
 
     return df_coords
+
+
+def get_node_coords(model, nodes='all'):
+    """Return a dictionary with coordinates of selected nodes of the model
+
+    Parameters
+    ----------
+
+    nodes: list, str
+        list of nodes or 'all'
+
+    Returns
+    -------
+
+    DataFrame:
+        DataFrame with the coordinates of the nodes
+
+    """
+    dimensions = model.n_dimensions
+    #
+    if nodes == 'all':
+        nodes = [n for i, n in model.nodes.items()]
+
+    # initialize empty dictionary to store the coordinates
+    dict_coords = dict()
+
+    # loop over every node
+    for node_i in nodes:
+        dict_coords[node_i.number] = node_i.coords
+
+    return dict_coords
+

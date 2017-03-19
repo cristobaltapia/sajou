@@ -353,7 +353,8 @@ class Display_mpl(Display):
             coords_nodes = get_deformed_node_coords(nodes='all', result=result,
                                                     scale=scale)
             # convert to ndarray
-            node_def = np.array([(d[0], d[1]) for k, d in displ_nodes.items()])
+            node_def = np.array([(d[0], d[1]) for k, d in coords_nodes.items()])
+            print(node_def)
             # plot nodes
             ax.plot(node_def[:, 0], node_def[:, 1], marker='o', **node_options)
 

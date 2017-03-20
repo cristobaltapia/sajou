@@ -228,6 +228,7 @@ class Postprocess(object):
         """
         pass
 
+    #FIXME: this is a duplicated function (model module). Clean it!
     def calc_node_new_coord(self):
         """Calculate the new coordinates of the nodes in the deformed state
         :returns: TODO

@@ -11,9 +11,11 @@ import seaborn.apionly as sns
 from matplotlib.axes import Axes
 from matplotlib.patches import Polygon
 from matplotlib.path import Path
+from sajou.model import get_dataframe_of_node_coords, get_node_coords
 
+from .lines_mpl import Line2D
+from .markers_mpl import MarkerStyle
 from .plot_elements_mpl import plot_element
-from sajou.model import (get_dataframe_of_node_coords, get_node_coords)
 
 
 class Display(object):
@@ -91,10 +93,12 @@ class Display_mpl(Display):
             palette = sns.color_palette('bright')
             self.draw_config = {
                 'force': {
-                    'color': palette[1]
+                    'color': palette[1],
+                    'markeredgewidth': 2,
                 },
                 'reaction': {
-                    'color': 'yellow'
+                    'color': 'yellow',
+                    'markeredgewidth': 2,
                 },
                 'background': {
                     'color': "#12191f"
@@ -110,7 +114,6 @@ class Display_mpl(Display):
                 'support': {
                     'markeredgecolor': palette[5],
                     'markerfacecolor': 'None',
-                    'ms': 25
                 },
                 'node': {
                     'color': palette[4]
@@ -129,10 +132,12 @@ class Display_mpl(Display):
         elif theme == 'publication':
             self.draw_config = {
                 'force': {
-                    'color': 'black'
+                    'color': 'black',
+                    'markeredgewidth': 2,
                 },
                 'reaction': {
-                    'color': 'black'
+                    'color': 'black',
+                    'markeredgewidth': 2,
                 },
                 'background': {
                     'color': 'white'
@@ -149,7 +154,6 @@ class Display_mpl(Display):
                     'markeredgecolor': 'black',
                     'markerfacecolor': 'None',
                     'markeredgewidth': 2,
-                    'ms': 35
                 },
                 'node': {
                     'color': 'black'
@@ -169,10 +173,12 @@ class Display_mpl(Display):
             palette = sns.color_palette('dark')
             self.draw_config = {
                 'force': {
-                    'color': palette[1]
+                    'color': palette[1],
+                    'markeredgewidth': 2,
                 },
                 'reaction': {
-                    'color': palette[3]
+                    'color': palette[3],
+                    'markeredgewidth': 2,
                 },
                 'background': {
                     'color': "#dee5ec"
@@ -188,7 +194,6 @@ class Display_mpl(Display):
                 'support': {
                     'markeredgecolor': palette[5],
                     'markerfacecolor': 'None',
-                    'ms': 25
                 },
                 'node': {
                     'color': palette[4]
@@ -272,7 +277,7 @@ class Display_mpl(Display):
         elem_options['ls'] = ls
 
         # set background color
-        ax.set_axis_bgcolor(background_options['color'])
+        ax.set_facecolor(background_options['color'])
         ax.grid(True, **grid_options)
 
         # call the plot function for each element
@@ -282,7 +287,9 @@ class Display_mpl(Display):
         nodes = model.nodes
         if self.display_config['nodes']:
             for num, node in nodes.items():
-                ax.scatter(node.x, node.y, marker='o', **node_options)
+                m_nodes = Line2D([node.x], [node.y], marker='o', ls='',
+                                 fillstyle='full', **node_options)
+                ax.add_line(m_nodes)
 
         # Plot forces if requiered
         if show_loads:
@@ -335,7 +342,7 @@ class Display_mpl(Display):
         model = result._model
 
         # set background color
-        ax.set_axis_bgcolor(background_options['color'])
+        ax.set_facecolor(background_options['color'])
         ax.grid(True, **grid_options)
 
         # Draw each deformed element
@@ -353,7 +360,8 @@ class Display_mpl(Display):
             coords_nodes = get_deformed_node_coords(nodes='all', result=result,
                                                     scale=scale)
             # convert to ndarray
-            node_def = np.array([(d[0], d[1]) for k, d in coords_nodes.items()])
+            node_def = np.array(
+                [(d[0], d[1]) for k, d in coords_nodes.items()])
             print(node_def)
             # plot nodes
             ax.plot(node_def[:, 0], node_def[:, 1], marker='o', **node_options)
@@ -560,8 +568,8 @@ class Display_mpl(Display):
         Parameters
         ----------
 
-        ax: matplotlib axis
-            The axis where the supports will be drawn
+        ax: matplotlib Axis
+            axis where to plot the support
         dof: ndarray, list[int]
             DOF that are restrained
         at: Node object
@@ -575,7 +583,6 @@ class Display_mpl(Display):
 
         """
         support_options = self.draw_config['support']
-        s_size = 25
         # transform to list
         dof = list(dof)
         #
@@ -583,28 +590,30 @@ class Display_mpl(Display):
         if len(dof) == 1:
             # rolling support free in 'y'
             if dof[0] == 0:
-                ax.plot([at.x], [at.y], marker=roll_y, **support_options)
+                suppt = Line2D([at.x], [at.y], marker='rsy', **support_options)
             # rolling support free in 'x'
             elif dof[0] == 1:
-                ax.plot([at.x], [at.y], marker=roll_x, **support_options)
+                suppt = Line2D([at.x], [at.y], marker='rsx', **support_options)
             # only rotation constrained
             elif dof[0] == 2:
-                ax.plot([at.x], [at.y], marker=rot_z, **support_options)
+                suppt = Line2D([at.x], [at.y], marker=rot_z, **support_options)
         #
         if len(dof) == 2:
             # pinned support
             if np.all([0, 1] == np.sort(dof)):
-                ax.plot([at.x], [at.y], marker=pinned, **support_options)
+                suppt = Line2D([at.x], [at.y], marker='psx', **support_options)
             #
             elif np.all([0, 2] == np.sort(dof)):
-                ax.plot([at.x], [at.y], marker=disp_y, **support_options)
+                suppt = Line2D([at.x], [at.y], marker='rey', **support_options)
             #
             elif np.all([1, 2] == np.sort(dof)):
-                ax.plot([at.x], [at.y], marker=disp_x, **support_options)
+                suppt = Line2D([at.x], [at.y], marker='rex', **support_options)
         #
         if len(dof) == 3:
             # Encastrated
-            ax.plot([at.x], [at.y], marker=encas, **support_options)
+            suppt = Line2D([at.x], [at.y], marker='es', **support_options)
+
+        ax.add_line(suppt)
 
         return ax
 
@@ -614,8 +623,8 @@ class Display_mpl(Display):
         Parameters
         ----------
 
-        ax: matplotlib axis
-            the axis where to draw to
+        ax: matplotlib Axis
+            axis to plot to
         dof: int
             Degree of freedom to which the force is being applied
         at: Node object
@@ -644,29 +653,31 @@ class Display_mpl(Display):
                         xytext=(-np.sign(val) * 50, 0),
                         color=force_options['color'], ha=halign, va='center',
                         textcoords='offset points', arrowprops=dict(
-                            arrowstyle='->', color=force_options['color'],
-                            lw=2.5))
+                            arrowstyle='->',
+                            linewidth=force_options['markeredgewidth'],
+                            color=force_options['color']))
         # Force in y direction
         elif dof == 1:
             ax.annotate('{f:.2E}'.format(f=abs(val)), xy=(at.x, at.y),
                         xytext=(0, -np.sign(val) * 50),
                         color=force_options['color'], ha='center', va='center',
                         textcoords='offset points', arrowprops=dict(
-                            arrowstyle='->', color=force_options['color'],
-                            lw=2.5))
+                            arrowstyle='->',
+                            linewidth=force_options['markeredgewidth'],
+                            color=force_options['color']))
         # Moment
         elif dof == 2:
             ax.annotate('{f:.2E}'.format(f=abs(val)), xy=(at.x, at.y),
                         xytext=(20, 20), color=force_options['color'],
                         ha='left', va='center', textcoords='offset points')
             if np.sign(val) >= 0.:
-                ax.plot([at.x], [at.y], marker=marker_moment_pos,
-                        markeredgecolor=force_options['color'],
-                        markerfacecolor='None', ms=40, markeredgewidth=2)
+                mom = Line2D([at.x], [at.y], marker='ap',
+                             markerfacecolor='None', **force_options)
+                ax.add_line(mom)
             else:
-                ax.plot([at.x], [at.y], marker=marker_moment_neg,
-                        markeredgecolor=force_options['color'],
-                        markerfacecolor='None', ms=40, markeredgewidth=2)
+                mom = Line2D([at.x], [at.y], marker='an',
+                             markerfacecolor='None', **force_options)
+                ax.add_line(mom)
 
         return ax
 
@@ -676,8 +687,8 @@ class Display_mpl(Display):
         Parameters
         ----------
 
-        ax: matplotlib axis
-            The axis where to draw to
+        ax: matplotlib Axis
+            axis to plot to
         dof: int
             Degree of freedom to which the force is being applied
         at: Node object
@@ -707,7 +718,7 @@ class Display_mpl(Display):
                         color=force_options['color'], ha=halign, va='center',
                         textcoords='offset points', arrowprops=dict(
                             arrowstyle='->', color=force_options['color'],
-                            lw=2.5))
+                            lw=force_options['markeredgewidth']))
         # Force in y direction
         elif dof == 1:
             ax.annotate('{f:.2E}'.format(f=abs(val)), xy=(at.x, at.y),
@@ -715,20 +726,22 @@ class Display_mpl(Display):
                         color=force_options['color'], ha='center', va='center',
                         textcoords='offset points', arrowprops=dict(
                             arrowstyle='->', color=force_options['color'],
-                            lw=2.5))
+                            lw=force_options['markeredgewidth']))
         # Moment
         elif dof == 2:
             ax.annotate('{f:.2E}'.format(f=abs(val)), xy=(at.x, at.y),
                         xytext=(20, 20), color=force_options['color'],
                         ha='left', va='center', textcoords='offset points')
             if np.sign(val) >= 0.:
-                ax.plot([at.x], [at.y], marker=marker_moment_pos,
-                        markeredgecolor=force_options['color'],
-                        markerfacecolor='None', ms=40, markeredgewidth=2)
+                mom = Line2D([at.x], [at.y], marker='ap',
+                             markeredgecolor=force_options['color'],
+                             markerfacecolor='none', **force_options)
+                ax.add_line(mom)
             else:
-                ax.plot([at.x], [at.y], marker=marker_moment_neg,
-                        markeredgecolor=force_options['color'],
-                        markerfacecolor='None', ms=40, markeredgewidth=2)
+                mom = Line2D([at.x], [at.y], marker='an',
+                             markeredgecolor=force_options['color'],
+                             markerfacecolor='none', **force_options)
+                ax.add_line(mom)
 
         return ax
 
@@ -893,7 +906,7 @@ class Display_mpl(Display):
             ax.plot(
                 nx_e,
                 ny_e,
-                marker=marker_moment_pos,
+                marker='ap',
                 ls='None',
                 ms=20,
                 markeredgewidth=1.5,
@@ -935,7 +948,8 @@ def get_element_deformed_node_coords(element, result, scale=1):
     # FIXME: make this compatible for 3D
     displ_nodes = dict()
     for n in list_nodes:
-        displ_nodes[n.number] = coord_nodes[n.number] + node_displ[n.number][:2] * scale
+        displ_nodes[n.number] = coord_nodes[n.number] + node_displ[
+            n.number][:2] * scale
 
     return displ_nodes
 
@@ -974,7 +988,8 @@ def get_deformed_node_coords(nodes, result, scale=1):
     # FIXME: make this compatible for 3D
     displ_nodes = dict()
     for n in list_nodes:
-        displ_nodes[n.number] = coord_nodes[n.number] + node_displ[n.number][:2] * scale
+        displ_nodes[n.number] = coord_nodes[n.number] + node_displ[
+            n.number][:2] * scale
 
     return displ_nodes
 
@@ -1025,126 +1040,6 @@ def range_with_ratio(x1, x2, n, a):
     return new_range
 
 
-############################################################
-# define markers for the moment application
-############################################################
-#
-marker_moment_pos = Path.arc(theta1=-45., theta2=135.)
-verts_m = marker_moment_pos.vertices
-codes_m = marker_moment_pos.codes
-arrow_head_s = 0.4
-# get angle on the tip (approx.)
-ang_aux_pos = np.arctan2((verts_m[-1, 1] - verts_m[-3, 1]),
-                         (verts_m[-1, 0] - verts_m[-3, 0]))
-ang_aux_neg = np.arctan2((verts_m[0, 1] - verts_m[2, 1]),
-                         (verts_m[0, 0] - verts_m[2, 0]))
-# Positive Moment
-ang_arrow = np.deg2rad(25.)
-ang_p1 = ang_aux_pos - np.pi + ang_arrow
-ang_p2 = ang_aux_pos - np.pi - ang_arrow
-# Position of the tip of the arrow
-tip_pos = verts_m[-1, :]
-# Position of the first line of the arrow
-p1 = tip_pos + arrow_head_s * np.array([np.cos(ang_p1), np.sin(ang_p1)])
-# Position of the second line of the arrow
-p2 = tip_pos + arrow_head_s * np.array([np.cos(ang_p2), np.sin(ang_p2)])
-# Add to the vertices and code
-aux = np.array([p1, tip_pos, p2])
-verts_mp = np.vstack((verts_m, aux))
-aux_code = np.array([1, 2, 2])
-codes_mp = np.hstack((codes_m, aux_code))
-# Create path
-marker_moment_pos = Path(verts_mp, codes_mp)
-
-# Negative Moment
-ang_p1 = ang_aux_neg - np.pi + ang_arrow
-ang_p2 = ang_aux_neg - np.pi - ang_arrow
-# Position of the tip of the arrow
-tip_neg = verts_m[0, :]
-# Position of the first line of the arrow
-p1 = tip_neg + arrow_head_s * np.array([np.cos(ang_p1), np.sin(ang_p1)])
-# Position of the second line of the arrow
-p2 = tip_neg + arrow_head_s * np.array([np.cos(ang_p2), np.sin(ang_p2)])
-# Add to the vertices and code
-aux = np.array([p1, tip_neg, p2])
-verts_mn = np.vstack((verts_m, aux))
-aux_code = np.array([1, 2, 2])
-codes_mn = np.hstack((codes_m, aux_code))
-marker_moment_neg = Path(verts_mn, codes_mn)
-############################################################
-
-############################################################
-# define markers for the supports
-############################################################
-# rolling x
-x = [0, 1, -1, 0, -1.2, 1.2]
-y = [0, -1, -1, 0, -1.5, -1.5]
-xy = list(zip(x, y))
-codes = [
-    Path.MOVETO, Path.LINETO, Path.LINETO, Path.LINETO, Path.MOVETO,
-    Path.LINETO
-]
-roll_x = Path(xy, codes)
-# rolling y
-x = [0, -1, -1, 0, -1.5, -1.5]
-y = [0, 1, -1, 0, 1.2, -1.2]
-xy = list(zip(x, y))
-codes = [
-    Path.MOVETO, Path.LINETO, Path.LINETO, Path.LINETO, Path.MOVETO,
-    Path.LINETO
-]
-roll_y = Path(xy, codes)
-# pinned
-x = [
-    0, 1, -1, 0, -1.2, 1.2, -1.2, -0.8, -0.8, -0.4, -0.4, 0, 0, 0.4, 0.4, 0.8,
-    0.8, 1.2
-]
-y = [
-    0, -1, -1, 0, -1, -1, -1.5, -1, -1.5, -1, -1.5, -1, -1.5, -1, -1.5, -1,
-    -1.5, -1
-]
-xy = list(zip(x, y))
-codes = [
-    Path.MOVETO, Path.LINETO, Path.LINETO, Path.LINETO, Path.MOVETO,
-    Path.LINETO, Path.MOVETO, Path.LINETO, Path.MOVETO, Path.LINETO,
-    Path.MOVETO, Path.LINETO, Path.MOVETO, Path.LINETO, Path.MOVETO,
-    Path.LINETO, Path.MOVETO, Path.LINETO
-]
-pinned = Path(xy, codes)
-# encastrated
-x = [
-    -1, 1, 1, -1, -1, -1.2, -0.8, -0.8, -0.4, -0.4, 0, 0, 0.4, 0.4, 0.8, 0.8,
-    1.2
-]
-y = [
-    0, 0, -1, -1, 0, -1.5, -1, -1.5, -1, -1.5, -1, -1.5, -1, -1.5, -1, -1.5, -1
-]
-xy = list(zip(x, y))
-codes = [
-    Path.MOVETO, Path.LINETO, Path.LINETO, Path.LINETO, Path.LINETO,
-    Path.MOVETO, Path.LINETO, Path.MOVETO, Path.LINETO, Path.MOVETO,
-    Path.LINETO, Path.MOVETO, Path.LINETO, Path.MOVETO, Path.LINETO,
-    Path.MOVETO, Path.LINETO
-]
-encas = Path(xy, codes)
-# no rotation and no displacement in y
-x = [-1, 1, 1, -1, -1, -1.2, 1.2]
-y = [0, 0, -1, -1, 0, -1.5, -1.5]
-xy = list(zip(x, y))
-codes = [
-    Path.MOVETO, Path.LINETO, Path.LINETO, Path.LINETO, Path.LINETO,
-    Path.MOVETO, Path.LINETO
-]
-disp_x = Path(xy, codes)
-# no rotation and no displacement in x
-x = [0, 0, -1, -1, 0, -1.5, -1.5]
-y = [1, -1, -1, 1, 1, 1.2, -1.2]
-xy = list(zip(x, y))
-codes = [
-    Path.MOVETO, Path.LINETO, Path.LINETO, Path.LINETO, Path.LINETO,
-    Path.MOVETO, Path.LINETO
-]
-disp_y = Path(xy, codes)
 # only rotation constrained
 x = [-0.5, 0.5, -0.5, 0.5]
 y = [-0.5, 0.5, 0.5, -0.5]

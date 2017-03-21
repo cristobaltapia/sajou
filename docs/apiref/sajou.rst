@@ -1,6 +1,3 @@
-sajou package
-=============
-
 Subpackages
 -----------
 

@@ -74,9 +74,6 @@ class MarkerStyle(mpl_mk.MarkerStyle):
         'es': 'encastrated_support',
         'rex': 'rolling_encastrated_x',
         'rey': 'rolling_encastrated_y',
-        '20': 'pinned_support',
-        '21': 'rolling_support',
-        '22': 'rolling_encastrated',
     }
 
     markers = {**markers_custom, **mpl_mk.MarkerStyle.markers}

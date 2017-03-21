@@ -15,13 +15,9 @@ In addition to the standard markers, the following are implemented:
     +---------+----------------------------------+
     | `'an'`  | arc with arrow (clock-wise)      |
     +---------+----------------------------------+
-    | `'ps'`  | pinned support                   |
-    +---------+----------------------------------+
     | `'psx'` | horizontal pinned support        |
     +---------+----------------------------------+
     | `'psy'` | vertical pinned support          |
-    +---------+----------------------------------+
-    | `'rs'`  | rolling support                  |
     +---------+----------------------------------+
     | `'rsx'` | horizontal rolling support       |
     +---------+----------------------------------+
@@ -37,6 +33,9 @@ In addition to the standard markers, the following are implemented:
 Examples
 --------
 
+.. plot:: sajou_examples/markers.py
+
+.. literalinclude:: ../../docs/sajou_examples/markers.py
 
 """
 import math

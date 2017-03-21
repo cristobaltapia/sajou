@@ -1,12 +1,42 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-This file contains the definitions of custom matplotlib markers
+This module contains an extension to the MarkerStyle class of Matplotlib.
 
-The created markers are the following:
+It implements an additional set of markers which are used for the
+representation of different attributes of a structural analysis model.
 
-    - 'mp': positive moment
-    - 'mn': negative moment
+In addition to the standard markers, the following are implemented:
+
+    +---------+----------------------------------+
+    | marker  | description                      |
+    +=========+==================================+
+    | `'ap'`  | arc with arrow (anti clock-wise) |
+    +---------+----------------------------------+
+    | `'an'`  | arc with arrow (clock-wise)      |
+    +---------+----------------------------------+
+    | `'ps'`  | pinned support                   |
+    +---------+----------------------------------+
+    | `'psx'` | horizontal pinned support        |
+    +---------+----------------------------------+
+    | `'psy'` | vertical pinned support          |
+    +---------+----------------------------------+
+    | `'rs'`  | rolling support                  |
+    +---------+----------------------------------+
+    | `'rsx'` | horizontal rolling support       |
+    +---------+----------------------------------+
+    | `'rsy'` | vertical rolling support         |
+    +---------+----------------------------------+
+    | `'es'`  | encastrated support              |
+    +---------+----------------------------------+
+    | `'rex'` | 'rolling_encastrated_x',         |
+    +---------+----------------------------------+
+    | `'rey'` | 'rolling_encastrated_y',         |
+    +---------+----------------------------------+
+
+Examples
+--------
+
 
 """
 import math
@@ -38,15 +68,16 @@ class MarkerStyle(mpl_mk.MarkerStyle):
     markers_custom = {
         'ap': 'arc_arrow_positive',
         'an': 'arc_arrow_negative',
-        'ps': 'pinned_support',
         'psx': 'pinned_support_x',
         'psy': 'pinned_support_y',
-        'rs': 'rolling_support',
         'rsx': 'rolling_support_x',
         'rsy': 'rolling_support_y',
         'es': 'encastrated_support',
         'rex': 'rolling_encastrated_x',
         'rey': 'rolling_encastrated_y',
+        '20': 'pinned_support',
+        '21': 'rolling_support',
+        '22': 'rolling_encastrated',
     }
 
     markers = {**markers_custom, **mpl_mk.MarkerStyle.markers}
@@ -125,7 +156,7 @@ class MarkerStyle(mpl_mk.MarkerStyle):
         ]
         self._filled = False
         self._path = Path(xy, codes)
-        self._transform.scale(3.0, 3.0)
+        self._transform.scale(2.0, 2.0)
         self._joinstyle = 'miter'
 
     def _set_pinned_support_x(self):
@@ -147,7 +178,7 @@ class MarkerStyle(mpl_mk.MarkerStyle):
 
         self._filled = False
         self._path = Path(xy, codes)
-        self._transform.scale(3.0, 3.0)
+        self._transform.scale(2.0, 2.0)
         self._joinstyle = 'miter'
 
     def _set_rolling_support_x(self):
@@ -176,7 +207,7 @@ class MarkerStyle(mpl_mk.MarkerStyle):
 
         self._filled = False
         self._path = Path(xy, codes)
-        self._transform.scale(3.0, 3.0)
+        self._transform.scale(2.0, 2.0)
         self._joinstyle = 'miter'
 
     def _set_rolling_encastrated(self, rot):
@@ -191,7 +222,7 @@ class MarkerStyle(mpl_mk.MarkerStyle):
 
         self._filled = False
         self._path = Path(xy, codes)
-        self._transform.scale(3.0, 3.0)
+        self._transform.scale(2.0, 2.0)
         self._joinstyle = 'miter'
 
     def _set_rolling_encastrated_x(self):

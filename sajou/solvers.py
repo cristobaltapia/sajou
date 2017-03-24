@@ -262,8 +262,18 @@ class StaticSolver(Solver):
         """
         Calculate the internal forces of elements.
 
-        :result: Result object
-        :returns: TODO
+        Parameters
+        ----------
+
+        result: Result object
+            used to store the results to
+        nodal_displ: ndarray
+            nodal displacements obtained from the solver
+
+        Returns
+        -------
+
+        dict: End forces
 
         """
         # Initialize dictionary with results of the end forces

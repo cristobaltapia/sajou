@@ -362,9 +362,8 @@ class Display_mpl(Display):
             # convert to ndarray
             node_def = np.array(
                 [(d[0], d[1]) for k, d in coords_nodes.items()])
-            print(node_def)
             # plot nodes
-            ax.plot(node_def[:, 0], node_def[:, 1], marker='o', **node_options)
+            ax.plot(node_def[:, 0], node_def[:, 1], ls='', marker='o', **node_options)
 
         if show_undeformed:
             ax = self.plot_geometry(model=result._model, ax=ax, ls='--')

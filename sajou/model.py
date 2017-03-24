@@ -330,13 +330,23 @@ class Model(object):
 
 
         """
+        # FIXME: node freedom allocation table should be used here
         # Get the node
-        n_node = dof // self.n_dof_per_node
-        node = self.nodes[n_node]
-        # Get the intra-element dof
-        n_dof = dof - (n_node * self.n_dof_per_node)
+        nfmt = self.nfmt
 
-        return node, n_dof
+        # search for the node
+        for n, node in self.nodes.items():
+            n_dof_node = sum(node.nfs)
+            if dof >= nfmt[node.number] and dof < (nfmt[node.number] + n_dof_node):
+                node_num = node.number
+                break
+
+        # search for the node in the element
+        node_sel = self.nodes[node_num]
+        # Get the intra-element dof
+        n_dof = dof - nfmt[node_num]
+
+        return node_sel, n_dof
 
     def add_hinge(self, node):
         """Add hinge to the specified node. Also supports list of nodes
@@ -383,7 +393,7 @@ class Model(object):
         # Initialize the global stiffness matrix
         K = np.zeros([n_dof, n_dof], dtype=np.float64)
         # Fill the global stiffness matrix
-        for n_elem, element in self.beams.items():
+        for n_elem, element in self.elements.items():
             # Get nodes of the respective element
             nodes_elem = element._nodal_connectivity
             # Assemble element stiffness matrix
@@ -528,7 +538,7 @@ class Model(object):
         nfmt = self.nfmt
         # Initialize a zero vector of the size of the total number of
         # dof
-        V = np.zeros(self.n_nodes * self.n_dof_per_node, dtype=np.float64)
+        V = np.zeros(n_dof, dtype=np.float64)
         # Assign the values corresponding to the loads in each dof
         for ix, node in self.nodes.items():
             # Get the Node Freedom Signature of the current node

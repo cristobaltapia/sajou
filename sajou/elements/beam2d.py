@@ -436,13 +436,13 @@ class Beam2D(Element):
         :returns: TODO
 
         """
-        if self.release_end_1 == True and self.release_end_2 == True:
+        if self.release_end_1 and self.release_end_2:
             j_n = [2, 5]
             i_n = [0, 1, 3, 4]
-        elif self.release_end_1 == True:
+        elif self.release_end_1:
             j_n = [2]
             i_n = [0, 1, 3, 4, 5]
-        elif self.release_end_2 == True:
+        elif self.release_end_2:
             j_n = [5]
             i_n = [0, 1, 2, 3, 4]
 

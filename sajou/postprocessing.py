@@ -81,7 +81,7 @@ class Postprocess(object):
         # FIXME: verify first if 'pos' is array
         pos = np.array(pos)
         # Decide which data to use
-        if unit_length == True:
+        if unit_length:
             x_l = pos * element._length
         else:
             x_l = pos
@@ -120,12 +120,12 @@ class Postprocess(object):
             # FIXME: throw error
             return 0
 
-        # Initialize list with maximum values of internal forces
+        # Initialize dictionary with maximum values of internal forces
         max_internal_force = dict()
         # The same with minimum values
         min_internal_force = dict()
         # A loop for each element of the model is made
-        for num_e, curr_element in self._model.beams.items():
+        for num_e, curr_element in self._model.elements.items():
             # define the points
             pos = np.linspace(0, 1, n, dtype=np.float64) * curr_element._length
             # call a function to calculate the internal forces in a
@@ -194,17 +194,33 @@ class Postprocess(object):
                                     unit_length=False):
         """
         Compute the internal forces of a given element.
-        The variable 'pos' defines te position where the internal force is calculated. It
-        can also be an array, specifying different positions at which the internal forces
-        are needed.
 
-        :param element: a Beam instance
-        :param pos: position of evaluation (float or array)
-        :param component: TODO
-        :param unit_length: bool, sets wheather the local coordinate 'x' of the beam move between [0,1]
-               or [0,Le]
+        The variable 'pos' defines te position where the internal force is
+        calculated. It can also be an array, specifying different positions at
+        which the internal forces are needed.
 
-        :returns: TODO
+        Parameters
+        ----------
+
+        element: Beam instance
+            the element for which the internal forces are to be computed
+        pos: float
+            position of evaluation
+        component: str
+            Defines the component that is going to be computed:
+
+                - `'moment'`
+                - `'shear'`
+                - `'axial'`
+
+        unit_length: bool
+            Sets wheather the local coordinate 'x' of the beam move between
+            [0,1] or [0,Le]
+
+        Returns
+        -------
+
+        ndarray: internal force specified
 
         """
         if component == 'moment':
@@ -228,7 +244,7 @@ class Postprocess(object):
         """
         pass
 
-    #FIXME: this is a duplicated function (model module). Clean it!
+    # FIXME: this is a duplicated function (model module). Clean it!
     def calc_node_new_coord(self):
         """Calculate the new coordinates of the nodes in the deformed state
         :returns: TODO

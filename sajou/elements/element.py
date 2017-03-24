@@ -26,7 +26,7 @@ class Element(object):
         Parameters
         ----------
 
-        node: Node instance
+        node: int
             the number of the node in the element (element number of the node: 0, 1,
             2, ... )
 
@@ -41,7 +41,7 @@ class Element(object):
         The array has the following form::
 
                 [0, 1, 2] --> all DOFs are used
-                [0, 2] --> DOF 0 and 2 are used only (ux and rz)
+                [0, 2] --> DOF 0 and 2 are used only (ux and rz in 2D)
 
         This array is used to know exactly which DOFs should be used to assemble the global
         stiffness matrix or to retrieve the corresponding displacements.

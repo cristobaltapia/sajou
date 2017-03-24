@@ -102,8 +102,7 @@ class StaticSolver(Solver):
         result = Result(model=model_data)
 
         # Add nodal displacements to the result object
-        nodal_displ = self.process_nodal_displ(V_res)
-        result.add_result('nodal displacements', nodal_displ)
+        self.calc_nodal_displ(result, V_res, K, P_e)
 
         # Add nodal reactions to the results object
         self.calc_nodal_reactions(result, V_res, K, P_e)
@@ -145,11 +144,20 @@ class StaticSolver(Solver):
 
         return result
 
-    def process_nodal_displ(self, nodal_displ):
-        """Return nodal displacements as a dictionary instance.
+    def calc_nodal_displ(self, result, nodal_displ, K, elem_load):
+        """Calculate the nodal displacements
 
-        :nodal_displ: TODO
-        :returns: TODO
+        Parameters
+        ----------
+
+        result: Results object
+            result obtained from the Solver
+        nodal_displ: ndarray
+            displacements array calculated after the solve process
+        K: ndarray
+            Stiffness matrix
+        elem_load: ndarray
+            Elemetn load
 
         """
         # generate a list of the nodes of the system
@@ -168,58 +176,70 @@ class StaticSolver(Solver):
             ix_node = node_i.number
             # get the indices for the node's DOFs on the global system
             ix_i = nfmt[ix_node]
-            ix_f = ix_i + node_i.n_dof
+            ix_f = ix_i + sum(node_i.nfs)
             # get the displacements for the specified node
             dict_displ[ix_node] = nodal_displ[ix_i: ix_f]
+
+        result.add_result('nodal displacements', dict_displ)
 
         return dict_displ
 
     def calc_nodal_forces(self, result, nodal_displ, K, elem_load):
-        """TODO: Docstring for calc_nodal_forces.
+        """Compute the nodal forces
 
-        :param result: TODO
-        :param nodal_displ: TODO
-        :param K: TODO
-        :param elem_load: TODO
+        Parameters
+        ----------
+        result: Result object
+            result obtained from the solver
+        nodal_displ: ndarray
+            nodal displacements calculated with the stiffness matrix
+        K: ndarray
+            Stiffness matrix
+        elem_load: TODO
         :returns: TODO
 
         """
+        # calculate the nodal forces
         nodal_forces = K @ nodal_displ - elem_load
-        #
-        n_dof = self._model.n_dof_per_node
 
-        nodes = [n for i, n in self._model.nodes.items()]
+        # get the node freedom map table
+        nfmt = self._model.nfmt
+        nodes = self._model.nodes
+        ndof = self._model.n_dof_per_node
 
-        # Initialize numpy array
-        ar_nodal_forces = np.zeros((len(nodes), n_dof), dtype=np.float64)
-        index_nodes = np.zeros(len(nodes), dtype=np.int)
-
+        dict_nf = dict()
         # Loop for each node of the model
-        # TODO: implement 3D case
-        for ix, curr_node in enumerate(nodes):
-            ix_node = curr_node.number
-            aux_arr = np.array([nodal_forces[ix_node * 3:ix_node * 3 + 3]])
-            ar_nodal_forces[ix, :] = aux_arr
-            index_nodes[ix] = curr_node.number
+        for num, curr_node in nodes.items():
+            ix = curr_node.number
+            nfs = curr_node.nfs
+            nod_force = np.zeros(ndof)
+            indices = np.arange(ndof)[nfs>0]
+            nod_force[indices] = nodal_forces[nfmt[ix]: nfmt[ix] + sum(nfs)]
+            dict_nf[ix] = nod_force
 
-        index_label = ['fx', 'fy', 'mz']
+        result.add_result('nodal forces', dict_nf)
 
-        # Create the data frame
-        df_nodal_forces = pd.DataFrame(data=ar_nodal_forces, index=index_nodes,
-                                       dtype=np.float64, columns=index_label)
-
-        result.add_result('nodal forces', df_nodal_forces)
-
-        return df_nodal_forces
+        return dict_nf
 
     def calc_nodal_reactions(self, result, nodal_displ, K, elem_load):
         """Calculate the nodal reactions of the model.
 
-        :result: TODO
-        :nodal_displ: nodal displacements
-        :K: stiffness matrix
-        :elem_forces: element forces vector
-        :returns: TODO
+        Parameters
+        ----------
+
+        result: Result object
+            result obtained with Solver
+        nodal_displ: ndarray
+            nodal displacements
+        K: ndarray
+            stiffness matrix
+        elem_forces: ndarray
+            element forces vector
+
+        Returns
+        -------
+
+        ndarray: nodal reactions
 
         """
         # Get the positions of the Dirichlet birder conditions
@@ -240,7 +260,7 @@ class StaticSolver(Solver):
 
     def calc_end_forces(self, result, nodal_displ):
         """
-        Calculate the internal forces of beam elements.
+        Calculate the internal forces of elements.
 
         :result: Result object
         :returns: TODO
@@ -253,7 +273,7 @@ class StaticSolver(Solver):
         # Get the node freedom allocation of every node
         nfat = self._model.nfat
         # Calculate end forces for each element
-        for num, element in self._model.beams.items():
+        for num, element in self._model.elements.items():
             # Get the transformation matrix for the element
             Te = element.transformation_matrix
             # Get the stiffness matrix of the element in global coordinates
@@ -267,7 +287,7 @@ class StaticSolver(Solver):
             enfmt = element.enfmt
             # Initiate element load vector
             # Assemble matrix with element nodal displacements of the current
-            # beam element
+            # element
             for n_node_e, node in element._nodal_connectivity.items():
                 # Indices for the array v_i
                 index_base = element.get_index_array_of_node(n_node_e)
@@ -286,26 +306,24 @@ class StaticSolver(Solver):
             # FIXME:
             # If an element uses release_end option, then the displacement (rotation) needs
             # to be calculated sepparately.
-            """
-            if element.release_end_1 == True or element.release_end_2 == True:
-                import scipy.sparse as sparse
-                aux = element._calc_condensed_displacements(v_i)
-                #v_i[5] = aux
-                #ke = element._assemble_Ke()
-                ## To sparse
-                #ke_local = sparse.csr_matrix(ke)
-                ## Transform to global coordinates:
-                #Te = element.transformation_matrix
-                #Ke = Te.T.dot(ke_local.dot(Te))
-            """
+            #if element.release_end_1 or element.release_end_2:
+            #    import scipy.sparse as sparse
+            #    aux = element._calc_condensed_displacements(v_i)
+            #    v_i[5] = aux
+            #    ke = element._assemble_Ke()
+            #    # To sparse
+            #    ke_local = sparse.csr_matrix(ke)
+            #    # Transform to global coordinates:
+            #    Te = element.transformation_matrix
+            #    Ke = Te.T.dot(ke_local.dot(Te))
 
             # Get the End Forces of the element in global coordinates
             P_i_global = Ke @ v_i - P_e_i
             # Transform End Forces to local coordinates
             P_i_local = Te @ P_i_global
             # Add End Forces to the dictionary of End Forces of the result object
-            # for the current beam element
-            end_forces[num] = P_i_local
+            # for the current element
+            end_forces[element.number] = P_i_local
             # Add the corresponding nodal forces to the matrix to
             # calculate the sectional forces
             # - Axial force

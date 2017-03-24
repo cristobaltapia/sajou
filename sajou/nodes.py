@@ -108,7 +108,7 @@ class Node(np.ndarray):
         Generate the Node Freedom Signature based on the information taken from the
         elements attached to the node.
 
-        This function has to be call when no more changes will be made to the model.
+        This function has to be called when no more changes will be made to the model.
 
         :returns: TODO
 

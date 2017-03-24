@@ -22,10 +22,20 @@ class Postprocess(object):
         """
         Calculate the axial force of element at position x.
 
-        :param pos: TODO
-        :param element: TODO
-        :param unit_length: boolean. Defines whether the range is [0, 1] or [0, Le] (default)
-        :returns: TODO
+        Parameters
+        ----------
+
+        pos: float
+            position where to compute the axial force
+        element: Element instance
+            The element for which the axial force should be computed
+        unit_length: bool
+            Defines whether the range is [0, 1] or [0, Le] (default)
+
+        Returns
+        -------
+
+        float: value of the axila force at the specified position
 
         """
         # FIXME: verify first if 'pos' is array
@@ -47,10 +57,20 @@ class Postprocess(object):
         """
         Calculate the shear force of element at position x.
 
-        :param pos: TODO
-        :param element: TODO
-        :param unit_length: boolean. Defines whether the range is [0, 1] or [0, Le] (default)
-        :returns: TODO
+        Parameters
+        ----------
+
+        pos: float
+            position where to compute the shear force
+        element: Element instance
+            The element for which the shear force should be computed
+        unit_length: bool
+            Defines whether the range is [0, 1] or [0, Le] (default)
+
+        Returns
+        -------
+
+        float: value of the shear force at the specified position
 
         """
         # FIXME: verify first if 'pos' is array
@@ -72,10 +92,20 @@ class Postprocess(object):
         """
         Calculate the moment of element at position x.
 
-        :param pos: TODO
-        :param element: TODO
-        :param unit_length: boolean. Defines whether the range is [0, 1] or [0, Le] (default)
-        :returns: TODO
+        Parameters
+        ----------
+
+        pos: float
+            position where to compute the moment
+        element: Element instance
+            The element for which the moment should be computed
+        unit_length: bool
+            Defines whether the range is [0, 1] or [0, Le] (default)
+
+        Returns
+        -------
+
+        float: value of the moment at the specified position
 
         """
         # FIXME: verify first if 'pos' is array

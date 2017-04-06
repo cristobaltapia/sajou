@@ -146,7 +146,7 @@ of section forces in a specified element and to plot the results using the above
 Let us begin by extracting values o the moment, shear and axial force along a specified beam (say beam No. 2)::
 
     # Postprocess the results
-    post = Postprocess(result=res)
+    post = sj.Postprocess(result=res)
     # get the values at the center of the beam
     m_0 = post.calc_moment_at(pos=0.5, element=b2, unit_length=True)
     s_0 = post.calc_shear_at(pos=0.5, element=b2, unit_length=True)

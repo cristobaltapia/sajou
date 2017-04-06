@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>sajou.loads module &mdash; Sajou 0.1.1 documentation</title>
+  <title>sajou.plot.lines_mpl module &mdash; Sajou 0.1.1 documentation</title>
   
 
   
@@ -36,9 +36,9 @@
               href="../genindex.html"/>
         <link rel="search" title="Search" href="../search.html"/>
     <link rel="top" title="Sajou 0.1.1 documentation" href="../index.html"/>
-        <link rel="up" title="Python API reference" href="index.html"/>
-        <link rel="next" title="sajou.materials module" href="sajou.materials.html"/>
-        <link rel="prev" title="sajou.plot.plot_elements_mpl module" href="sajou.plot.plot_elements_mpl.html"/> 
+        <link rel="up" title="sajou.plot package" href="sajou.plot.html"/>
+        <link rel="next" title="sajou.plot.markers_mpl module" href="sajou.plot.markers_mpl.html"/>
+        <link rel="prev" title="sajou.plot.display module" href="sajou.plot.display.html"/> 
 
   
   <script src="../_static/js/modernizr.min.js"></script>
@@ -101,18 +101,16 @@
 <li class="toctree-l1"><a class="reference internal" href="../doc/index.html">Documentation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="index.html">Python API reference</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html#sajou-package">sajou package</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="index.html#subpackages">Subpackages</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="index.html#submodules">Submodules</a><ul class="current">
-<li class="toctree-l3 current"><a class="current reference internal" href="#">sajou.loads module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="sajou.materials.html">sajou.materials module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="sajou.model.html">sajou.model module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="sajou.nodes.html">sajou.nodes module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="sajou.postprocessing.html">sajou.postprocessing module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="sajou.sections.html">sajou.sections module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="sajou.solvers.html">sajou.solvers module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="sajou.utils.html">sajou.utils module</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="sajou.elements.html">sajou.elements package</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="sajou.plot.html">sajou.plot package</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="sajou.plot.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="sajou.plot.html#module-sajou.plot">Module contents</a></li>
 </ul>
 </li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#submodules">Submodules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="index.html#module-sajou">Module contents</a></li>
 </ul>
 </li>
@@ -162,13 +160,15 @@
         
           <li><a href="index.html">Python API reference</a> &raquo;</li>
         
-      <li>sajou.loads module</li>
+          <li><a href="sajou.plot.html">sajou.plot package</a> &raquo;</li>
+        
+      <li>sajou.plot.lines_mpl module</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../_sources/apiref/sajou.loads.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/apiref/sajou.plot.lines_mpl.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -181,29 +181,19 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="module-sajou.loads">
-<span id="sajou-loads-module"></span><h1>sajou.loads module<a class="headerlink" href="#module-sajou.loads" title="Permalink to this headline">¶</a></h1>
-<p>Defines the different load types,thta can be applied to the elements, which are
-transfered accordingly to the respective nodes.</p>
+  <div class="section" id="module-sajou.plot.lines_mpl">
+<span id="sajou-plot-lines-mpl-module"></span><h1>sajou.plot.lines_mpl module<a class="headerlink" href="#module-sajou.plot.lines_mpl" title="Permalink to this headline">¶</a></h1>
+<p>Extends the Line2D class of matplotlib to use the custom markers</p>
 <dl class="class">
-<dt id="sajou.loads.DistributedLoad">
-<em class="property">class </em><code class="descclassname">sajou.loads.</code><code class="descname">DistributedLoad</code><span class="sig-paren">(</span><em>elem</em>, <em>p1</em>, <em>p2=None</em>, <em>direction='y'</em>, <em>coord_system='local'</em><span class="sig-paren">)</span><a class="headerlink" href="#sajou.loads.DistributedLoad" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#sajou.loads.Load" title="sajou.loads.Load"><code class="xref py py-class docutils literal"><span class="pre">sajou.loads.Load</span></code></a></p>
-<p>Docstring for DistributedLoad.</p>
-</dd></dl>
+<dt id="sajou.plot.lines_mpl.Line2D">
+<em class="property">class </em><code class="descclassname">sajou.plot.lines_mpl.</code><code class="descname">Line2D</code><span class="sig-paren">(</span><em>xdata</em>, <em>ydata</em>, <em>linewidth=None</em>, <em>linestyle=None</em>, <em>color=None</em>, <em>marker=None</em>, <em>markersize=None</em>, <em>markeredgewidth=None</em>, <em>markeredgecolor=None</em>, <em>markerfacecolor=None</em>, <em>markerfacecoloralt='none'</em>, <em>fillstyle=None</em>, <em>antialiased=None</em>, <em>dash_capstyle=None</em>, <em>solid_capstyle=None</em>, <em>dash_joinstyle=None</em>, <em>solid_joinstyle=None</em>, <em>pickradius=5</em>, <em>drawstyle=None</em>, <em>markevery=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#sajou.plot.lines_mpl.Line2D" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">matplotlib.lines.Line2D</span></code></p>
+<p>Extends the Line2D class from matplotlib.</p>
+<dl class="attribute">
+<dt id="sajou.plot.lines_mpl.Line2D.markers">
+<code class="descname">markers</code><em class="property"> = {0: 'tickleft', '': 'nothing', 2: 'tickup', 'rsy': 'rolling_support_y', '&lt;': 'triangle_left', 5: 'caretright', 6: 'caretup', 'o': 'circle', 'rex': 'rolling_encastrated_x', 9: 'caretrightbase', 10: 'caretupbase', 11: 'caretdownbase', 'x': 'x', 3: 'tickdown', 'p': 'pentagon', 4: 'caretleft', '8': 'octagon', '*': 'star', '|': 'vline', 'rey': 'rolling_encastrated_y', 1: 'tickright', 'H': 'hexagon2', 7: 'caretdown', '3': 'tri_left', 'ap': 'arc_arrow_positive', '2': 'tri_up', '&gt;': 'triangle_right', '^': 'triangle_up', 'es': 'encastrated_support', 'rsx': 'rolling_support_x', '1': 'tri_down', 'None': 'nothing', None: 'nothing', ' ': 'nothing', 'X': 'x_filled', 'P': 'plus_filled', 'd': 'thin_diamond', 's': 'square', '+': 'plus', 'h': 'hexagon1', '4': 'tri_right', 'an': 'arc_arrow_negative', 'D': 'diamond', 'v': 'triangle_down', ',': 'pixel', '_': 'hline', 'psx': 'pinned_support_x', 8: 'caretleftbase', 'psy': 'pinned_support_y', '.': 'point'}</em><a class="headerlink" href="#sajou.plot.lines_mpl.Line2D.markers" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
-<dl class="class">
-<dt id="sajou.loads.DistributedMoment">
-<em class="property">class </em><code class="descclassname">sajou.loads.</code><code class="descname">DistributedMoment</code><span class="sig-paren">(</span><em>elem</em>, <em>m1</em>, <em>m2=None</em>, <em>direction='z'</em>, <em>coord_system='local'</em><span class="sig-paren">)</span><a class="headerlink" href="#sajou.loads.DistributedMoment" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#sajou.loads.Load" title="sajou.loads.Load"><code class="xref py py-class docutils literal"><span class="pre">sajou.loads.Load</span></code></a></p>
-<p>Docstring for DistributedMoment.</p>
-</dd></dl>
-
-<dl class="class">
-<dt id="sajou.loads.Load">
-<em class="property">class </em><code class="descclassname">sajou.loads.</code><code class="descname">Load</code><a class="headerlink" href="#sajou.loads.Load" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
-<p>Defines the Load object.</p>
 </dd></dl>
 
 </div>
@@ -218,10 +208,10 @@ transfered accordingly to the respective nodes.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="sajou.materials.html" class="btn btn-neutral float-right" title="sajou.materials module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="sajou.plot.markers_mpl.html" class="btn btn-neutral float-right" title="sajou.plot.markers_mpl module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="sajou.plot.plot_elements_mpl.html" class="btn btn-neutral" title="sajou.plot.plot_elements_mpl module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="sajou.plot.display.html" class="btn btn-neutral" title="sajou.plot.display module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

@@ -1,0 +1,7 @@
+sajou.plot.display module
+=========================
+
+.. automodule:: sajou.plot.display
+    :members:
+    :undoc-members:
+    :show-inheritance:

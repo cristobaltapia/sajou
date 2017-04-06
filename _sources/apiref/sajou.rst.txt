@@ -1,9 +1,13 @@
+sajou package
+=============
+
 Subpackages
 -----------
 
 .. toctree::
 
     sajou.elements
+    sajou.plot
 
 Submodules
 ----------
@@ -14,7 +18,6 @@ Submodules
    sajou.materials
    sajou.model
    sajou.nodes
-   sajou.plot
    sajou.postprocessing
    sajou.sections
    sajou.solvers

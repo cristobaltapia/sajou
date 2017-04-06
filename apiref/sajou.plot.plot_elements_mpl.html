@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>sajou.nodes module &mdash; Sajou 0.1.1 documentation</title>
+  <title>sajou.plot.plot_elements_mpl module &mdash; Sajou 0.1.1 documentation</title>
   
 
   
@@ -36,9 +36,9 @@
               href="../genindex.html"/>
         <link rel="search" title="Search" href="../search.html"/>
     <link rel="top" title="Sajou 0.1.1 documentation" href="../index.html"/>
-        <link rel="up" title="Python API reference" href="index.html"/>
-        <link rel="next" title="sajou.postprocessing module" href="sajou.postprocessing.html"/>
-        <link rel="prev" title="sajou.model module" href="sajou.model.html"/> 
+        <link rel="up" title="sajou.plot package" href="sajou.plot.html"/>
+        <link rel="next" title="sajou.loads module" href="sajou.loads.html"/>
+        <link rel="prev" title="sajou.plot.markers_mpl module" href="sajou.plot.markers_mpl.html"/> 
 
   
   <script src="../_static/js/modernizr.min.js"></script>
@@ -101,18 +101,16 @@
 <li class="toctree-l1"><a class="reference internal" href="../doc/index.html">Documentation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="index.html">Python API reference</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html#sajou-package">sajou package</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="index.html#subpackages">Subpackages</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="index.html#submodules">Submodules</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="sajou.loads.html">sajou.loads module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="sajou.materials.html">sajou.materials module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="sajou.model.html">sajou.model module</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">sajou.nodes module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="sajou.postprocessing.html">sajou.postprocessing module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="sajou.sections.html">sajou.sections module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="sajou.solvers.html">sajou.solvers module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="sajou.utils.html">sajou.utils module</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="sajou.elements.html">sajou.elements package</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="sajou.plot.html">sajou.plot package</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="sajou.plot.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="sajou.plot.html#module-sajou.plot">Module contents</a></li>
 </ul>
 </li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#submodules">Submodules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="index.html#module-sajou">Module contents</a></li>
 </ul>
 </li>
@@ -162,13 +160,15 @@
         
           <li><a href="index.html">Python API reference</a> &raquo;</li>
         
-      <li>sajou.nodes module</li>
+          <li><a href="sajou.plot.html">sajou.plot package</a> &raquo;</li>
+        
+      <li>sajou.plot.plot_elements_mpl module</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../_sources/apiref/sajou.nodes.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/apiref/sajou.plot.plot_elements_mpl.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -181,18 +181,17 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="module-sajou.nodes">
-<span id="sajou-nodes-module"></span><h1>sajou.nodes module<a class="headerlink" href="#module-sajou.nodes" title="Permalink to this headline">¶</a></h1>
-<p>This module contains the implementation of the nodes in 2D and 3D.</p>
-<dl class="class">
-<dt id="sajou.nodes.Node">
-<em class="property">class </em><code class="descclassname">sajou.nodes.</code><code class="descname">Node</code><a class="headerlink" href="#sajou.nodes.Node" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></code></p>
-<p>3-dimensional implementation of Nodes</p>
-<dl class="method">
-<dt id="sajou.nodes.Node.add_hinge">
-<code class="descname">add_hinge</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#sajou.nodes.Node.add_hinge" title="Permalink to this definition">¶</a></dt>
-<dd><p>Method to add a hinge at the instance of the node</p>
+  <div class="section" id="module-sajou.plot.plot_elements_mpl">
+<span id="sajou-plot-plot-elements-mpl-module"></span><h1>sajou.plot.plot_elements_mpl module<a class="headerlink" href="#module-sajou.plot.plot_elements_mpl" title="Permalink to this headline">¶</a></h1>
+<p>Defines the functions used to plot each element type in the matplotlib backend</p>
+<dl class="function">
+<dt id="sajou.plot.plot_elements_mpl.plot_beam2d">
+<code class="descclassname">sajou.plot.plot_elements_mpl.</code><code class="descname">plot_beam2d</code><span class="sig-paren">(</span><em>element</em>, <em>ax</em>, <em>elem_options</em><span class="sig-paren">)</span><a class="headerlink" href="#sajou.plot.plot_elements_mpl.plot_beam2d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plots the given Beam2D element</p>
+<dl class="docutils">
+<dt>element: Beam2D instance</dt>
+<dd>the element to be plotted</dd>
+</dl>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -203,77 +202,69 @@
 </table>
 </dd></dl>
 
-<dl class="method">
-<dt id="sajou.nodes.Node.append_element">
-<code class="descname">append_element</code><span class="sig-paren">(</span><em>element</em>, <em>node</em><span class="sig-paren">)</span><a class="headerlink" href="#sajou.nodes.Node.append_element" title="Permalink to this definition">¶</a></dt>
-<dd><p>Append the information of the beam that uses the node and the number
-in the element: 1, 2, 3,...</p>
+<dl class="function">
+<dt id="sajou.plot.plot_elements_mpl.plot_deformed_beam2d">
+<code class="descclassname">sajou.plot.plot_elements_mpl.</code><code class="descname">plot_deformed_beam2d</code><span class="sig-paren">(</span><em>element</em>, <em>results</em>, <em>ax</em>, <em>elem_options</em>, <em>scale=1</em><span class="sig-paren">)</span><a class="headerlink" href="#sajou.plot.plot_elements_mpl.plot_deformed_beam2d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot the deformed shape of the Beam2D element</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>beam</strong> &#8211; Beam instance</li>
-<li><strong>node</strong> &#8211; int corresponding to the number of the node within the element</li>
+<li><strong>element</strong> (<em>Beam2D instance</em>) &#8211; element to be plotted</li>
+<li><strong>results</strong> (<em>Results instance</em>) &#8211; result obtained after solving the system</li>
+<li><strong>ax</strong> (<em>matplotlib Axis</em>) &#8211; axis where to plot the element to</li>
+<li><strong>elem_options</strong> (<em>dict</em>) &#8211; options to pass to the &#8216;plot&#8217; function</li>
+<li><strong>scale</strong> (<em>float</em>) &#8211; scale applied to the displacements</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">nothing FIXME</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">axis where the element was plotted</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">matplotlib Axis</p>
 </td>
 </tr>
 </tbody>
 </table>
 </dd></dl>
 
-<dl class="method">
-<dt id="sajou.nodes.Node.set_BC">
-<code class="descname">set_BC</code><span class="sig-paren">(</span><em>dof</em>, <em>val</em><span class="sig-paren">)</span><a class="headerlink" href="#sajou.nodes.Node.set_BC" title="Permalink to this definition">¶</a></dt>
-<dd><p>Adds a BC to the specified <em>dof</em> of the Node.</p>
+<dl class="function">
+<dt id="sajou.plot.plot_elements_mpl.plot_element">
+<code class="descclassname">sajou.plot.plot_elements_mpl.</code><code class="descname">plot_element</code><span class="sig-paren">(</span><em>element</em>, <em>ax</em>, <em>elem_options</em><span class="sig-paren">)</span><a class="headerlink" href="#sajou.plot.plot_elements_mpl.plot_element" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot the given element</p>
+<p>This is a general function that calls the specific plotting function for
+the element passed.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>dof</strong> &#8211; specified degree of freedom</li>
-<li><strong>val</strong> &#8211; value given</li>
-</ul>
-</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>element</strong> (<a class="reference internal" href="sajou.elements.element.html#sajou.elements.element.Element" title="sajou.elements.element.Element"><em>Element</em></a>) &#8211; the element that will be plotted</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">TODO</p>
-</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">axis containing the plotted element</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">matplotlib Axis</td>
 </tr>
 </tbody>
 </table>
 </dd></dl>
 
-<dl class="method">
-<dt id="sajou.nodes.Node.set_Load">
-<code class="descname">set_Load</code><span class="sig-paren">(</span><em>dof</em>, <em>val</em><span class="sig-paren">)</span><a class="headerlink" href="#sajou.nodes.Node.set_Load" title="Permalink to this definition">¶</a></dt>
-<dd><p>Adds a Load to the specified dof of the Node.</p>
+<dl class="function">
+<dt id="sajou.plot.plot_elements_mpl.plot_spring2d">
+<code class="descclassname">sajou.plot.plot_elements_mpl.</code><code class="descname">plot_spring2d</code><span class="sig-paren">(</span><em>element</em>, <em>ax</em>, <em>elem_options</em><span class="sig-paren">)</span><a class="headerlink" href="#sajou.plot.plot_elements_mpl.plot_spring2d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plots the given Beam2D element</p>
+<dl class="docutils">
+<dt>element: Beam2D instance</dt>
+<dd>the element to be plotted</dd>
+</dl>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>dof</strong> &#8211; specified degree of freedom</li>
-<li><strong>val</strong> &#8211; value given</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">TODO</p>
-</td>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">TODO</td>
 </tr>
 </tbody>
 </table>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="sajou.nodes.Node2D">
-<em class="property">class </em><code class="descclassname">sajou.nodes.</code><code class="descname">Node2D</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>z</em>, <em>number</em><span class="sig-paren">)</span><a class="headerlink" href="#sajou.nodes.Node2D" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#sajou.nodes.Node" title="sajou.nodes.Node"><code class="xref py py-class docutils literal"><span class="pre">sajou.nodes.Node</span></code></a></p>
-<p>2-dimensional implementation of Nodes</p>
 </dd></dl>
 
 </div>
@@ -288,10 +279,10 @@ in the element: 1, 2, 3,...</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="sajou.postprocessing.html" class="btn btn-neutral float-right" title="sajou.postprocessing module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="sajou.loads.html" class="btn btn-neutral float-right" title="sajou.loads module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="sajou.model.html" class="btn btn-neutral" title="sajou.model module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="sajou.plot.markers_mpl.html" class="btn btn-neutral" title="sajou.plot.markers_mpl module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

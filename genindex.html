@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Index &mdash; Sajou 0.1 documentation</title>
+  <title>Index &mdash; Sajou 0.1.1 documentation</title>
   
 
   
@@ -36,7 +36,7 @@
         <link rel="index" title="Index"
               href="#"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="Sajou 0.1 documentation" href="index.html"/> 
+    <link rel="top" title="Sajou 0.1.1 documentation" href="index.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -98,6 +98,7 @@
 <li class="toctree-l1"><a class="reference internal" href="tutorial/index.html">Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="doc/index.html">Documentation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="apiref/index.html">Python API reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apiref/index.html#sajou-package">sajou package</a></li>
 </ul>
 
             
@@ -233,15 +234,19 @@
 </li>
       <li><a href="apiref/sajou.solvers.html#sajou.solvers.Result.add_result">add_result() (sajou.solvers.Result method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apiref/sajou.nodes.html#sajou.nodes.Node.append_element">append_element() (sajou.nodes.Node method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apiref/sajou.elements.beam3d.html#sajou.elements.beam3d.Beam3D.assemble_K">assemble_K() (sajou.elements.beam3d.Beam3D method)</a>
 </li>
       <li><a href="apiref/sajou.elements.beam2d.html#sajou.elements.beam2d.Beam2D.assemble_Ke">assemble_Ke() (sajou.elements.beam2d.Beam2D method)</a>
+
+      <ul>
+        <li><a href="apiref/sajou.elements.spring2d.html#sajou.elements.spring2d.Spring2D.assemble_Ke">(sajou.elements.spring2d.Spring2D method)</a>
 </li>
-      <li><a href="apiref/sajou.elements.beam2d.html#sajou.elements.beam2d.Beam2D.assemble_sym_K">assemble_sym_K() (sajou.elements.beam2d.Beam2D method)</a>
+      </ul></li>
+      <li><a href="apiref/sajou.elements.spring2d.html#sajou.elements.spring2d.Spring2D.assign_elastic_constant">assign_elastic_constant() (sajou.elements.spring2d.Spring2D method)</a>
 </li>
       <li><a href="apiref/sajou.elements.beam2d.html#sajou.elements.beam2d.Beam2D.assign_section">assign_section() (sajou.elements.beam2d.Beam2D method)</a>
 </li>
@@ -293,13 +298,17 @@
 </li>
       <li><a href="apiref/sajou.postprocessing.html#sajou.postprocessing.Postprocess.calc_internal_force_element">calc_internal_force_element() (sajou.postprocessing.Postprocess method)</a>
 </li>
+      <li><a href="apiref/sajou.postprocessing.html#sajou.postprocessing.Postprocess.calc_moment_at">calc_moment_at() (sajou.postprocessing.Postprocess method)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="apiref/sajou.postprocessing.html#sajou.postprocessing.Postprocess.calc_moment_at">calc_moment_at() (sajou.postprocessing.Postprocess method)</a>
+      <li><a href="apiref/sajou.solvers.html#sajou.solvers.StaticSolver.calc_nodal_displ">calc_nodal_displ() (sajou.solvers.StaticSolver method)</a>
 </li>
       <li><a href="apiref/sajou.solvers.html#sajou.solvers.StaticSolver.calc_nodal_forces">calc_nodal_forces() (sajou.solvers.StaticSolver method)</a>
 </li>
       <li><a href="apiref/sajou.solvers.html#sajou.solvers.StaticSolver.calc_nodal_reactions">calc_nodal_reactions() (sajou.solvers.StaticSolver method)</a>
+</li>
+      <li><a href="apiref/sajou.postprocessing.html#sajou.postprocessing.Postprocess.calc_node_new_coord">calc_node_new_coord() (sajou.postprocessing.Postprocess method)</a>
 </li>
       <li><a href="apiref/sajou.postprocessing.html#sajou.postprocessing.Postprocess.calc_shear_at">calc_shear_at() (sajou.postprocessing.Postprocess method)</a>
 </li>
@@ -315,9 +324,9 @@
 <h2 id="D">D</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="apiref/sajou.plot.html#sajou.plot.Display">Display (class in sajou.plot)</a>
+      <li><a href="apiref/sajou.plot.display.html#sajou.plot.display.Display">Display (class in sajou.plot.display)</a>
 </li>
-      <li><a href="apiref/sajou.plot.html#sajou.plot.Display_mpl">Display_mpl (class in sajou.plot)</a>
+      <li><a href="apiref/sajou.plot.display.html#sajou.plot.display.Display_mpl">Display_mpl (class in sajou.plot.display)</a>
 </li>
       <li><a href="apiref/sajou.elements.beam2d.html#sajou.elements.beam2d.Beam2D.distributed_load">distributed_load() (sajou.elements.beam2d.Beam2D method)</a>
 
@@ -340,7 +349,11 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apiref/sajou.elements.beam2d.html#sajou.elements.beam2d.Beam2D.efs">efs (sajou.elements.beam2d.Beam2D attribute)</a>
+
+      <ul>
+        <li><a href="apiref/sajou.elements.spring2d.html#sajou.elements.spring2d.Spring2D.efs">(sajou.elements.spring2d.Spring2D attribute)</a>
 </li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apiref/sajou.elements.element.html#sajou.elements.element.Element">Element (class in sajou.elements.element)</a>
@@ -353,10 +366,14 @@
 <h2 id="F">F</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="apiref/sajou.utils.html#sajou.utils.CoordSys.from_cart_to_cylindric">from_cart_to_cylindric() (sajou.utils.CoordSys method)</a>
+      <li><a href="apiref/sajou.plot.markers_mpl.html#sajou.plot.markers_mpl.MarkerStyle.filled_markers">filled_markers (sajou.plot.markers_mpl.MarkerStyle attribute)</a>
+</li>
+      <li><a href="apiref/sajou.plot.markers_mpl.html#sajou.plot.markers_mpl.MarkerStyle.fillstyles">fillstyles (sajou.plot.markers_mpl.MarkerStyle attribute)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apiref/sajou.utils.html#sajou.utils.CoordSys.from_cart_to_cylindric">from_cart_to_cylindric() (sajou.utils.CoordSys method)</a>
+</li>
       <li><a href="apiref/sajou.utils.html#sajou.utils.CoordSys.from_cylindric_to_cart">from_cylindric_to_cart() (sajou.utils.CoordSys method)</a>
 </li>
   </ul></td>
@@ -367,11 +384,17 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apiref/sajou.model.html#sajou.model.get_dataframe_of_node_coords">get_dataframe_of_node_coords() (in module sajou.model)</a>
 </li>
+      <li><a href="apiref/sajou.plot.display.html#sajou.plot.display.get_deformed_node_coords">get_deformed_node_coords() (in module sajou.plot.display)</a>
+</li>
+      <li><a href="apiref/sajou.plot.display.html#sajou.plot.display.get_element_deformed_node_coords">get_element_deformed_node_coords() (in module sajou.plot.display)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="apiref/sajou.elements.beam2d.html#sajou.elements.beam2d.Beam2D.get_index_array_of_node">get_index_array_of_node() (sajou.elements.beam2d.Beam2D method)</a>
+      <li><a href="apiref/sajou.elements.element.html#sajou.elements.element.Element.get_index_array_of_node">get_index_array_of_node() (sajou.elements.element.Element method)</a>
 </li>
       <li><a href="apiref/sajou.model.html#sajou.model.Model.get_node_and_dof">get_node_and_dof() (sajou.model.Model method)</a>
+</li>
+      <li><a href="apiref/sajou.model.html#sajou.model.get_node_coords">get_node_coords() (in module sajou.model)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -379,6 +402,8 @@
 <h2 id="L">L</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apiref/sajou.plot.lines_mpl.html#sajou.plot.lines_mpl.Line2D">Line2D (class in sajou.plot.lines_mpl)</a>
+</li>
       <li><a href="apiref/sajou.loads.html#sajou.loads.Load">Load (class in sajou.loads)</a>
 </li>
   </ul></td>
@@ -393,14 +418,24 @@
 <h2 id="M">M</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apiref/sajou.plot.lines_mpl.html#sajou.plot.lines_mpl.Line2D.markers">markers (sajou.plot.lines_mpl.Line2D attribute)</a>
+
+      <ul>
+        <li><a href="apiref/sajou.plot.markers_mpl.html#sajou.plot.markers_mpl.MarkerStyle.markers">(sajou.plot.markers_mpl.MarkerStyle attribute)</a>, <a href="apiref/sajou.plot.markers_mpl.html#sajou.plot.markers_mpl.MarkerStyle.markers">[1]</a>
+</li>
+      </ul></li>
+      <li><a href="apiref/sajou.plot.markers_mpl.html#sajou.plot.markers_mpl.MarkerStyle.markers_custom">markers_custom (sajou.plot.markers_mpl.MarkerStyle attribute)</a>
+</li>
+      <li><a href="apiref/sajou.plot.markers_mpl.html#sajou.plot.markers_mpl.MarkerStyle">MarkerStyle (class in sajou.plot.markers_mpl)</a>
+</li>
       <li><a href="apiref/sajou.materials.html#sajou.materials.Material">Material (class in sajou.materials)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apiref/sajou.model.html#sajou.model.Model.material">material() (sajou.model.Model method)</a>
 </li>
       <li><a href="apiref/sajou.model.html#sajou.model.Model.materials">materials (sajou.model.Model attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apiref/sajou.model.html#sajou.model.Model">Model (class in sajou.model)</a>
 </li>
       <li><a href="apiref/sajou.model.html#sajou.model.Model2D">Model2D (class in sajou.model)</a>
@@ -416,9 +451,11 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apiref/sajou.elements.beam2d.html#sajou.elements.beam2d.Beam2D.n_active_dof">n_active_dof (sajou.elements.beam2d.Beam2D attribute)</a>
+
+      <ul>
+        <li><a href="apiref/sajou.elements.spring2d.html#sajou.elements.spring2d.Spring2D.n_active_dof">(sajou.elements.spring2d.Spring2D attribute)</a>
 </li>
-      <li><a href="apiref/sajou.model.html#sajou.model.Model.n_beams">n_beams (sajou.model.Model attribute)</a>
-</li>
+      </ul></li>
       <li><a href="apiref/sajou.model.html#sajou.model.Model.n_dimensions">n_dimensions (sajou.model.Model attribute)</a>
 
       <ul>
@@ -431,14 +468,20 @@
         <li><a href="apiref/sajou.model.html#sajou.model.Model2D.n_dof_per_node">(sajou.model.Model2D attribute)</a>
 </li>
       </ul></li>
+      <li><a href="apiref/sajou.model.html#sajou.model.Model.n_elements">n_elements (sajou.model.Model attribute)</a>
+</li>
       <li><a href="apiref/sajou.model.html#sajou.model.Model.n_materials">n_materials (sajou.model.Model attribute)</a>
 </li>
       <li><a href="apiref/sajou.model.html#sajou.model.Model.n_nodes">n_nodes (sajou.model.Model attribute)</a>
 </li>
+      <li><a href="apiref/sajou.elements.beam2d.html#sajou.elements.beam2d.Beam2D.nefmt">nefmt (sajou.elements.beam2d.Beam2D attribute)</a>
+
+      <ul>
+        <li><a href="apiref/sajou.elements.spring2d.html#sajou.elements.spring2d.Spring2D.nefmt">(sajou.elements.spring2d.Spring2D attribute)</a>
+</li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="apiref/sajou.elements.beam2d.html#sajou.elements.beam2d.Beam2D.nefmt">nefmt (sajou.elements.beam2d.Beam2D attribute)</a>
-</li>
       <li><a href="apiref/sajou.model.html#sajou.model.Model.nfat">nfat (sajou.model.Model attribute)</a>
 </li>
       <li><a href="apiref/sajou.nodes.html#sajou.nodes.Node">Node (class in sajou.nodes)</a>
@@ -450,9 +493,17 @@
 </li>
       </ul></li>
       <li><a href="apiref/sajou.elements.beam2d.html#sajou.elements.beam2d.Beam2D.node1">node1 (sajou.elements.beam2d.Beam2D attribute)</a>
+
+      <ul>
+        <li><a href="apiref/sajou.elements.spring2d.html#sajou.elements.spring2d.Spring2D.node1">(sajou.elements.spring2d.Spring2D attribute)</a>
 </li>
+      </ul></li>
       <li><a href="apiref/sajou.elements.beam2d.html#sajou.elements.beam2d.Beam2D.node2">node2 (sajou.elements.beam2d.Beam2D attribute)</a>
+
+      <ul>
+        <li><a href="apiref/sajou.elements.spring2d.html#sajou.elements.spring2d.Spring2D.node2">(sajou.elements.spring2d.Spring2D attribute)</a>
 </li>
+      </ul></li>
       <li><a href="apiref/sajou.nodes.html#sajou.nodes.Node2D">Node2D (class in sajou.nodes)</a>
 </li>
       <li><a href="apiref/sajou.model.html#sajou.model.Model.nodes">nodes (sajou.model.Model attribute)</a>
@@ -463,21 +514,31 @@
 <h2 id="P">P</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="apiref/sajou.plot.html#sajou.plot.Display_mpl.plot_deformed_geometry">plot_deformed_geometry() (sajou.plot.Display_mpl method)</a>
+      <li><a href="apiref/sajou.plot.plot_elements_mpl.html#sajou.plot.plot_elements_mpl.plot_beam2d">plot_beam2d() (in module sajou.plot.plot_elements_mpl)</a>
 </li>
-      <li><a href="apiref/sajou.plot.html#sajou.plot.Display_mpl.plot_element_loads">plot_element_loads() (sajou.plot.Display_mpl method)</a>
+      <li><a href="apiref/sajou.plot.plot_elements_mpl.html#sajou.plot.plot_elements_mpl.plot_deformed_beam2d">plot_deformed_beam2d() (in module sajou.plot.plot_elements_mpl)</a>
 </li>
-      <li><a href="apiref/sajou.plot.html#sajou.plot.Display_mpl.plot_geometry">plot_geometry() (sajou.plot.Display_mpl method)</a>
+      <li><a href="apiref/sajou.plot.display.html#sajou.plot.display.Display_mpl.plot_deformed_element">plot_deformed_element() (sajou.plot.display.Display_mpl method)</a>
 </li>
-      <li><a href="apiref/sajou.plot.html#sajou.plot.Display_mpl.plot_internal_forces">plot_internal_forces() (sajou.plot.Display_mpl method)</a>
+      <li><a href="apiref/sajou.plot.display.html#sajou.plot.display.Display_mpl.plot_deformed_geometry">plot_deformed_geometry() (sajou.plot.display.Display_mpl method)</a>
 </li>
-      <li><a href="apiref/sajou.plot.html#sajou.plot.Display_mpl.plot_nodal_force">plot_nodal_force() (sajou.plot.Display_mpl method)</a>
+      <li><a href="apiref/sajou.plot.plot_elements_mpl.html#sajou.plot.plot_elements_mpl.plot_element">plot_element() (in module sajou.plot.plot_elements_mpl)</a>
+</li>
+      <li><a href="apiref/sajou.plot.display.html#sajou.plot.display.Display_mpl.plot_element_loads">plot_element_loads() (sajou.plot.display.Display_mpl method)</a>
+</li>
+      <li><a href="apiref/sajou.plot.display.html#sajou.plot.display.Display_mpl.plot_geometry">plot_geometry() (sajou.plot.display.Display_mpl method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="apiref/sajou.plot.html#sajou.plot.Display_mpl.plot_nodal_reaction">plot_nodal_reaction() (sajou.plot.Display_mpl method)</a>
+      <li><a href="apiref/sajou.plot.display.html#sajou.plot.display.Display_mpl.plot_internal_forces">plot_internal_forces() (sajou.plot.display.Display_mpl method)</a>
 </li>
-      <li><a href="apiref/sajou.plot.html#sajou.plot.Display_mpl.plot_support">plot_support() (sajou.plot.Display_mpl method)</a>
+      <li><a href="apiref/sajou.plot.display.html#sajou.plot.display.Display_mpl.plot_nodal_force">plot_nodal_force() (sajou.plot.display.Display_mpl method)</a>
+</li>
+      <li><a href="apiref/sajou.plot.display.html#sajou.plot.display.Display_mpl.plot_nodal_reaction">plot_nodal_reaction() (sajou.plot.display.Display_mpl method)</a>
+</li>
+      <li><a href="apiref/sajou.plot.plot_elements_mpl.html#sajou.plot.plot_elements_mpl.plot_spring2d">plot_spring2d() (in module sajou.plot.plot_elements_mpl)</a>
+</li>
+      <li><a href="apiref/sajou.plot.display.html#sajou.plot.display.Display_mpl.plot_support">plot_support() (sajou.plot.display.Display_mpl method)</a>
 </li>
       <li><a href="apiref/sajou.postprocessing.html#sajou.postprocessing.Postprocess">Postprocess (class in sajou.postprocessing)</a>
 </li>
@@ -485,15 +546,13 @@
 </li>
       <li><a href="apiref/sajou.sections.html#sajou.sections.BeamSection.print_properties">print_properties() (sajou.sections.BeamSection method)</a>
 </li>
-      <li><a href="apiref/sajou.solvers.html#sajou.solvers.StaticSolver.process_nodal_displ">process_nodal_displ() (sajou.solvers.StaticSolver method)</a>
-</li>
   </ul></td>
 </tr></table>
 
 <h2 id="R">R</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="apiref/sajou.plot.html#sajou.plot.range_with_ratio">range_with_ratio() (in module sajou.plot)</a>
+      <li><a href="apiref/sajou.plot.display.html#sajou.plot.display.range_with_ratio">range_with_ratio() (in module sajou.plot.display)</a>
 </li>
       <li><a href="apiref/sajou.elements.beam2d.html#sajou.elements.beam2d.Beam2D.release_end">release_end() (sajou.elements.beam2d.Beam2D method)</a>
 </li>
@@ -521,6 +580,8 @@
 </li>
       <li><a href="apiref/sajou.elements.element.html#module-sajou.elements.element">sajou.elements.element (module)</a>
 </li>
+      <li><a href="apiref/sajou.elements.spring2d.html#module-sajou.elements.spring2d">sajou.elements.spring2d (module)</a>
+</li>
       <li><a href="apiref/sajou.loads.html#module-sajou.loads">sajou.loads (module)</a>
 </li>
       <li><a href="apiref/sajou.materials.html#module-sajou.materials">sajou.materials (module)</a>
@@ -529,9 +590,17 @@
 </li>
       <li><a href="apiref/sajou.nodes.html#module-sajou.nodes">sajou.nodes (module)</a>
 </li>
+      <li><a href="apiref/sajou.plot.html#module-sajou.plot">sajou.plot (module)</a>
+</li>
+      <li><a href="apiref/sajou.plot.display.html#module-sajou.plot.display">sajou.plot.display (module)</a>
+</li>
+      <li><a href="apiref/sajou.plot.lines_mpl.html#module-sajou.plot.lines_mpl">sajou.plot.lines_mpl (module)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="apiref/sajou.plot.html#module-sajou.plot">sajou.plot (module)</a>
+      <li><a href="apiref/sajou.plot.markers_mpl.html#module-sajou.plot.markers_mpl">sajou.plot.markers_mpl (module)</a>
+</li>
+      <li><a href="apiref/sajou.plot.plot_elements_mpl.html#module-sajou.plot.plot_elements_mpl">sajou.plot.plot_elements_mpl (module)</a>
 </li>
       <li><a href="apiref/sajou.postprocessing.html#module-sajou.postprocessing">sajou.postprocessing (module)</a>
 </li>
@@ -549,6 +618,10 @@
 </li>
       <li><a href="apiref/sajou.solvers.html#sajou.solvers.Solver">Solver (class in sajou.solvers)</a>
 </li>
+      <li><a href="apiref/sajou.model.html#sajou.model.Model2D.spring">spring() (sajou.model.Model2D method)</a>
+</li>
+      <li><a href="apiref/sajou.elements.spring2d.html#sajou.elements.spring2d.Spring2D">Spring2D (class in sajou.elements.spring2d)</a>
+</li>
       <li><a href="apiref/sajou.solvers.html#sajou.solvers.StaticSolver">StaticSolver (class in sajou.solvers)</a>
 </li>
   </ul></td>
@@ -558,7 +631,11 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apiref/sajou.elements.beam2d.html#sajou.elements.beam2d.Beam2D.transformation_matrix">transformation_matrix (sajou.elements.beam2d.Beam2D attribute)</a>
+
+      <ul>
+        <li><a href="apiref/sajou.elements.spring2d.html#sajou.elements.spring2d.Spring2D.transformation_matrix">(sajou.elements.spring2d.Spring2D attribute)</a>
 </li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -598,7 +675,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.1',
+            VERSION:'0.1.1',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

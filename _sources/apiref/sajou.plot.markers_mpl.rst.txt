@@ -1,0 +1,7 @@
+sajou.plot.markers_mpl module
+=============================
+
+.. automodule:: sajou.plot.markers_mpl
+    :members:
+    :undoc-members:
+    :show-inheritance:

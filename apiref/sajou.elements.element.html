@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>sajou.elements.element module &mdash; Sajou 0.1 documentation</title>
+  <title>sajou.elements.element module &mdash; Sajou 0.1.1 documentation</title>
   
 
   
@@ -35,9 +35,9 @@
         <link rel="index" title="Index"
               href="../genindex.html"/>
         <link rel="search" title="Search" href="../search.html"/>
-    <link rel="top" title="Sajou 0.1 documentation" href="../index.html"/>
+    <link rel="top" title="Sajou 0.1.1 documentation" href="../index.html"/>
         <link rel="up" title="sajou.elements package" href="sajou.elements.html"/>
-        <link rel="next" title="sajou.loads module" href="sajou.loads.html"/>
+        <link rel="next" title="sajou.elements.spring2d module" href="sajou.elements.spring2d.html"/>
         <link rel="prev" title="sajou.elements.beam3d module" href="sajou.elements.beam3d.html"/> 
 
   
@@ -99,13 +99,15 @@
 <li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quick start</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tutorial/index.html">Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../doc/index.html">Documentation</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="index.html">Python API reference</a><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="index.html">Python API reference</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html#sajou-package">sajou package</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="index.html#subpackages">Subpackages</a><ul class="current">
 <li class="toctree-l3 current"><a class="reference internal" href="sajou.elements.html">sajou.elements package</a><ul class="current">
 <li class="toctree-l4 current"><a class="reference internal" href="sajou.elements.html#submodules">Submodules</a></li>
 <li class="toctree-l4"><a class="reference internal" href="sajou.elements.html#module-sajou.elements">Module contents</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="sajou.plot.html">sajou.plot package</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="index.html#submodules">Submodules</a></li>
@@ -186,6 +188,49 @@
 <em class="property">class </em><code class="descclassname">sajou.elements.element.</code><code class="descname">Element</code><span class="sig-paren">(</span><em>number</em><span class="sig-paren">)</span><a class="headerlink" href="#sajou.elements.element.Element" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
 <p>Generic Element object. Parent class for the 2D and 3D implementation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>number</strong> (<em>int</em>) &#8211; number identifying the element in the model</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="sajou.elements.element.Element.get_index_array_of_node">
+<code class="descname">get_index_array_of_node</code><span class="sig-paren">(</span><em>node</em><span class="sig-paren">)</span><a class="headerlink" href="#sajou.elements.element.Element.get_index_array_of_node" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get an array containing the indices of the used DOFs of the given node of the
+element.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>node</strong> (<em>int</em>) &#8211; the number of the node in the element (element number of the node: 0, 1,
+2, ... )</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">array of indices</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>The array has the following form:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">--&gt;</span> <span class="nb">all</span> <span class="n">DOFs</span> <span class="n">are</span> <span class="n">used</span>
+<span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">--&gt;</span> <span class="n">DOF</span> <span class="mi">0</span> <span class="ow">and</span> <span class="mi">2</span> <span class="n">are</span> <span class="n">used</span> <span class="n">only</span> <span class="p">(</span><span class="n">ux</span> <span class="ow">and</span> <span class="n">rz</span> <span class="ow">in</span> <span class="mi">2</span><span class="n">D</span><span class="p">)</span>
+</pre></div>
+</div>
+<p class="last">This array is used to know exactly which DOFs should be used to assemble the global
+stiffness matrix or to retrieve the corresponding displacements.</p>
+</div>
+<p class="rubric">Example</p>
+<p>It would be used like this:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">i_global_node_1</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">get_index_list_of_node</span><span class="p">(</span><span class="n">n_node_ele</span><span class="p">)</span> <span class="o">+</span> <span class="n">nfat</span><span class="p">[</span><span class="n">global_node_number</span><span class="p">]</span>
+</pre></div>
+</div>
+</dd></dl>
+
 </dd></dl>
 
 </div>
@@ -200,7 +245,7 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="sajou.loads.html" class="btn btn-neutral float-right" title="sajou.loads module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="sajou.elements.spring2d.html" class="btn btn-neutral float-right" title="sajou.elements.spring2d module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="sajou.elements.beam3d.html" class="btn btn-neutral" title="sajou.elements.beam3d module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
@@ -234,7 +279,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'0.1',
+            VERSION:'0.1.1',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

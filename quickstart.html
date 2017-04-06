@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Quick start &mdash; Sajou 0.1 documentation</title>
+  <title>Quick start &mdash; Sajou 0.1.1 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="Sajou 0.1 documentation" href="index.html"/>
+    <link rel="top" title="Sajou 0.1.1 documentation" href="index.html"/>
         <link rel="next" title="Tutorial" href="tutorial/index.html"/>
         <link rel="prev" title="Installation instructions" href="install.html"/> 
 
@@ -111,6 +111,7 @@
 <li class="toctree-l1"><a class="reference internal" href="tutorial/index.html">Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="doc/index.html">Documentation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="apiref/index.html">Python API reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apiref/index.html#sajou-package">sajou package</a></li>
 </ul>
 
             
@@ -288,7 +289,7 @@ The border conditions (BCs) are defined with the method <a class="reference inte
 <div class="section" id="visualizing-the-model">
 <h3>Visualizing the model<a class="headerlink" href="#visualizing-the-model" title="Permalink to this headline">¶</a></h3>
 <p>A visual inspection of the model is crucial to easily spot problems in the model.
-To see the current state of the model a <a class="reference internal" href="apiref/sajou.plot.html#sajou.plot.Display" title="sajou.plot.Display"><code class="xref py py-class docutils literal"><span class="pre">Display</span></code></a> instance has to be instantiated and a <a class="reference external" href="http://www.matplotlib.org">Matplotlib</a> axis has to be passed (this might change in the future):</p>
+To see the current state of the model a <a class="reference internal" href="apiref/sajou.plot.display.html#sajou.plot.display.Display" title="sajou.plot.display.Display"><code class="xref py py-class docutils literal"><span class="pre">Display</span></code></a> instance has to be instantiated and a <a class="reference external" href="http://www.matplotlib.org">Matplotlib</a> axis has to be passed (this might change in the future):</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># create matplotlib figure and axes</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mf">6.</span><span class="p">,</span><span class="mf">5.3</span><span class="o">.</span><span class="p">))</span>
@@ -327,7 +328,7 @@ To see the current state of the model a <a class="reference internal" href="apir
 <h3>Postprocessing<a class="headerlink" href="#postprocessing" title="Permalink to this headline">¶</a></h3>
 <p>The previously obtained <a class="reference internal" href="apiref/sajou.solvers.html#sajou.solvers.Result" title="sajou.solvers.Result"><code class="xref py py-class docutils literal"><span class="pre">Result</span></code></a> object is then used in the post-processing of the model.
 This is done by means of a <a class="reference internal" href="apiref/sajou.postprocessing.html#sajou.postprocessing.Postprocess" title="sajou.postprocessing.Postprocess"><code class="xref py py-class docutils literal"><span class="pre">Postprocess</span></code></a> object, which defines several methods to obtain values
-of section forces in a specified element and to plot the results using the above mentioned <a class="reference internal" href="apiref/sajou.plot.html#sajou.plot.Display" title="sajou.plot.Display"><code class="xref py py-class docutils literal"><span class="pre">Display</span></code></a> class.</p>
+of section forces in a specified element and to plot the results using the above mentioned <a class="reference internal" href="apiref/sajou.plot.display.html#sajou.plot.display.Display" title="sajou.plot.display.Display"><code class="xref py py-class docutils literal"><span class="pre">Display</span></code></a> class.</p>
 <p>Let us begin by extracting values o the moment, shear and axial force along a specified beam (say beam No. 2):</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># Postprocess the results</span>
 <span class="n">post</span> <span class="o">=</span> <span class="n">Postprocess</span><span class="p">(</span><span class="n">result</span><span class="o">=</span><span class="n">res</span><span class="p">)</span>
@@ -433,7 +434,7 @@ This also holds for the <a class="reference internal" href="apiref/sajou.postpro
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.1',
+            VERSION:'0.1.1',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

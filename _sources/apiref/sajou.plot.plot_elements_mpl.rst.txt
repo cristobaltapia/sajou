@@ -1,0 +1,7 @@
+sajou.plot.plot_elements_mpl module
+===================================
+
+.. automodule:: sajou.plot.plot_elements_mpl
+    :members:
+    :undoc-members:
+    :show-inheritance:

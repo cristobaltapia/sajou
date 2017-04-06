@@ -1,0 +1,378 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>sajou.plot.markers_mpl module &mdash; Sajou 0.1.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="Sajou 0.1.1 documentation" href="../index.html"/>
+        <link rel="up" title="sajou.plot package" href="sajou.plot.html"/>
+        <link rel="next" title="sajou.plot.plot_elements_mpl module" href="sajou.plot.plot_elements_mpl.html"/>
+        <link rel="prev" title="sajou.plot.lines_mpl module" href="sajou.plot.lines_mpl.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Sajou
+          
+
+          
+            
+            <img src="../_static/logo.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../install.html">Installation instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quick start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/index.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../doc/index.html">Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">Python API reference</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html#sajou-package">sajou package</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="sajou.elements.html">sajou.elements package</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="sajou.plot.html">sajou.plot package</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="sajou.plot.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="sajou.plot.html#module-sajou.plot">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#module-sajou">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Sajou</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">Python API reference</a> &raquo;</li>
+        
+          <li><a href="sajou.plot.html">sajou.plot package</a> &raquo;</li>
+        
+      <li>sajou.plot.markers_mpl module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/apiref/sajou.plot.markers_mpl.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-sajou.plot.markers_mpl">
+<span id="sajou-plot-markers-mpl-module"></span><h1>sajou.plot.markers_mpl module<a class="headerlink" href="#module-sajou.plot.markers_mpl" title="Permalink to this headline">¶</a></h1>
+<p>This module contains an extension to the MarkerStyle class of Matplotlib.</p>
+<p>It implements an additional set of markers which are used for the
+representation of different attributes of a structural analysis model.</p>
+<p>In addition to the standard markers, the following are implemented:</p>
+<blockquote>
+<div><table border="1" class="docutils">
+<colgroup>
+<col width="21%" />
+<col width="79%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">marker</th>
+<th class="head">description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><cite>&#8216;ap&#8217;</cite></td>
+<td>arc with arrow (anti clock-wise)</td>
+</tr>
+<tr class="row-odd"><td><cite>&#8216;an&#8217;</cite></td>
+<td>arc with arrow (clock-wise)</td>
+</tr>
+<tr class="row-even"><td><cite>&#8216;psx&#8217;</cite></td>
+<td>horizontal pinned support</td>
+</tr>
+<tr class="row-odd"><td><cite>&#8216;psy&#8217;</cite></td>
+<td>vertical pinned support</td>
+</tr>
+<tr class="row-even"><td><cite>&#8216;rsx&#8217;</cite></td>
+<td>horizontal rolling support</td>
+</tr>
+<tr class="row-odd"><td><cite>&#8216;rsy&#8217;</cite></td>
+<td>vertical rolling support</td>
+</tr>
+<tr class="row-even"><td><cite>&#8216;es&#8217;</cite></td>
+<td>encastrated support</td>
+</tr>
+<tr class="row-odd"><td><cite>&#8216;rex&#8217;</cite></td>
+<td>&#8216;rolling_encastrated_x&#8217;,</td>
+</tr>
+<tr class="row-even"><td><cite>&#8216;rey&#8217;</cite></td>
+<td>&#8216;rolling_encastrated_y&#8217;,</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<p class="rubric">Examples</p>
+<p>(<a class="reference external" href="../sajou_examples/markers.py">Source code</a>, <a class="reference external" href="../sajou_examples/markers.png">png</a>, <a class="reference external" href="../sajou_examples/markers.hires.png">hires.png</a>, <a class="reference external" href="../sajou_examples/markers.pdf">pdf</a>)</p>
+<div class="figure">
+<img alt="../_images/markers.png" src="../_images/markers.png" />
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;Example to show the new marker styles&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">sajou.plot.lines_mpl</span> <span class="k">import</span> <span class="n">Line2D</span>
+
+<span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">111</span><span class="p">)</span>
+<span class="n">markers</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;ap&#39;</span><span class="p">,</span> <span class="s1">&#39;an&#39;</span><span class="p">,</span> <span class="s1">&#39;psx&#39;</span><span class="p">,</span> <span class="s1">&#39;rsx&#39;</span><span class="p">,</span> <span class="s1">&#39;es&#39;</span><span class="p">,</span> <span class="s1">&#39;rex&#39;</span><span class="p">]</span>
+
+<span class="k">for</span> <span class="n">ix</span><span class="p">,</span> <span class="n">mark</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">markers</span><span class="p">):</span>
+    <span class="n">marker</span> <span class="o">=</span> <span class="n">Line2D</span><span class="p">([</span><span class="n">ix</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">marker</span><span class="o">=</span><span class="n">mark</span><span class="p">,</span> <span class="n">fillstyle</span><span class="o">=</span><span class="s1">&#39;none&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">add_line</span><span class="p">(</span><span class="n">marker</span><span class="p">)</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">markers</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<dl class="class">
+<dt id="sajou.plot.markers_mpl.MarkerStyle">
+<em class="property">class </em><code class="descclassname">sajou.plot.markers_mpl.</code><code class="descname">MarkerStyle</code><span class="sig-paren">(</span><em>marker=None</em>, <em>fillstyle=None</em><span class="sig-paren">)</span><a class="headerlink" href="#sajou.plot.markers_mpl.MarkerStyle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">matplotlib.markers.MarkerStyle</span></code></p>
+<p>Defines custom marker styles for Sajou</p>
+<dl class="attribute">
+<dt id="sajou.plot.markers_mpl.MarkerStyle.markers">
+<code class="descname">markers</code><a class="headerlink" href="#sajou.plot.markers_mpl.MarkerStyle.markers" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>list of known markes</em></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="sajou.plot.markers_mpl.MarkerStyle.fillstyles">
+<code class="descname">fillstyles</code><a class="headerlink" href="#sajou.plot.markers_mpl.MarkerStyle.fillstyles" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>list of known fillstyles</em></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="sajou.plot.markers_mpl.MarkerStyle.filled_markers">
+<code class="descname">filled_markers</code><a class="headerlink" href="#sajou.plot.markers_mpl.MarkerStyle.filled_markers" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>list of known filled markers.</em></p>
+</dd></dl>
+
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>marker</strong> (<em>string</em><em> or </em><em>array_like</em><em>, </em><em>optional</em><em>, </em><em>default: None</em>) &#8211; See the descriptions of possible markers in the module docstring.</li>
+<li><strong>fillstyle</strong> (<em>string</em><em>, </em><em>optional</em><em>, </em><em>default: 'full'</em>) &#8211; &#8216;full&#8217;, &#8216;left&#8221;, &#8216;right&#8217;, &#8216;bottom&#8217;, &#8216;top&#8217;, &#8216;none&#8217;</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt>
+<code class="descname">markers</code><em class="property"> = {0: 'tickleft', '': 'nothing', 2: 'tickup', 'rsy': 'rolling_support_y', '&lt;': 'triangle_left', 5: 'caretright', 6: 'caretup', 'o': 'circle', 'rex': 'rolling_encastrated_x', 9: 'caretrightbase', 10: 'caretupbase', 11: 'caretdownbase', 'x': 'x', 3: 'tickdown', 'p': 'pentagon', 4: 'caretleft', '8': 'octagon', '*': 'star', '|': 'vline', 'rey': 'rolling_encastrated_y', 1: 'tickright', 'H': 'hexagon2', 7: 'caretdown', '3': 'tri_left', 'ap': 'arc_arrow_positive', '2': 'tri_up', '&gt;': 'triangle_right', '^': 'triangle_up', 'es': 'encastrated_support', 'rsx': 'rolling_support_x', '1': 'tri_down', 'None': 'nothing', None: 'nothing', ' ': 'nothing', 'X': 'x_filled', 'P': 'plus_filled', 'd': 'thin_diamond', 's': 'square', '+': 'plus', 'h': 'hexagon1', '4': 'tri_right', 'an': 'arc_arrow_negative', 'D': 'diamond', 'v': 'triangle_down', ',': 'pixel', '_': 'hline', 'psx': 'pinned_support_x', 8: 'caretleftbase', 'psy': 'pinned_support_y', '.': 'point'}</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="sajou.plot.markers_mpl.MarkerStyle.markers_custom">
+<code class="descname">markers_custom</code><em class="property"> = {'ap': 'arc_arrow_positive', 'es': 'encastrated_support', 'rsx': 'rolling_support_x', 'rsy': 'rolling_support_y', 'psx': 'pinned_support_x', 'rex': 'rolling_encastrated_x', 'an': 'arc_arrow_negative', 'psy': 'pinned_support_y', 'rey': 'rolling_encastrated_y'}</em><a class="headerlink" href="#sajou.plot.markers_mpl.MarkerStyle.markers_custom" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="sajou.plot.plot_elements_mpl.html" class="btn btn-neutral float-right" title="sajou.plot.plot_elements_mpl module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="sajou.plot.lines_mpl.html" class="btn btn-neutral" title="sajou.plot.lines_mpl module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Cristóbal Tapia Camú.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.1.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

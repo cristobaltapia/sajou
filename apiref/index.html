@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Python API reference &mdash; Sajou 0.1 documentation</title>
+  <title>Python API reference &mdash; Sajou 0.1.1 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../genindex.html"/>
         <link rel="search" title="Search" href="../search.html"/>
-    <link rel="top" title="Sajou 0.1 documentation" href="../index.html"/>
+    <link rel="top" title="Sajou 0.1.1 documentation" href="../index.html"/>
         <link rel="next" title="sajou.elements package" href="sajou.elements.html"/>
         <link rel="prev" title="Sections" href="../doc/sections.html"/> 
 
@@ -98,9 +98,11 @@
 <li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quick start</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tutorial/index.html">Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../doc/index.html">Documentation</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Python API reference</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Python API reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#sajou-package">sajou package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#subpackages">Subpackages</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="sajou.elements.html">sajou.elements package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sajou.plot.html">sajou.plot package</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a><ul>
@@ -108,7 +110,6 @@
 <li class="toctree-l3"><a class="reference internal" href="sajou.materials.html">sajou.materials module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="sajou.model.html">sajou.model module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="sajou.nodes.html">sajou.nodes module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="sajou.plot.html">sajou.plot module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="sajou.postprocessing.html">sajou.postprocessing module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="sajou.sections.html">sajou.sections module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="sajou.solvers.html">sajou.solvers module</a></li>
@@ -183,6 +184,9 @@
             
   <div class="section" id="python-api-reference">
 <h1>Python API reference<a class="headerlink" href="#python-api-reference" title="Permalink to this headline">¶</a></h1>
+</div>
+<div class="section" id="sajou-package">
+<h1>sajou package<a class="headerlink" href="#sajou-package" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="subpackages">
 <h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
@@ -192,9 +196,21 @@
 <li class="toctree-l3"><a class="reference internal" href="sajou.elements.beam2d.html">sajou.elements.beam2d module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="sajou.elements.beam3d.html">sajou.elements.beam3d module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="sajou.elements.element.html">sajou.elements.element module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sajou.elements.spring2d.html">sajou.elements.spring2d module</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="sajou.elements.html#module-sajou.elements">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="sajou.plot.html">sajou.plot package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="sajou.plot.html#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="sajou.plot.display.html">sajou.plot.display module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sajou.plot.lines_mpl.html">sajou.plot.lines_mpl module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sajou.plot.markers_mpl.html">sajou.plot.markers_mpl module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sajou.plot.plot_elements_mpl.html">sajou.plot.plot_elements_mpl module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="sajou.plot.html#module-sajou.plot">Module contents</a></li>
 </ul>
 </li>
 </ul>
@@ -208,7 +224,6 @@
 <li class="toctree-l1"><a class="reference internal" href="sajou.materials.html">sajou.materials module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="sajou.model.html">sajou.model module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="sajou.nodes.html">sajou.nodes module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="sajou.plot.html">sajou.plot module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="sajou.postprocessing.html">sajou.postprocessing module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="sajou.sections.html">sajou.sections module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="sajou.solvers.html">sajou.solvers module</a></li>
@@ -266,7 +281,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'0.1',
+            VERSION:'0.1.1',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>sajou.elements.beam3d module &mdash; Sajou 0.1.1 documentation</title>
+  <title>sajou.elements.spring2d module &mdash; Sajou 0.1.1 documentation</title>
   
 
   
@@ -37,8 +37,8 @@
         <link rel="search" title="Search" href="../search.html"/>
     <link rel="top" title="Sajou 0.1.1 documentation" href="../index.html"/>
         <link rel="up" title="sajou.elements package" href="sajou.elements.html"/>
-        <link rel="next" title="sajou.elements.element module" href="sajou.elements.element.html"/>
-        <link rel="prev" title="sajou.elements.beam2d module" href="sajou.elements.beam2d.html"/> 
+        <link rel="next" title="sajou.plot package" href="sajou.plot.html"/>
+        <link rel="prev" title="sajou.elements.element module" href="sajou.elements.element.html"/> 
 
   
   <script src="../_static/js/modernizr.min.js"></script>
@@ -162,13 +162,13 @@
         
           <li><a href="sajou.elements.html">sajou.elements package</a> &raquo;</li>
         
-      <li>sajou.elements.beam3d module</li>
+      <li>sajou.elements.spring2d module</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../_sources/apiref/sajou.elements.beam3d.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/apiref/sajou.elements.spring2d.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -181,27 +181,87 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="module-sajou.elements.beam3d">
-<span id="sajou-elements-beam3d-module"></span><h1>sajou.elements.beam3d module<a class="headerlink" href="#module-sajou.elements.beam3d" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="module-sajou.elements.spring2d">
+<span id="sajou-elements-spring2d-module"></span><h1>sajou.elements.spring2d module<a class="headerlink" href="#module-sajou.elements.spring2d" title="Permalink to this headline">¶</a></h1>
+<p>Defines a 2-dimensional spring element</p>
 <dl class="class">
-<dt id="sajou.elements.beam3d.Beam3D">
-<em class="property">class </em><code class="descclassname">sajou.elements.beam3d.</code><code class="descname">Beam3D</code><span class="sig-paren">(</span><em>node1</em>, <em>node2</em>, <em>number</em><span class="sig-paren">)</span><a class="headerlink" href="#sajou.elements.beam3d.Beam3D" title="Permalink to this definition">¶</a></dt>
+<dt id="sajou.elements.spring2d.Spring2D">
+<em class="property">class </em><code class="descclassname">sajou.elements.spring2d.</code><code class="descname">Spring2D</code><span class="sig-paren">(</span><em>node1</em>, <em>node2</em>, <em>number</em><span class="sig-paren">)</span><a class="headerlink" href="#sajou.elements.spring2d.Spring2D" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="sajou.elements.element.html#sajou.elements.element.Element" title="sajou.elements.element.Element"><code class="xref py py-class docutils literal"><span class="pre">sajou.elements.element.Element</span></code></a></p>
-<p>Beam object, joining two nodes</p>
-<dl class="method">
-<dt id="sajou.elements.beam3d.Beam3D.assemble_K">
-<code class="descname">assemble_K</code><span class="sig-paren">(</span><em>second_order=False</em><span class="sig-paren">)</span><a class="headerlink" href="#sajou.elements.beam3d.Beam3D.assemble_K" title="Permalink to this definition">¶</a></dt>
-<dd><p>This function assembles the stiffness matrix for one individual element. Optionally
-it can take the shear effect into account (second order effect).</p>
+<p>Defines a 2D spring element and all its methods</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Element:</th><td class="field-body">segment instance</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>node1</strong> (<em>Node instance</em>) &#8211; first node</li>
+<li><strong>node2</strong> (<em>Node instance</em>) &#8211; second node</li>
+<li><strong>number</strong> (<em>int</em>) &#8211; number of the element</li>
+</ul>
+</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Seecond_order:</th><td class="field-body">boolean</td>
-</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="sajou.elements.spring2d.Spring2D.node1">
+<code class="descname">node1</code><a class="headerlink" href="#sajou.elements.spring2d.Spring2D.node1" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>Node instance</em> &#8211; first node</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="sajou.elements.spring2d.Spring2D.node2">
+<code class="descname">node2</code><a class="headerlink" href="#sajou.elements.spring2d.Spring2D.node2" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>Node instance</em> &#8211; second node</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="sajou.elements.spring2d.Spring2D.efs">
+<code class="descname">efs</code><a class="headerlink" href="#sajou.elements.spring2d.Spring2D.efs" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>dict</em> &#8211; Element freedom signature. Defines the degree of freedom active (dof)
+in each node.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="sajou.elements.spring2d.Spring2D.nefmt">
+<code class="descname">nefmt</code><a class="headerlink" href="#sajou.elements.spring2d.Spring2D.nefmt" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>dict</em> &#8211; Node freedom map table of the element.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="sajou.elements.spring2d.Spring2D.n_active_dof">
+<code class="descname">n_active_dof</code><a class="headerlink" href="#sajou.elements.spring2d.Spring2D.n_active_dof" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>int</em> &#8211; number of active <em>dof</em></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="sajou.elements.spring2d.Spring2D.transformation_matrix">
+<code class="descname">transformation_matrix</code><a class="headerlink" href="#sajou.elements.spring2d.Spring2D.transformation_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>ndarray</em> &#8211; transformation matrix for the element, from local to global</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="sajou.elements.spring2d.Spring2D.assemble_Ke">
+<code class="descname">assemble_Ke</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#sajou.elements.spring2d.Spring2D.assemble_Ke" title="Permalink to this definition">¶</a></dt>
+<dd><p>Assemble the element stiffness matrix &#8216;Ke&#8217; in local and global coordinates.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">local stiffness matrix</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="sajou.elements.spring2d.Spring2D.assign_elastic_constant">
+<code class="descname">assign_elastic_constant</code><span class="sig-paren">(</span><em>elastic_K</em><span class="sig-paren">)</span><a class="headerlink" href="#sajou.elements.spring2d.Spring2D.assign_elastic_constant" title="Permalink to this definition">¶</a></dt>
+<dd><p>Assigns the elastic constant to the spring element.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>elastic_K</strong> (<em>float</em>) &#8211; The elastic constant of the spring</td>
 </tr>
 </tbody>
 </table>
@@ -221,10 +281,10 @@ it can take the shear effect into account (second order effect).</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="sajou.elements.element.html" class="btn btn-neutral float-right" title="sajou.elements.element module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="sajou.plot.html" class="btn btn-neutral float-right" title="sajou.plot package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="sajou.elements.beam2d.html" class="btn btn-neutral" title="sajou.elements.beam2d module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="sajou.elements.element.html" class="btn btn-neutral" title="sajou.elements.element module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

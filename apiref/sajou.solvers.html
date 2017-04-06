@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>sajou.solvers module &mdash; Sajou 0.1 documentation</title>
+  <title>sajou.solvers module &mdash; Sajou 0.1.1 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../genindex.html"/>
         <link rel="search" title="Search" href="../search.html"/>
-    <link rel="top" title="Sajou 0.1 documentation" href="../index.html"/>
+    <link rel="top" title="Sajou 0.1.1 documentation" href="../index.html"/>
         <link rel="up" title="Python API reference" href="index.html"/>
         <link rel="next" title="sajou.utils module" href="sajou.utils.html"/>
         <link rel="prev" title="sajou.sections module" href="sajou.sections.html"/> 
@@ -99,14 +99,14 @@
 <li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quick start</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tutorial/index.html">Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../doc/index.html">Documentation</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="index.html">Python API reference</a><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="index.html">Python API reference</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html#sajou-package">sajou package</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="index.html#subpackages">Subpackages</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="index.html#submodules">Submodules</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="sajou.loads.html">sajou.loads module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="sajou.materials.html">sajou.materials module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="sajou.model.html">sajou.model module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="sajou.nodes.html">sajou.nodes module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="sajou.plot.html">sajou.plot module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="sajou.postprocessing.html">sajou.postprocessing module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="sajou.sections.html">sajou.sections module</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">sajou.solvers module</a></li>
@@ -241,14 +241,42 @@
 <dl class="method">
 <dt id="sajou.solvers.StaticSolver.calc_end_forces">
 <code class="descname">calc_end_forces</code><span class="sig-paren">(</span><em>result</em>, <em>nodal_displ</em><span class="sig-paren">)</span><a class="headerlink" href="#sajou.solvers.StaticSolver.calc_end_forces" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate the internal forces of beam elements.</p>
+<dd><p>Calculate the internal forces of elements.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Result:</th><td class="field-body">Result object</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>result</strong> (<em>Result object</em>) &#8211; used to store the results to</li>
+<li><strong>nodal_displ</strong> (<em>ndarray</em>) &#8211; nodal displacements obtained from the solver</li>
+</ul>
+</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">TODO</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>dict</strong></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">End forces</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="sajou.solvers.StaticSolver.calc_nodal_displ">
+<code class="descname">calc_nodal_displ</code><span class="sig-paren">(</span><em>result</em>, <em>nodal_displ</em>, <em>K</em>, <em>elem_load</em><span class="sig-paren">)</span><a class="headerlink" href="#sajou.solvers.StaticSolver.calc_nodal_displ" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the nodal displacements</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>result</strong> (<em>Results object</em>) &#8211; result obtained from the Solver</li>
+<li><strong>nodal_displ</strong> (<em>ndarray</em>) &#8211; displacements array calculated after the solve process</li>
+<li><strong>K</strong> (<em>ndarray</em>) &#8211; Stiffness matrix</li>
+<li><strong>elem_load</strong> (<em>ndarray</em>) &#8211; Elemetn load</li>
+</ul>
+</td>
 </tr>
 </tbody>
 </table>
@@ -257,24 +285,23 @@
 <dl class="method">
 <dt id="sajou.solvers.StaticSolver.calc_nodal_forces">
 <code class="descname">calc_nodal_forces</code><span class="sig-paren">(</span><em>result</em>, <em>nodal_displ</em>, <em>K</em>, <em>elem_load</em><span class="sig-paren">)</span><a class="headerlink" href="#sajou.solvers.StaticSolver.calc_nodal_forces" title="Permalink to this definition">¶</a></dt>
-<dd><p>TODO: Docstring for calc_nodal_forces.</p>
+<dd><p>Compute the nodal forces</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>result</strong> &#8211; TODO</li>
-<li><strong>nodal_displ</strong> &#8211; TODO</li>
-<li><strong>K</strong> &#8211; TODO</li>
-<li><strong>elem_load</strong> &#8211; TODO</li>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>result</strong> (<em>Result object</em>) &#8211; result obtained from the solver</li>
+<li><strong>nodal_displ</strong> (<em>ndarray</em>) &#8211; nodal displacements calculated with the stiffness matrix</li>
+<li><strong>K</strong> (<em>ndarray</em>) &#8211; Stiffness matrix</li>
+<li><strong>elem_load</strong> (<em>TODO</em>) &#8211; </li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">TODO</p>
 </td>
 </tr>
 </tbody>
 </table>
+<p>:param :
+:type : returns: TODO</p>
 </dd></dl>
 
 <dl class="method">
@@ -285,15 +312,19 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Result:</th><td class="field-body">TODO</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>result</strong> (<em>Result object</em>) &#8211; result obtained with Solver</li>
+<li><strong>nodal_displ</strong> (<em>ndarray</em>) &#8211; nodal displacements</li>
+<li><strong>K</strong> (<em>ndarray</em>) &#8211; stiffness matrix</li>
+<li><strong>elem_forces</strong> (<em>ndarray</em>) &#8211; element forces vector</li>
+</ul>
+</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Nodal_displ:</th><td class="field-body">nodal displacements</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>ndarray</strong></p>
+</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">K:</th><td class="field-body">stiffness matrix</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Elem_forces:</th><td class="field-body">element forces vector</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">TODO</td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">nodal reactions</p>
+</td>
 </tr>
 </tbody>
 </table>
@@ -308,24 +339,6 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Result:</th><td class="field-body">TODO</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">TODO</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="sajou.solvers.StaticSolver.process_nodal_displ">
-<code class="descname">process_nodal_displ</code><span class="sig-paren">(</span><em>nodal_displ</em><span class="sig-paren">)</span><a class="headerlink" href="#sajou.solvers.StaticSolver.process_nodal_displ" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return nodal displacements as a pandas DataFrame instance.
-Each column represents a DOF and the index correspond to the respective node
-number.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Nodal_displ:</th><td class="field-body">TODO</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">TODO</td>
 </tr>
@@ -388,7 +401,7 @@ number.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'0.1',
+            VERSION:'0.1.1',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

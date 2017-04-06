@@ -1,0 +1,610 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>sajou.plot.display module &mdash; Sajou 0.1.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="Sajou 0.1.1 documentation" href="../index.html"/>
+        <link rel="up" title="sajou.plot package" href="sajou.plot.html"/>
+        <link rel="next" title="sajou.plot.lines_mpl module" href="sajou.plot.lines_mpl.html"/>
+        <link rel="prev" title="sajou.plot package" href="sajou.plot.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Sajou
+          
+
+          
+            
+            <img src="../_static/logo.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../install.html">Installation instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quick start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/index.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../doc/index.html">Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">Python API reference</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html#sajou-package">sajou package</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="sajou.elements.html">sajou.elements package</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="sajou.plot.html">sajou.plot package</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="sajou.plot.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="sajou.plot.html#module-sajou.plot">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#module-sajou">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Sajou</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">Python API reference</a> &raquo;</li>
+        
+          <li><a href="sajou.plot.html">sajou.plot package</a> &raquo;</li>
+        
+      <li>sajou.plot.display module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/apiref/sajou.plot.display.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-sajou.plot.display">
+<span id="sajou-plot-display-module"></span><h1>sajou.plot.display module<a class="headerlink" href="#module-sajou.plot.display" title="Permalink to this headline">¶</a></h1>
+<p>Define all the functions needed to plot the created structures and the results</p>
+<p>TODO: plot hinges</p>
+<dl class="class">
+<dt id="sajou.plot.display.Display">
+<em class="property">class </em><code class="descclassname">sajou.plot.display.</code><code class="descname">Display</code><span class="sig-paren">(</span><em>backend</em><span class="sig-paren">)</span><a class="headerlink" href="#sajou.plot.display.Display" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Class to present the pre and postprocessing graphically.</p>
+<p>This class is not intended to be used directly, but rather their sublclasses, which
+implement different plotting backends (at the moent only matplotlib).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>width</strong> (<em>float</em>) &#8211; width of the window in pixels</li>
+<li><strong>height</strong> (<em>float</em>) &#8211; height of the window in pixels</li>
+<li><strong>theme</strong> (<em>str</em>) &#8211; color theme used for the plots. Options are: &#8216;dark&#8217;, &#8216;light&#8217;
+and &#8216;publication&#8217;</li>
+<li><strong>backend</strong> (<em>str</em>) &#8211; <p>backend used to display the results</p>
+<ul>
+<li>&#8216;matplotlib&#8217;</li>
+<li>&#8216;python-occ&#8217; (not implemented yet)</li>
+<li>&#8216;mayavi&#8217; (not implemented yet)</li>
+</ul>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="class">
+<dt id="sajou.plot.display.Display_mpl">
+<em class="property">class </em><code class="descclassname">sajou.plot.display.</code><code class="descname">Display_mpl</code><span class="sig-paren">(</span><em>width=10.0</em>, <em>height=10.0</em>, <em>theme='dark'</em>, <em>backend='matplotlib'</em><span class="sig-paren">)</span><a class="headerlink" href="#sajou.plot.display.Display_mpl" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#sajou.plot.display.Display" title="sajou.plot.display.Display"><code class="xref py py-class docutils literal"><span class="pre">sajou.plot.display.Display</span></code></a></p>
+<p>Matplotlib backend for the visualization</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>width</strong> (<em>float</em>) &#8211; width of the window in pixels</li>
+<li><strong>height</strong> (<em>float</em>) &#8211; height of the window in pixels</li>
+<li><strong>theme</strong> (<em>str</em>) &#8211; color theme used for the plots. Options are: &#8216;dark&#8217;, &#8216;light&#8217;
+and &#8216;publication&#8217;</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="sajou.plot.display.Display_mpl.plot_deformed_element">
+<code class="descname">plot_deformed_element</code><span class="sig-paren">(</span><em>element</em>, <em>result</em>, <em>ax</em><span class="sig-paren">)</span><a class="headerlink" href="#sajou.plot.display.Display_mpl.plot_deformed_element" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot the given element in its deformed state</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>element</strong> (<em>Element instance</em>) &#8211; The element to be plotted</li>
+<li><strong>result</strong> (<em>Result instance</em>) &#8211; The result obtained after solving the system</li>
+<li><strong>ax</strong> (<em>matplotlib Axis</em>) &#8211; the axis where to plot the deformed element to</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">the axis used to plot the element</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">matplotlib Axis</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="sajou.plot.display.Display_mpl.plot_deformed_geometry">
+<code class="descname">plot_deformed_geometry</code><span class="sig-paren">(</span><em>result</em>, <em>ax</em>, <em>show_undeformed=False</em>, <em>scale=1.0</em><span class="sig-paren">)</span><a class="headerlink" href="#sajou.plot.display.Display_mpl.plot_deformed_geometry" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot the system in its deformed configuration.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>result</strong> (<em>Result object</em>) &#8211; result object returned by the Solver</li>
+<li><strong>ax</strong> (<em>matplotlib axis</em>) &#8211; Axis where to draw to</li>
+<li><strong>scale</strong> (<em>float</em>) &#8211; scale used to plot the deformations</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">the same axis object passed</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">matplotlib axis</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="sajou.plot.display.Display_mpl.plot_element_loads">
+<code class="descname">plot_element_loads</code><span class="sig-paren">(</span><em>ax</em>, <em>model</em><span class="sig-paren">)</span><a class="headerlink" href="#sajou.plot.display.Display_mpl.plot_element_loads" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot the element loads.</p>
+<p>Element loads like uniformly distributed loads are drawn accordinlgy.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>ax</strong> (<em>matplotlib axis</em>) &#8211; axis where to draw to</li>
+<li><strong>result</strong> (<em>Result object</em>) &#8211; Result object returned by the Solver</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">the same axis originally passed</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">matplotlib axis</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="sajou.plot.display.Display_mpl.plot_geometry">
+<code class="descname">plot_geometry</code><span class="sig-paren">(</span><em>model</em>, <em>ax</em>, <em>ls='-'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#sajou.plot.display.Display_mpl.plot_geometry" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot the geometry of the model passed.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>model</strong> (<em>sajou.Model</em>) &#8211; Model to plot</li>
+<li><strong>ax</strong> (<em>a matplotlib axis object</em>) &#8211; Axis where to draw to</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">the same axis object given</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">matplotlib axis</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="sajou.plot.display.Display_mpl.plot_internal_forces">
+<code class="descname">plot_internal_forces</code><span class="sig-paren">(</span><em>ax</em>, <em>result</em>, <em>component</em>, <em>scale=1</em><span class="sig-paren">)</span><a class="headerlink" href="#sajou.plot.display.Display_mpl.plot_internal_forces" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot the diagrams of internal forces.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>ax</strong> (<em>matplotlib axis</em>) &#8211; the Axis instance where to draw the internal forces</li>
+<li><strong>result</strong> (<em>Result object</em>) &#8211; obtained after solving the system</li>
+<li><strong>component</strong> (<em>str</em>) &#8211; <p>component that want to be displayed. Options are</p>
+<blockquote>
+<div><ul>
+<li>&#8216;axial&#8217;</li>
+<li>&#8216;shear&#8217;</li>
+<li>&#8216;moment&#8217;</li>
+</ul>
+</div></blockquote>
+</li>
+<li><strong>scale</strong> (<em>float</em>) &#8211; scale for the member forces (the member forces are already
+automatically scaled to fit in the display. This is a scale factor
+that multiplies that automatically calulated factor)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">the axis with the drawn internal forces</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">matplotlib axis</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="sajou.plot.display.Display_mpl.plot_nodal_force">
+<code class="descname">plot_nodal_force</code><span class="sig-paren">(</span><em>ax</em>, <em>dof</em>, <em>at</em>, <em>val</em><span class="sig-paren">)</span><a class="headerlink" href="#sajou.plot.display.Display_mpl.plot_nodal_force" title="Permalink to this definition">¶</a></dt>
+<dd><p>TODO: Docstring for plot_forces.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>ax</strong> (<em>matplotlib Axis</em>) &#8211; axis to plot to</li>
+<li><strong>dof</strong> (<em>int</em>) &#8211; Degree of freedom to which the force is being applied</li>
+<li><strong>at</strong> (<em>Node object</em>) &#8211; node at which the load is applied</li>
+<li><strong>val</strong> (<em>float</em>) &#8211; value of the force</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">the same axis passed as asrgument</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">matplotlib Axis</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="sajou.plot.display.Display_mpl.plot_nodal_reaction">
+<code class="descname">plot_nodal_reaction</code><span class="sig-paren">(</span><em>ax</em>, <em>dof</em>, <em>at</em>, <em>val</em><span class="sig-paren">)</span><a class="headerlink" href="#sajou.plot.display.Display_mpl.plot_nodal_reaction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot the nodal reactions of the system</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>ax</strong> (<em>matplotlib Axis</em>) &#8211; axis to plot to</li>
+<li><strong>dof</strong> (<em>int</em>) &#8211; Degree of freedom to which the force is being applied</li>
+<li><strong>at</strong> (<em>Node object</em>) &#8211; node at which the load is applied</li>
+<li><strong>val</strong> (<em>float</em>) &#8211; value of the reaction</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">the same Axis passed as argument</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">matplotlib Axis</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="sajou.plot.display.Display_mpl.plot_support">
+<code class="descname">plot_support</code><span class="sig-paren">(</span><em>ax</em>, <em>dof</em>, <em>at</em><span class="sig-paren">)</span><a class="headerlink" href="#sajou.plot.display.Display_mpl.plot_support" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot the respective support</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>ax</strong> (<em>matplotlib Axis</em>) &#8211; axis where to plot the support</li>
+<li><strong>dof</strong> (<em>ndarray</em><em>, </em><em>list</em><em>[</em><em>int</em><em>]</em><em></em>) &#8211; DOF that are restrained</li>
+<li><strong>at</strong> (<em>Node object</em>) &#8211; node at which the contraints are applied</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">the same axis passed</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">matplotlib Axis</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="sajou.plot.display.get_deformed_node_coords">
+<code class="descclassname">sajou.plot.display.</code><code class="descname">get_deformed_node_coords</code><span class="sig-paren">(</span><em>nodes</em>, <em>result</em>, <em>scale=1</em><span class="sig-paren">)</span><a class="headerlink" href="#sajou.plot.display.get_deformed_node_coords" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the deformed coordinates of the given nodes</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>nodes</strong> (<em>List</em><em>[</em><a class="reference internal" href="sajou.nodes.html#sajou.nodes.Node" title="sajou.nodes.Node"><em>Node</em></a><em>]</em><em></em><em>, </em><em>str</em>) &#8211; Node from which the deformed position will be computed</li>
+<li><strong>result</strong> (<em>Result object</em>) &#8211; results obtained from the solver</li>
+<li><strong>sacele</strong> (<em>float</em>) &#8211; scale applied to the deformations (default to 1)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">node deformed coordinates</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">dict</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="sajou.plot.display.get_element_deformed_node_coords">
+<code class="descclassname">sajou.plot.display.</code><code class="descname">get_element_deformed_node_coords</code><span class="sig-paren">(</span><em>element</em>, <em>result</em>, <em>scale=1</em><span class="sig-paren">)</span><a class="headerlink" href="#sajou.plot.display.get_element_deformed_node_coords" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the deformed coordinates of the nodes of the given element</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>element</strong> (<em>ELement instance</em>) &#8211; Element from which the deformed position of its nodes will be computed</li>
+<li><strong>result</strong> (<em>Result object</em>) &#8211; results obtained from the solver</li>
+<li><strong>sacele</strong> (<em>float</em>) &#8211; scale applied to the deformations (default to 1)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">node deformed coordinates</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">dict</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="sajou.plot.display.range_with_ratio">
+<code class="descclassname">sajou.plot.display.</code><code class="descname">range_with_ratio</code><span class="sig-paren">(</span><em>x1</em>, <em>x2</em>, <em>n</em>, <em>a</em><span class="sig-paren">)</span><a class="headerlink" href="#sajou.plot.display.range_with_ratio" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create an array with numbers increasing their relative distance
+according to the ratio &#8216;a&#8217;.</p>
+<p>The range is divided such that:</p>
+<div class="math">
+\[\ell_{tot} = \ell_1 + \ell_2 + ... + \ell_n\]</div>
+<p>where:</p>
+<div class="math">
+\[\begin{split}\ell_i &amp;= \ell_i - 1 + b \\
+b &amp;= \frac{\ell_{tot} - (\frac{\ell_{tot}}{n} \cdot a)}{n}\end{split}\]</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>x1</strong> (<em>float</em>) &#8211; begin of the range</li>
+<li><strong>x2</strong> (<em>float</em>) &#8211; end of the range</li>
+<li><strong>n</strong> (<em>int</em>) &#8211; number of points</li>
+<li><strong>a</strong> (<em>float</em>) &#8211; ratio between the beginning and end</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">a range with increasingly separated values</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">ndarray</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="sajou.plot.lines_mpl.html" class="btn btn-neutral float-right" title="sajou.plot.lines_mpl module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="sajou.plot.html" class="btn btn-neutral" title="sajou.plot package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Cristóbal Tapia Camú.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.1.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

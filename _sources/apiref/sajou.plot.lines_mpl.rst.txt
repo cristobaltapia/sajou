@@ -1,0 +1,7 @@
+sajou.plot.lines_mpl module
+===========================
+
+.. automodule:: sajou.plot.lines_mpl
+    :members:
+    :undoc-members:
+    :show-inheritance:

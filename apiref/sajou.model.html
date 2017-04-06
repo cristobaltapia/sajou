@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>sajou.model module &mdash; Sajou 0.1 documentation</title>
+  <title>sajou.model module &mdash; Sajou 0.1.1 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../genindex.html"/>
         <link rel="search" title="Search" href="../search.html"/>
-    <link rel="top" title="Sajou 0.1 documentation" href="../index.html"/>
+    <link rel="top" title="Sajou 0.1.1 documentation" href="../index.html"/>
         <link rel="up" title="Python API reference" href="index.html"/>
         <link rel="next" title="sajou.nodes module" href="sajou.nodes.html"/>
         <link rel="prev" title="sajou.materials module" href="sajou.materials.html"/> 
@@ -99,14 +99,14 @@
 <li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quick start</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tutorial/index.html">Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../doc/index.html">Documentation</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="index.html">Python API reference</a><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="index.html">Python API reference</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html#sajou-package">sajou package</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="index.html#subpackages">Subpackages</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="index.html#submodules">Submodules</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="sajou.loads.html">sajou.loads module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="sajou.materials.html">sajou.materials module</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">sajou.model module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="sajou.nodes.html">sajou.nodes module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="sajou.plot.html">sajou.plot module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="sajou.postprocessing.html">sajou.postprocessing module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="sajou.sections.html">sajou.sections module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="sajou.solvers.html">sajou.solvers module</a></li>
@@ -238,8 +238,8 @@
 </dd></dl>
 
 <dl class="attribute">
-<dt id="sajou.model.Model.n_beams">
-<code class="descname">n_beams</code><a class="headerlink" href="#sajou.model.Model.n_beams" title="Permalink to this definition">¶</a></dt>
+<dt id="sajou.model.Model.n_elements">
+<code class="descname">n_elements</code><a class="headerlink" href="#sajou.model.Model.n_elements" title="Permalink to this definition">¶</a></dt>
 <dd><p><em>int</em> &#8211; number of beams in the system</p>
 </dd></dl>
 
@@ -530,7 +530,7 @@ models of frame structures.</p>
 <dl class="method">
 <dt id="sajou.model.Model2D.beam">
 <code class="descname">beam</code><span class="sig-paren">(</span><em>node1</em>, <em>node2</em><span class="sig-paren">)</span><a class="headerlink" href="#sajou.model.Model2D.beam" title="Permalink to this definition">¶</a></dt>
-<dd><p>Define a line between two nodes.</p>
+<dd><p>Define a beam element between two nodes.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -599,6 +599,31 @@ corresponding elements.</p>
 </td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">sajou.Node</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="sajou.model.Model2D.spring">
+<code class="descname">spring</code><span class="sig-paren">(</span><em>node1</em>, <em>node2</em>, <em>K</em><span class="sig-paren">)</span><a class="headerlink" href="#sajou.model.Model2D.spring" title="Permalink to this definition">¶</a></dt>
+<dd><p>Define a spring element between two nodes</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>node1</strong> (<em>Node instance</em>) &#8211; first node</li>
+<li><strong>node2</strong> (<em>Node instance</em>) &#8211; second node</li>
+<li><strong>K</strong> (<em>float</em>) &#8211; elastic constant of the spring</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A Sprind 2D instance</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">sajou.Spring2D</p>
 </td>
 </tr>
 </tbody>
@@ -674,9 +699,29 @@ models of frame structures.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Nodes:</th><td class="field-body">list of nodes or &#8216;all&#8217;</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>nodes</strong> (<em>list</em><em>, </em><em>str</em>) &#8211; list of nodes or &#8216;all&#8217;</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">TODO</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">DataFrame with the coordinates of the nodes</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">DataFrame</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="sajou.model.get_node_coords">
+<code class="descclassname">sajou.model.</code><code class="descname">get_node_coords</code><span class="sig-paren">(</span><em>model</em>, <em>nodes='all'</em><span class="sig-paren">)</span><a class="headerlink" href="#sajou.model.get_node_coords" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a dictionary with coordinates of selected nodes of the model</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>nodes</strong> (<em>list</em><em>, </em><em>str</em>) &#8211; list of nodes or &#8216;all&#8217;</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">DataFrame with the coordinates of the nodes</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">DataFrame</td>
 </tr>
 </tbody>
 </table>
@@ -728,7 +773,7 @@ models of frame structures.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'0.1',
+            VERSION:'0.1.1',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

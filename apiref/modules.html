@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>sajou.materials module &mdash; Sajou 0.1.1 documentation</title>
+  <title>sajou &mdash; Sajou 0.1.1 documentation</title>
   
 
   
@@ -35,10 +35,7 @@
         <link rel="index" title="Index"
               href="../genindex.html"/>
         <link rel="search" title="Search" href="../search.html"/>
-    <link rel="top" title="Sajou 0.1.1 documentation" href="../index.html"/>
-        <link rel="up" title="Python API reference" href="index.html"/>
-        <link rel="next" title="sajou.model module" href="sajou.model.html"/>
-        <link rel="prev" title="sajou.loads module" href="sajou.loads.html"/> 
+    <link rel="top" title="Sajou 0.1.1 documentation" href="../index.html"/> 
 
   
   <script src="../_static/js/modernizr.min.js"></script>
@@ -94,28 +91,13 @@
               
             
             
-              <ul class="current">
+              <ul>
 <li class="toctree-l1"><a class="reference internal" href="../install.html">Installation instructions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quick start</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tutorial/index.html">Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../doc/index.html">Documentation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="index.html">Python API reference</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="index.html#sajou-package">sajou package</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="index.html#subpackages">Subpackages</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="index.html#submodules">Submodules</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="sajou.loads.html">sajou.loads module</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">sajou.materials module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="sajou.model.html">sajou.model module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="sajou.nodes.html">sajou.nodes module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="sajou.postprocessing.html">sajou.postprocessing module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="sajou.sections.html">sajou.sections module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="sajou.solvers.html">sajou.solvers module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="sajou.utils.html">sajou.utils module</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="index.html#module-sajou">Module contents</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="index.html#sajou-package">sajou package</a></li>
 </ul>
 
             
@@ -160,15 +142,13 @@
     
       <li><a href="../index.html">Docs</a> &raquo;</li>
         
-          <li><a href="index.html">Python API reference</a> &raquo;</li>
-        
-      <li>sajou.materials module</li>
+      <li>sajou</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../_sources/apiref/sajou.materials.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/apiref/modules.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -181,35 +161,40 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="module-sajou.materials">
-<span id="sajou-materials-module"></span><h1>sajou.materials module<a class="headerlink" href="#module-sajou.materials" title="Permalink to this headline">¶</a></h1>
-<p>This module contains the classes and methods used for the creation of material
-properties.</p>
-<dl class="class">
-<dt id="sajou.materials.Material">
-<em class="property">class </em><code class="descclassname">sajou.materials.</code><code class="descname">Material</code><span class="sig-paren">(</span><em>name</em>, <em>data</em>, <em>type='isotropic'</em><span class="sig-paren">)</span><a class="headerlink" href="#sajou.materials.Material" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
-<p>Material properties</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>name</strong> (<em>str</em>) &#8211; name of the material</li>
-<li><strong>table</strong> (<em>tuple</em>) &#8211; properties of the material</li>
-<li><strong>type</strong> (<em>str</em>) &#8211; <p>type of the material:</p>
+  <div class="section" id="sajou">
+<h1>sajou<a class="headerlink" href="#sajou" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
 <ul>
-<li>&#8216;isotropic&#8217;: data = (E, )</li>
-<li>&#8216;orthotropic&#8217;: data = (E_1, E_2, E_3)</li>
+<li class="toctree-l1"><a class="reference internal" href="sajou.html">sajou package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="sajou.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="sajou.elements.html">sajou.elements package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="sajou.elements.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="sajou.elements.html#module-sajou.elements">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="sajou.plot.html">sajou.plot package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="sajou.plot.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="sajou.plot.html#module-sajou.plot">Module contents</a></li>
 </ul>
 </li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
+</li>
+<li class="toctree-l2"><a class="reference internal" href="sajou.html#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="sajou.loads.html">sajou.loads module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sajou.materials.html">sajou.materials module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sajou.model.html">sajou.model module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sajou.nodes.html">sajou.nodes module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sajou.postprocessing.html">sajou.postprocessing module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sajou.sections.html">sajou.sections module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sajou.solvers.html">sajou.solvers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sajou.utils.html">sajou.utils module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="sajou.html#module-sajou">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
 </div>
 
 
@@ -219,15 +204,6 @@ properties.</p>
            </div>
           </div>
           <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="sajou.model.html" class="btn btn-neutral float-right" title="sajou.model module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="sajou.loads.html" class="btn btn-neutral" title="sajou.loads module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
-    </div>
   
 
   <hr/>

@@ -730,7 +730,7 @@ class Model2D(Model):
         Returns
         -------
 
-        sajou.Sprinf2D:
+        sajou.Spring2D:
             A Sprind 2D instance
 
         """

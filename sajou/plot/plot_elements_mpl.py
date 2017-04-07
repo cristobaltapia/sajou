@@ -46,6 +46,7 @@ def plot_beam2d(element, ax, elem_options):
 
     return ax
 
+
 def plot_deformed_beam2d(element, results, ax, elem_options, scale=1):
     """Plot the deformed shape of the Beam2D element
 

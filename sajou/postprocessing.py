@@ -39,7 +39,7 @@ class Postprocess(object):
 
         """
         # FIXME: verify first if 'pos' is array
-        pos = np.array(pos)
+        pos = np.asarray(pos)
         # Decide which data to use
         if unit_length:
             x_l = pos * element._length
@@ -74,7 +74,7 @@ class Postprocess(object):
 
         """
         # FIXME: verify first if 'pos' is array
-        pos = np.array(pos)
+        pos = np.asarray(pos)
         # Decide which data to use
         if unit_length:
             x_l = pos * element._length
@@ -109,7 +109,7 @@ class Postprocess(object):
 
         """
         # FIXME: verify first if 'pos' is array
-        pos = np.array(pos)
+        pos = np.asarray(pos)
         # Decide which data to use
         if unit_length:
             x_l = pos * element._length

@@ -29,6 +29,8 @@ In addition to the standard markers, the following are implemented:
     +---------+----------------------------------+
     | `'rey'` | 'rolling_encastrated_y',         |
     +---------+----------------------------------+
+    | `'rc'`  | 'rotation_constrained',          |
+    +---------+----------------------------------+
 
 Examples
 --------
@@ -74,6 +76,7 @@ class MarkerStyle(mpl_mk.MarkerStyle):
         'es': 'encastrated_support',
         'rex': 'rolling_encastrated_x',
         'rey': 'rolling_encastrated_y',
+        'rc': 'rotation_constrained',
     }
 
     markers = {**markers_custom, **mpl_mk.MarkerStyle.markers}
@@ -226,3 +229,15 @@ class MarkerStyle(mpl_mk.MarkerStyle):
 
     def _set_rolling_encastrated_y(self):
         return self._set_rolling_encastrated(90)
+
+    def _set_rotation_constrained(self):
+        self._transform = Affine2D().translate(0, 0)
+        x = [-0.5, 0.5, -0.5, 0.5]
+        y = [-0.5, 0.5, 0.5, -0.5]
+        xy = list(zip(x, y))
+        codes = [Path.MOVETO, Path.LINETO, Path.MOVETO, Path.LINETO]
+
+        self._filled = False
+        self._path = Path(xy, codes)
+        self._transform.scale(2.0, 2.0)
+        self._joinstyle = 'miter'

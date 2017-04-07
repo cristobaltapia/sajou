@@ -1038,11 +1038,3 @@ def range_with_ratio(x1, x2, n, a):
 
     return new_range
 
-
-# only rotation constrained
-x = [-0.5, 0.5, -0.5, 0.5]
-y = [-0.5, 0.5, 0.5, -0.5]
-xy = list(zip(x, y))
-codes = [Path.MOVETO, Path.LINETO, Path.MOVETO, Path.LINETO]
-rot_z = Path(xy, codes)
-############################################################

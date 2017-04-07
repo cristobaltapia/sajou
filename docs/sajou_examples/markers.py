@@ -6,7 +6,7 @@ from sajou.plot.lines_mpl import Line2D
 
 fig = plt.figure(figsize=(12, 3))
 ax = fig.add_subplot(111)
-markers = ['ap', 'an', 'psx', 'rsx', 'es', 'rex']
+markers = ['ap', 'an', 'psx', 'rsx', 'es', 'rex', 'rc']
 
 for ix, mark in enumerate(markers):
     marker = Line2D([ix], [0], marker=mark, fillstyle='none', color='k')

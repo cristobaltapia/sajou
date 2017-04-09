@@ -70,8 +70,8 @@ The above created :class:`.BeamSection` now needs to be assigned to a :class:`.B
 Applying loads and border conditions
 ************************************
 
-Sajou supports the application of both point loads as well as distributed loads. For this, the methods :meth:`.Model.load` and :meth:`.Beam2D.distributed_load` are used.
-The border conditions (BCs) are defined with the method :meth:`.Beam2D.distributed_load`:
+Sajou supports the application of both concentrated loads as well as distributed loads. For this, the methods :meth:`.Model.load` and :meth:`.Beam2D.distributed_load` are used.
+The border conditions (BCs) are defined with the method :meth:`.Model.bc`:
 
 .. literalinclude:: sajou_examples/quickstart_post.py
    :lines: 42-52

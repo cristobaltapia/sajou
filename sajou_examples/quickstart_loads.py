@@ -54,10 +54,9 @@ b2.release_end(which=2)
 
 fig = plt.figure(figsize=(6., 5.5))
 ax = fig.add_subplot(111)
-
 disp = sj.Display(theme='dark')
-
 ax = disp.plot_geometry(ax=ax, model=m)
+
 ax.spines['right'].set_color('none')
 ax.spines['top'].set_color('none')
 ax.spines['bottom'].set_smart_bounds(True)
@@ -66,5 +65,5 @@ ax.xaxis.set_ticks_position('bottom')
 ax.yaxis.set_ticks_position('left')
 ax.set_xlim(xmin=-800, xmax=3500)
 
-
 plt.tight_layout()
+plt.show()

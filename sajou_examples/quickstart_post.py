@@ -27,11 +27,11 @@ b3 = m.beam(node1=n3, node2=n4)
 b4 = m.beam(node1=n4, node2=n5)
 
 # create material
-mat = m.material(name='Wood', data=(12e3, ), type='isotropic')
+mat = m.material(name='glulam', data=(12e3, ), type='isotropic')
 
 # create beam section
-section1 = m.beam_section(name='rectangular 1', material=mat, data=(
-    300, 100), type='rectangular')
+section1 = m.beam_section(name='glulam section', material=mat, data=(
+    100, 300), type='rectangular')
 
 # add beam section to the beams
 b1.assign_section(section1)
@@ -77,7 +77,7 @@ ax1 = disp.plot_internal_forces(ax=ax1, result=res, component='moment')
 ax2 = disp.plot_internal_forces(ax=ax2, result=res, component='shear')
 ax3 = disp.plot_internal_forces(ax=ax3, result=res, component='axial')
 ax4 = disp.plot_deformed_geometry(ax=ax4, result=res, show_undeformed=True,
-                                  scale=10)
+                                  scale=100)
 
 for ax in [ax1, ax2, ax3, ax4]:
     ax.spines['right'].set_color('none')

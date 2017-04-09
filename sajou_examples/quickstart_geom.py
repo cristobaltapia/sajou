@@ -66,5 +66,4 @@ ax.xaxis.set_ticks_position('bottom')
 ax.yaxis.set_ticks_position('left')
 ax.set_xlim(xmin=-800, xmax=3500)
 
-
 plt.tight_layout()

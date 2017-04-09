@@ -86,8 +86,8 @@ class Beam2D(Element):
 
         # Element Freedom Signature:
         self.efs = {
-            0: np.array([1, 1, 1], dtype=np.int),
-            1: np.array([1, 1, 1], dtype=np.int)
+            0: np.array([1, 2, 3], dtype=np.int),
+            1: np.array([1, 2, 3], dtype=np.int)
         }
 
         # Node freedom map table of the element (will be automatically
@@ -146,19 +146,8 @@ class Beam2D(Element):
 
         """
 
-        # Generate the element stiffness matrix depending on the use of
-        # hinges or not (release_end_1 and release_end_2)
-        if self.release_end_1 == False and self.release_end_2 == False:
-            k = self._assemble_Ke()
-        # If both ends are released
-        elif self.release_end_1 == True and self.release_end_2 == True:
-            k = self._assemble_Ke_end_release_both()
-        # If the rotation is release in the first node
-        elif self.release_end_1 == True:
-            k = self._assemble_Ke_end_release1()
-        # If the rotation is release in the second node
-        elif self.release_end_2 == True:
-            k = self._assemble_Ke_end_release2()
+        # Generate the element stiffness matrix
+        k = self._assemble_Ke()
 
         # Generate sparse matrix
         ke_local = sparse.csr_matrix(k)
@@ -173,7 +162,7 @@ class Beam2D(Element):
         # Generate the Element Node Freedom Map Table
         self._generate_element_node_freedom_map_dict()
         # Calculate total number of active DOFs in the element
-        sum_dof = np.array([np.sum(nfs) for node_i, nfs in self.efs.items()])
+        sum_dof = np.array([np.sum((nfs >= 1)) for node_i, nfs in self.efs.items()])
         self.n_active_dof = np.sum(sum_dof)
 
         return Ke
@@ -268,11 +257,19 @@ class Beam2D(Element):
         # Set the respective property to 'True'
         if which == 1:
             self.release_end_1 = True
+            n_new_dof = self._nodal_connectivity[0]._add_dof(self, 1)
+            self.efs[0][2] = n_new_dof
         elif which == 2:
             self.release_end_2 = True
+            n_new_dof = self._nodal_connectivity[1]._add_dof(self, 1)
+            self.efs[1][2] = n_new_dof
         elif which == 'both':
             self.release_end_1 = True
             self.release_end_2 = True
+            n_new_dof_1 = self._nodal_connectivity[0]._add_dof(self, 1)
+            n_new_dof_2 = self._nodal_connectivity[1]._add_dof(self, 1)
+            self.efs[0][2] = n_new_dof_1
+            self.efs[1][2] = n_new_dof_2
 
         return 1
 
@@ -325,149 +322,13 @@ class Beam2D(Element):
 
         return ke
 
-    def _assemble_Ke_end_release1(self):
-        """
-        Assembles the element stiffness matrix in local and global coordinates for the
-        case when the release_end_1 option is set to 'True'.
-        :returns: TODO
-
-        """
-        # Modulus of elasticity
-        E = self._beam_section._material._data[0]
-        # Area of the section
-        EA = self._beam_section._area * E
-        # Inertias
-        EI = self._beam_section._Iz * E
-        # Length of the element
-        L = self._length
-
-        # Initialize stiffness matrix
-        ke = np.zeros((6, 6), dtype=np.float64)
-
-        ke[0, 0] = ke[3, 3] = EA / L
-        ke[1, 1] = ke[4, 4] = 3. * EI / (L * L * L)
-        ke[5, 5] = 3. * EI / L
-        ke[3, 0] = ke[0, 3] = -EA / L
-        ke[4, 1] = ke[1, 4] = -3. * EI / (L * L * L)
-        ke[5, 1] = ke[1, 5] = 3. * EI / L**2
-        ke[5, 4] = ke[4, 5] = -3. * EI / L**2
-
-        # The Element Freedom signature has to be changed for the
-        # respective node
-        self.efs[0] = np.array([1, 1, 0], dtype=np.int)
-
-        return ke
-
-    def _assemble_Ke_end_release2(self):
-        """
-        Assembles the element stiffness matrix in local and global coordinates for the
-        case when the release_end_2 option is set to 'True'.
-        :returns: TODO
-
-        """
-        # Modulus of elasticity
-        E = self._beam_section._material._data[0]
-        # Area of the section
-        EA = self._beam_section._area * E
-        # Inertias
-        EI = self._beam_section._Iz * E
-        # Length of the element
-        L = self._length
-
-        # Initialize stiffness matrix
-        ke = np.zeros((6, 6), dtype=np.float64)
-
-        ke[0, 0] = ke[3, 3] = EA / L
-        ke[1, 1] = ke[4, 4] = 3. * EI / (L * L * L)
-        ke[2, 2] = 3. * EI / L
-        ke[2, 1] = ke[1, 2] = 3. * EI / L**2
-        ke[2, 4] = ke[4, 2] = -3. * EI / L**2
-        ke[3, 0] = ke[0, 3] = -EA / L
-        ke[4, 1] = ke[1, 4] = -3. * EI / (L * L * L)
-
-        # The Element Freedom signature has to be changed for the
-        # respective node
-        self.efs[1] = np.array([1, 1, 0], dtype=np.int)
-
-        return ke
-
-    def _assemble_Ke_end_release_both(self):
-        """
-        Assembles the element stiffness matrix in local and global coordinates for the
-        case when the release_end_2 option is set to 'True'.
-        :returns: TODO
-
-        """
-        # Modulus of elasticity
-        E = self._beam_section._material._data[0]
-        # Area of the section
-        EA = self._beam_section._area * E
-        # Inertias
-        EI = self._beam_section._Iz * E
-        # Length of the element
-        L = self._length
-
-        # Initialize stiffness matrix
-        ke = np.zeros((6, 6), dtype=np.float64)
-
-        ke[0, 0] = ke[3, 3] = EA / L
-        ke[3, 0] = ke[0, 3] = -EA / L
-
-        # The Element Freedom signature has to be changed for the
-        # respective node
-        self.efs[0] = np.array([1, 1, 0], dtype=np.int)
-        self.efs[1] = np.array([1, 1, 0], dtype=np.int)
-
-        return ke
-
-    def _calc_condensed_displacements(self, displ):
-        """
-        Calculate the nodal displacements taking into account the condensend DOF due to
-        the end_release options.
-
-        If the condensed displacemtns are denoted by the subindex 'j' and the remaining
-        DOFs are denoted with the letter 'i', then the condensed displacements are
-        calculated according to
-
-
-                v_j = -K_jj^-1 . K_ji . v_i
-
-        :displ: TODO
-        :returns: TODO
-
-        """
-        if self.release_end_1 and self.release_end_2:
-            j_n = [2, 5]
-            i_n = [0, 1, 3, 4]
-        elif self.release_end_1:
-            j_n = [2]
-            i_n = [0, 1, 3, 4, 5]
-        elif self.release_end_2:
-            j_n = [5]
-            i_n = [0, 1, 2, 3, 4]
-
-        ke = self._assemble_Ke()
-        # To sparse
-        ke_local = sparse.csr_matrix(ke)
-        # Transform to global coordinates:
-        Te = self.transformation_matrix
-        Ke = Te.T @ ke_local.todense() @ Te
-        # Transform to global coordinates
-        k_jj = Ke[j_n, j_n]
-        k_ji = Ke[j_n, i_n]
-        from numpy.linalg import inv
-        #print(k_jj.todense())
-        #print(k_ji.todense())
-        v_j = k_jj**(-1) @ k_ji @ displ[i_n]
-
-        return v_j
-
     def _generate_element_node_freedom_map_dict(self):
         """
         Generate the Node Freedom Map Table of the element.
 
-        The Node Freedom Map Table of the element is a dictionary that contains the index
-        to which each node's first active DOF contributes within the element.
+        The Node Freedom Map Table of the element is a dictionary that contains
+        the index to which each node's first active DOF contributes to within
+        the element.
 
         It is analogous to the function __generate_node_freedom_map_dict__() from the
         Model class.

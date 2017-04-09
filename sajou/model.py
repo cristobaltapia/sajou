@@ -407,7 +407,7 @@ class Model(object):
                 # Get Element Freedom Signature
                 efs = element.efs[n_node_e]
                 # Number of active DOF in the node of the element
-                active_dof = np.sum(efs)
+                active_dof = np.sum((efs >= 1))
                 if active_dof > 0:
                     # Get value of th Node Freedom Assign Table for the
                     # current node
@@ -415,12 +415,13 @@ class Model(object):
                     # Get NFS of the node in the element
                     enfs_node = element.enfmt[n_node_e]
                     # for the total of used DOF in the node
-                    index_base = element.get_index_array_of_node(n_node_e)
+                    # FIXME!!
+                    index_base = element.get_node_active_dof(n_node_e)
                     active_nodes = nfat_node + index_base
                     # Extend the list
                     g_i.extend(active_nodes)
                     #
-                    index_base_e = element.get_index_array_of_node(n_node_e)
+                    index_base_e = element.get_element_active_dof(n_node_e)
                     active_nodes_e = enfs_node + index_base_e
                     g_e.extend(active_nodes_e)
 
@@ -481,7 +482,7 @@ class Model(object):
         P = np.zeros(n_dof, dtype=np.float64)
 
         # Add loads applied to the elements (distributed loads)
-        for ix, element in self.beams.items():
+        for ix, element in self.elements.items():
             # Check if the element has element loads defined
             if len(element._loads) > 0:
                 # Get nodes of the respective element
@@ -495,7 +496,7 @@ class Model(object):
                     # Get Element Freedom Signature
                     efs = element.efs[n_node_e]
                     # Number of active DOF in the node of the element
-                    active_dof = np.sum(efs)
+                    active_dof = np.sum((efs >= 1))
 
                     if active_dof > 0:
                         # Get value of th Node Freedom Assign Table for the
@@ -505,12 +506,12 @@ class Model(object):
                         enfs_node = element.enfmt[n_node_e]
                         # Get the corresponding active indices of the
                         # node in the element
-                        index_base = element.get_index_array_of_node(n_node_e)
+                        index_base = element.get_node_active_dof(n_node_e)
                         active_nodes = nfat_node + index_base
                         # Extend the list
                         g_i.extend(active_nodes)
                         #
-                        index_base_e = element.get_index_array_of_node(
+                        index_base_e = element.get_element_active_dof(
                             n_node_e)
                         active_nodes_e = enfs_node + index_base_e
                         g_e.extend(active_nodes_e)

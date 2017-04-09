@@ -107,11 +107,6 @@ class DistributedLoad(Load):
             load_v[2] = length**2 * (p1 / 20. + p2 / 30.)
             load_v[4] = length * (3. * p1 + 7. * p2) / 20.
             load_v[5] = -length**2 * (p1 / 30. + p2 / 20.)
-            # consider the cases with released ends
-            if self._elem.release_end_2:
-                load_v[2] += load_v[5]
-            elif self._elem.release_end_1:
-                load_v[5] += load_v[2]
             # Generate matrix used for the calculation of section forces
             poly_sec_force = self._generate_section_force_poly(p1, p2, length,
                                                                direction)

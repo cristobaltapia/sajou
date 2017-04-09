@@ -91,10 +91,10 @@ class Node(np.ndarray):
 
     def append_element(self, element, node):
         """
-        Append the information of the beam that uses the node and the number
+        Append the information of the element that uses the node and the number
         in the element: 1, 2, 3,...
 
-        :param beam: Beam instance
+        :param element: ELement instance
         :param node: int corresponding to the number of the node within the element
         :returns: nothing FIXME
 
@@ -103,16 +103,32 @@ class Node(np.ndarray):
 
         return 1
 
+    def _add_dof(self, element, n):
+        """
+        Add an extra DOF to the node
+
+        Returns
+        -------
+        int : number of the first one of the newly created DOF(s)
+
+        """
+        self.n_dof += n
+        return self.n_dof - (n - 1)
+
     def __generate_node_freedom_signature__(self):
         """
         Generate the Node Freedom Signature based on the information taken from the
         elements attached to the node.
 
-        This function has to be called when no more changes will be made to the model.
+        Generates a boolean array signalizing which degrees of freedom in the
+        node are active.
+        This function has to be called when no more changes will be made to
+        the model.
 
         :returns: TODO
 
         """
+        self.__gen_node_freedom_signature__()
         # Initiate a new node freedom signature
         nfs = np.zeros(self.n_dof, dtype=np.int)
         # Iterate for each element connected to the node
@@ -122,12 +138,18 @@ class Node(np.ndarray):
             # Get the element instance
             elem = data_element['element']
             # Modify the Node Freedom Signature of the node
-            # Activate the given DOF if it is no activated already
-            nfs += elem.efs[n_node] - (elem.efs[n_node] * nfs)
+            # Activate the given DOF if it is not activated already
+            efs = elem.efs[n_node]
+            bool_efs = elem.efs[n_node] >= 1
+            nfs[efs[bool_efs] - 1] += bool_efs - bool_efs * nfs[efs[bool_efs] - 1]
 
         self.nfs = nfs
 
         return self.nfs
+
+    def __gen_node_freedom_signature__(self):
+        # All DOFs are initiated to be unused.
+        self.nfs = np.zeros(self.n_dof, dtype=np.int)
 
     def __repr__(self):
         """
@@ -147,8 +169,6 @@ class Node2D(Node):
     """2-dimensional implementation of Nodes"""
 
     def __init__(self, x, y, z, number):
-        """ Instatiate a Node2D instance.
-        """
         # Number od DOF per node:
         # Translation in x, translation in y, rotation in z
         self.n_dof = 3
@@ -159,7 +179,7 @@ class Node2D(Node):
         # NFA = [v_1, v_2, r_3]
         #
         # All DOFs are initiated to be unused.
-        self.nfs = np.zeros(self.n_dof, dtype=np.int)
+        #self.nfs = np.zeros(self.n_dof, dtype=np.int)
 
         return None
 

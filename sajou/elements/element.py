@@ -18,37 +18,34 @@ class Element(object):
         # TODO: check that the number is not in use
         self.number = number
 
-    def get_index_array_of_node(self, node):
+    def get_node_active_dof(self, node):
         """
-        Get an array containing the indices of the used DOFs of the given node of the
-        element.
+        Get an array containing the indices of the used DOFs of the given node
+        of the element.
 
         Parameters
         ----------
-
         node: int
-            the number of the node in the element (element number of the node: 0, 1,
-            2, ... )
+            the number of the node in the element (element number of the node:
+            0, 1, 2, ... )
 
         Returns
         -------
-
         array of indices:
 
         Note
         ----
-
         The array has the following form::
 
                 [0, 1, 2] --> all DOFs are used
                 [0, 2] --> DOF 0 and 2 are used only (ux and rz in 2D)
 
-        This array is used to know exactly which DOFs should be used to assemble the global
-        stiffness matrix or to retrieve the corresponding displacements.
+        This array is used to know exactly which DOFs should be used to
+        assemble the global stiffness matrix or to retrieve the corresponding
+        displacements.
 
         Example
         ---------
-
         It would be used like this::
 
             i_global_node_1 = e.get_index_list_of_node(n_node_ele) + nfat[global_node_number]
@@ -57,7 +54,39 @@ class Element(object):
         """
         efs = self.efs[node]
 
+        return efs[efs >= 1] - 1
+
+    def get_element_active_dof(self, node):
+        """
+        Get an array containing the indices of the used DOFs of the node within
+        the element.
+
+        Parameters
+        ----------
+        node: int
+            the number of the node in the element (element number of the node:
+            0, 1, 2, ... )
+
+        Returns
+        -------
+        array of indices:
+
+        Note
+        ----
+        The array has the following form::
+
+                [0, 1, 2] --> all DOFs are used
+                [0, 2] --> DOF 0 and 2 are used only (ux and rz in 2D)
+
+        This array is used to know exactly which DOFs should be used to
+        assemble the global stiffness matrix or to retrieve the corresponding
+        displacements.
+
+        """
+        efs = self.efs[node]
+
         return np.arange(len(efs))[efs > 0]
+
 
     def __str__(self):
         """Returns the printable string for this object"""

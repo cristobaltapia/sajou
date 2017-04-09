@@ -205,14 +205,19 @@ class StaticSolver(Solver):
         # get the node freedom map table
         nfmt = self._model.nfmt
         nodes = self._model.nodes
-        ndof = self._model.n_dof_per_node
 
         dict_nf = dict()
         # Loop for each node of the model
         for num, curr_node in nodes.items():
+            # get total DOFs of the node
+            ndof = curr_node.n_dof
+            # get node number
             ix = curr_node.number
+            # get node freedom signature
             nfs = curr_node.nfs
+            # initialize nodal force vector
             nod_force = np.zeros(ndof)
+            #
             indices = np.arange(ndof)[nfs>0]
             nod_force[indices] = nodal_forces[nfmt[ix]: nfmt[ix] + sum(nfs)]
             dict_nf[ix] = nod_force
@@ -300,11 +305,12 @@ class StaticSolver(Solver):
             # element
             for n_node_e, node in element._nodal_connectivity.items():
                 # Indices for the array v_i
-                index_base = element.get_index_array_of_node(n_node_e)
+                index_base = element.get_element_active_dof(n_node_e)
                 i_index = index_base + enfmt[n_node_e]
                 # Indices corresponding to the position of the DOF of
                 # the current node analyzed (global system)
-                j_index = index_base + nfmt[node.number]
+                index_base_n = element.get_node_active_dof(n_node_e)
+                j_index = index_base_n + nfmt[node.number]
                 # Add the results for these DOFs to the v_i array
                 v_i[i_index] = nodal_displ[j_index]  # DOF of node selected
                 # Account for element loads
@@ -312,20 +318,6 @@ class StaticSolver(Solver):
                     # Same indices are used here
                     for load in element._loads:
                         P_e_i[i_index] += load._load_vector_global[i_index]
-
-            # FIXME:
-            # If an element uses release_end option, then the displacement (rotation) needs
-            # to be calculated sepparately.
-            #if element.release_end_1 or element.release_end_2:
-            #    import scipy.sparse as sparse
-            #    aux = element._calc_condensed_displacements(v_i)
-            #    v_i[5] = aux
-            #    ke = element._assemble_Ke()
-            #    # To sparse
-            #    ke_local = sparse.csr_matrix(ke)
-            #    # Transform to global coordinates:
-            #    Te = element.transformation_matrix
-            #    Ke = Te.T.dot(ke_local.dot(Te))
 
             # Get the End Forces of the element in global coordinates
             P_i_global = Ke @ v_i - P_e_i

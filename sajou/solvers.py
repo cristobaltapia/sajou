@@ -28,6 +28,23 @@ class Solver(object):
             - 'strains'
             - 'energy'
 
+    Attributes
+    ----------
+    nfat: dict
+        Node Freedom Allocation Table
+    n_dof_per_node: int
+        number of degrees of freedom per node
+        spacial dimensions used in the model
+    _K: numpy ndarray
+        global stiffness matrix
+    _P: numpy ndarray
+        global load vector
+    _V: numpy ndarray
+        global displacement vector
+    _dof_dirichlet: list
+        number of degrees of freedom with Dirichlet border conditions
+    _nfmt: dict
+        Node Freedom Map Table
 
         """
 

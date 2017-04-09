@@ -27,8 +27,6 @@ class Model(object):
 
     Attributes
     ----------
-    nfat: dict
-        Node Freedom Allocation Table
     nodes: dict
         dictionary with all the nodes of the system
     beams: dict
@@ -51,17 +49,6 @@ class Model(object):
         name of the model
     _dimensionality: str
         spacial dimensions used in the model
-    _K: numpy ndarray
-        global stiffness matrix
-    _P: numpy ndarray
-        global load vector
-    _V: numpy ndarray
-        global displacement vector
-    _dof_dirichlet: list
-        number of degrees of freedom with Dirichlet border conditions
-    _nfmt: dict
-        Node Freedom Map Table
-
 
     """
 

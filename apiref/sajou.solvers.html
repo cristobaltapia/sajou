@@ -94,27 +94,12 @@
               
             
             
-              <ul class="current">
+              <ul>
 <li class="toctree-l1"><a class="reference internal" href="../install.html">Installation instructions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quick start</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tutorial/index.html">Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../doc/index.html">Documentation</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="index.html">Python API reference</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="index.html#subpackages">Subpackages</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="index.html#submodules">Submodules</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="sajou.loads.html">sajou.loads module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="sajou.materials.html">sajou.materials module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="sajou.model.html">sajou.model module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="sajou.nodes.html">sajou.nodes module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="sajou.postprocessing.html">sajou.postprocessing module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="sajou.sections.html">sajou.sections module</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">sajou.solvers module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="sajou.utils.html">sajou.utils module</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="index.html#module-sajou">Module contents</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">Python API reference</a></li>
 </ul>
 
             
@@ -230,6 +215,96 @@
 <em class="property">class </em><code class="descclassname">sajou.solvers.</code><code class="descname">Solver</code><span class="sig-paren">(</span><em>model</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#sajou.solvers.Solver" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
 <p>Parent class for the solvers used</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>model</strong> (<em>TODO</em>) &#8211; </li>
+<li><strong>**kwargs</strong> (<em>Additional options:</em>) &#8211; <ul>
+<li><dl class="first docutils">
+<dt>output: list of keywords specifying the different results that need to be</dt>
+<dd>computed after the solution is found.
+Accepted values are:
+- &#8216;reactions&#8217;
+- &#8216;internal forces&#8217;
+- &#8216;stresses&#8217;
+- &#8216;strains&#8217;
+- &#8216;energy&#8217;</dd>
+</dl>
+</li>
+</ul>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="sajou.solvers.Solver.nfat">
+<code class="descname">nfat</code><a class="headerlink" href="#sajou.solvers.Solver.nfat" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>dict</em> &#8211; Node Freedom Allocation Table</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="sajou.solvers.Solver.n_dof_per_node">
+<code class="descname">n_dof_per_node</code><a class="headerlink" href="#sajou.solvers.Solver.n_dof_per_node" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>int</em> &#8211; number of degrees of freedom per node
+spacial dimensions used in the model</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="sajou.solvers.Solver._K">
+<code class="descname">_K</code><a class="headerlink" href="#sajou.solvers.Solver._K" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>numpy ndarray</em> &#8211; global stiffness matrix</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="sajou.solvers.Solver._P">
+<code class="descname">_P</code><a class="headerlink" href="#sajou.solvers.Solver._P" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>numpy ndarray</em> &#8211; global load vector</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="sajou.solvers.Solver._V">
+<code class="descname">_V</code><a class="headerlink" href="#sajou.solvers.Solver._V" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>numpy ndarray</em> &#8211; global displacement vector</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="sajou.solvers.Solver._dof_dirichlet">
+<code class="descname">_dof_dirichlet</code><a class="headerlink" href="#sajou.solvers.Solver._dof_dirichlet" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>list</em> &#8211; number of degrees of freedom with Dirichlet border conditions</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="sajou.solvers.Solver._nfmt">
+<code class="descname">_nfmt</code><a class="headerlink" href="#sajou.solvers.Solver._nfmt" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>dict</em> &#8211; Node Freedom Map Table</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="sajou.solvers.Solver.get_node_and_dof">
+<code class="descname">get_node_and_dof</code><span class="sig-paren">(</span><em>dof</em><span class="sig-paren">)</span><a class="headerlink" href="#sajou.solvers.Solver.get_node_and_dof" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the node and element dof (number of the dof in a specific element)
+corresponding to the global dof given.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>dof</strong> (<em>int</em>) &#8211; global <em>dof</em></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><ul class="simple">
+<li><em>sajou.Node</em> &#8211; Node correpsonding to the <em>dof</em> specified</li>
+<li><em>int</em> &#8211; number of the <em>dof</em> of the element corresponding to the global
+<em>dof</em> supplied</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="class">
@@ -289,7 +364,7 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>result</strong> (<em>Result object</em>) &#8211; result obtained from the solver</li>
 <li><strong>nodal_displ</strong> (<em>ndarray</em>) &#8211; nodal displacements calculated with the stiffness matrix</li>
 <li><strong>K</strong> (<em>ndarray</em>) &#8211; Stiffness matrix</li>
@@ -297,10 +372,14 @@
 </ul>
 </td>
 </tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>dict</strong></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">dictionary with the nodal forces</p>
+</td>
+</tr>
 </tbody>
 </table>
-<p>:param :
-:type : returns: TODO</p>
 </dd></dl>
 
 <dl class="method">

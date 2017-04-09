@@ -141,8 +141,13 @@ class Beam2D(Element):
         """
         Assemble the element stiffness matrix 'Ke' in local and global coordinates.
 
-        :second_order: boolean
-        :returns: local stiffness matrix
+        Parameters
+        ----------
+        second_order: bool
+
+        Returns
+        -------
+        array: global stiffness matrix of the element
 
         """
 
@@ -294,7 +299,10 @@ class Beam2D(Element):
     def _assemble_Ke(self):
         """
         Assemble the element stiffness matrix in local coordinates for the Bernoulli beam.
-        :returns: TODO
+
+        Returns
+        -------
+        array: the element stiffness matrix
 
         """
         # Modulus of elasticity
@@ -333,7 +341,9 @@ class Beam2D(Element):
         It is analogous to the function __generate_node_freedom_map_dict__() from the
         Model class.
 
-        :returns: TODO
+        Returns
+        -------
+        array: node freedom map table
 
         """
         # Obtain the number of active DOFs in each node:

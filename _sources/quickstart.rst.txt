@@ -81,7 +81,7 @@ The border conditions (BCs) are defined with the method :meth:`.Beam2D.distribut
 End release (adding a hinge)
 ****************************
 
-It is also possible to add hinges at a given node, by means of the :meth:`Beam2D.release_end` method.
+It is also possible to add hinges at a given node, by means of the :meth:`.Beam2D.release_end` method.
 This method adds an additional degree of freedom at the respective node, effectively uncoupling the rotation from the rest of the system:
 
 .. literalinclude:: sajou_examples/quickstart_post.py

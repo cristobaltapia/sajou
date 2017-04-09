@@ -53,8 +53,8 @@ class Spring2D(Element):
 
         # Element Freedom Signature:
         self.efs = {
-            0: np.array([1, 1, 0], dtype=np.int),
-            1: np.array([1, 1, 0], dtype=np.int)
+            0: np.array([1, 2, 0], dtype=np.int),
+            1: np.array([1, 2, 0], dtype=np.int)
         }
 
         # Node freedom map table of the element (will be automatically

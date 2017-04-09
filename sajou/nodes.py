@@ -128,7 +128,7 @@ class Node(np.ndarray):
         :returns: TODO
 
         """
-        self.__gen_node_freedom_signature__()
+        self.__ini_node_freedom_signature__()
         # Initiate a new node freedom signature
         nfs = np.zeros(self.n_dof, dtype=np.int)
         # Iterate for each element connected to the node
@@ -140,16 +140,20 @@ class Node(np.ndarray):
             # Modify the Node Freedom Signature of the node
             # Activate the given DOF if it is not activated already
             efs = elem.efs[n_node]
+            # boolean vector with active indices
             bool_efs = elem.efs[n_node] >= 1
-            nfs[efs[bool_efs] - 1] += bool_efs - bool_efs * nfs[efs[bool_efs] - 1]
+            nfs[efs[bool_efs] - 1] += (bool_efs[bool_efs] - bool_efs[bool_efs]
+                                       * nfs[efs[bool_efs] - 1])
 
         self.nfs = nfs
 
         return self.nfs
 
-    def __gen_node_freedom_signature__(self):
+    def __ini_node_freedom_signature__(self):
         # All DOFs are initiated to be unused.
         self.nfs = np.zeros(self.n_dof, dtype=np.int)
+
+        return self.nfs
 
     def __repr__(self):
         """

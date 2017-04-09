@@ -501,7 +501,10 @@ class StaticSolver(Solver):
         K: ndarray
             Stiffness matrix
         elem_load: TODO
-        :returns: TODO
+
+        Returns
+        -------
+        dict: dictionary with the nodal forces
 
         """
         # calculate the nodal forces

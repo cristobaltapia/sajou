@@ -27,94 +27,74 @@ To build the model a :class:`.Model` has to be created::
     # Initialize a Model instance of a 2D model
     m = sj.Model(name='Model 1', dimensionality='2D')
 
-The geometry of the problem can then be defined by means of :class:`.Node`, which is conveniently wrapped in the method :meth:`.Model2D.node` of the class :class:`.Model`::
+The geometry of the problem can then be defined by means of :class:`.Node`, which is conveniently wrapped in the method :meth:`.Model2D.node` of the class :class:`.Model`:
 
-    # Add nodes in the specified positions
-    n1 = m.node(0, 0)
-    n2 = m.node(0, 2000)
-    n3 = m.node(2000, 2000)
-    n4 = m.node(2000, 0)
+.. literalinclude:: sajou_examples/quickstart_post.py
+   :lines: 16-21
 
-Beam elements (:class:`.Beam2D`) are created using a method of the class :class:`model.Model`::
+Beam elements (:class:`.Beam2D`) are created using a method of the class :class:`model.Model`:
 
-    # Add Beam2D elements
-    b1 = m.beam(n1, n2)
-    b2 = m.beam(n2, n3)
-    b3 = m.beam(n3, n4)
+.. literalinclude:: sajou_examples/quickstart_post.py
+   :lines: 23-27
 
 Material and cross-section
 **************************
 
-For this example, the material consist of a steel, with an modulus of elasticity (MOE) equals to 200 GPa.
-The cross-section of the beam is defined in a *general* way by giving both the area and moment of inertia
-as a tuple (see :class:`sections.BeamSection` to understand how to pass different parameters).
+For this example, the material consist of a timber glulam, with an modulus of elasticity (MOE) equals to 12 GPa.
+The cross-section of the beam is defined as a rectangular section.
+
+.. seealso:: :class:`sections.BeamSection` to understand how to pass different parameters
 
 +----------+---------+-------+
 | Property | value   | units |
 +==========+=========+=======+
-| MOE      | 200     | GPa   |
+| MOE      | 12      | GPa   |
 +----------+---------+-------+
-| Area     | 3.2e3   | mm^2  |
+| width    | 100     | mm    |
 +----------+---------+-------+
-| Inertia  | 2.356e7 | mm^4  |
+| depth    | 300     | mm    |
 +----------+---------+-------+
 
 The material is defined by means of the :meth:`.Model.material` method, which creates an instance of the class :class:`.Material`.
 This is then assigned to a :class:`.BeamSection` instance, using the :meth:`.Model.beam_section` method and giving the
-parameter ``type='general'``::
+parameter ``type='rectangular'``:
 
-    # Create a material instance
-    steel = m.material(name='steel', data=(200e3, ), type='isotropic')
-    # Create a beam section
-    section_1 = m.beam_section(name='section 1', material=steel,
-                               data=(32e2, 2.356e7), type='general')
+.. literalinclude:: sajou_examples/quickstart_post.py
+   :lines: 29-34
 
-The above created :class:`.BeamSection` now needs to be assigned to a :class:`.Beam2D` instance::
+The above created :class:`.BeamSection` now needs to be assigned to a :class:`.Beam2D` instance:
 
-
-    # Assign the section to the beam elements
-    b1.assign_section(section_1)
-    b2.assign_section(section_1)
-    b3.assign_section(section_1)
-
+.. literalinclude:: sajou_examples/quickstart_post.py
+   :lines: 36-40
 
 Applying loads and border conditions
 ************************************
 
-
 Sajou supports the application of both point loads as well as distributed loads. For this, the methods :meth:`.Model.load` and :meth:`.Beam2D.distributed_load` are used.
-The border conditions (BCs) are defined with the method :meth:`.Beam2D.distributed_load`::
+The border conditions (BCs) are defined with the method :meth:`.Beam2D.distributed_load`:
 
-    # Add border conditions
-    m.bc(node=n1, v1=0., v2=0., r3=0.)
-    m.bc(node=n4, v1=0., v2=0.)
-
-    # Add point Load
-    m.load(node=n2, f2=-5e3)
-    m.load(node=n3, f1=-10e3)
-
-    # Add distributed load
-    b1.distributed_load(p1=-1, p2=-2, direction='y', coord_system='local')
+.. literalinclude:: sajou_examples/quickstart_post.py
+   :lines: 42-52
 
 .. seealso:: Concentrated and distributed moments are also supported. See the methods :meth:`.Model.load` and :meth:`.Beam2D.distributed_moment`
+
+End release (adding a hinge)
+****************************
+
+It is also possible to add hinges at a given node, by means of the :meth:`Beam2D.release_end` method.
+This method adds an additional degree of freedom at the respective node, effectively uncoupling the rotation from the rest of the system:
+
+.. literalinclude:: sajou_examples/quickstart_post.py
+   :lines: 54-55
 
 Visualizing the model
 *********************
 
 A visual inspection of the model is crucial to easily spot problems in the model.
-To see the current state of the model a :class:`.Display` instance has to be instantiated and a `Matplotlib <http://www.matplotlib.org>`_ axis has to be passed (this might change in the future)::
+To see the current state of the model a :class:`.Display` instance has to be instantiated and a `Matplotlib <http://www.matplotlib.org>`_ axis has to be passed (this might change in the future):
 
-    # create matplotlib figure and axes
-    import matplotlib.pyplot as plt
-    fig = plt.figure(figsize=(6.,5.3.))
-    ax = fig.add_subplot(111)
-
-    # Instatiate a Display object
-    disp = sj.Display(theme='dark')
-
-    # plot the current state of the model
-    ax = disp.plot_geometry(model=m, ax=ax)
-    plt.show()
+.. literalinclude:: sajou_examples/quickstart_loads.py
+   :lines: 8,55-58,69
 
 A figure similar to the one shown below should be created.
 
@@ -123,16 +103,10 @@ A figure similar to the one shown below should be created.
 Solving the system
 ******************
 
-For this example, the implemented static solver (:class:`.StaticSolver`) is used::
+For this example, the implemented static solver (:class:`.StaticSolver`) is used:
 
-    # instance of StaticSolver
-    from sj.solvers import StaticSolver
-    # Define output variables
-    output = ['nodal displacements', 'internal forces', 'end forces']
-    # Create the StaticSolver instance
-    solver = StaticSolver(model=m, output=output)
-    # Solve the system
-    res = solver.solve()
+.. literalinclude:: sajou_examples/quickstart_post.py
+   :lines: 12,57-62
 
 After this, a :class:`.Result` object is created (stored as ``res`` in the example), which contains the required results of the system.
 

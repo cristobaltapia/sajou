@@ -44,7 +44,7 @@ m.bc(node=n1, v1=0., v2=0.)
 m.bc(node=n5, v1=0., v2=0.)
 
 # Add load
-m.load(node=n4, f2=-10e3)
+m.load(node=n3, f2=-10e3)
 
 # Distributed load
 b1.distributed_load(p1=-1, p2=-2, direction='y', coord_system='local')

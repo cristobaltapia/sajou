@@ -94,12 +94,25 @@
               
             
             
-              <ul>
+              <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../install.html">Installation instructions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quick start</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tutorial/index.html">Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../doc/index.html">Documentation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="index.html">Python API reference</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Python API reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="sajou.elements.html">sajou.elements package</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="sajou.plot.html">sajou.plot package</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="sajou.plot.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="sajou.plot.html#module-sajou.plot">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#module-sajou">Module contents</a></li>
+</ul>
+</li>
 </ul>
 
             
@@ -279,12 +292,12 @@ representation of different attributes of a structural analysis model.</p>
 </table>
 <dl class="attribute">
 <dt>
-<code class="descname">markers</code><em class="property"> = {0: 'tickleft', 'rsy': 'rolling_support_y', 2: 'tickup', 's': 'square', 4: 'caretleft', 5: 'caretright', '&gt;': 'triangle_right', 1: 'tickright', 'h': 'hexagon1', 9: 'caretrightbase', 10: 'caretupbase', 11: 'caretdownbase', '^': 'triangle_up', '&lt;': 'triangle_left', 'rex': 'rolling_encastrated_x', 3: 'tickdown', 'psy': 'pinned_support_y', 'X': 'x_filled', 'x': 'x', '': 'nothing', 'rsx': 'rolling_support_x', 6: 'caretup', 'D': 'diamond', 7: 'caretdown', 'an': 'arc_arrow_negative', 'P': 'plus_filled', 8: 'caretleftbase', ' ': 'nothing', 'es': 'encastrated_support', 'rey': 'rolling_encastrated_y', 'v': 'triangle_down', '+': 'plus', '1': 'tri_down', None: 'nothing', '2': 'tri_up', '|': 'vline', 'o': 'circle', '*': 'star', 'None': 'nothing', 'ap': 'arc_arrow_positive', 'psx': 'pinned_support_x', 'd': 'thin_diamond', '8': 'octagon', ',': 'pixel', '4': 'tri_right', '3': 'tri_left', '_': 'hline', 'rc': 'rotation_constrained', 'H': 'hexagon2', '.': 'point', 'p': 'pentagon'}</em></dt>
+<code class="descname">markers</code><em class="property"> = {0: 'tickleft', '': 'nothing', 2: 'tickup', 'rey': 'rolling_encastrated_y', 4: 'caretleft', 5: 'caretright', 6: 'caretup', 1: 'tickright', 8: 'caretleftbase', 9: 'caretrightbase', 10: 'caretupbase', 11: 'caretdownbase', 'rsy': 'rolling_support_y', '.': 'point', 3: 'tickdown', '4': 'tri_right', 'es': 'encastrated_support', 'H': 'hexagon2', 'p': 'pentagon', 'None': 'nothing', 'h': 'hexagon1', 'd': 'thin_diamond', 7: 'caretdown', '1': 'tri_down', 'rc': 'rotation_constrained', 'D': 'diamond', 'P': 'plus_filled', 'X': 'x_filled', 'x': 'x', '&gt;': 'triangle_right', ' ': 'nothing', 'v': 'triangle_down', '^': 'triangle_up', '2': 'tri_up', 'rex': 'rolling_encastrated_x', 'o': 'circle', ',': 'pixel', 'psy': 'pinned_support_y', None: 'nothing', '3': 'tri_left', 's': 'square', '+': 'plus', '8': 'octagon', 'psx': 'pinned_support_x', 'ap': 'arc_arrow_positive', 'an': 'arc_arrow_negative', '_': 'hline', '|': 'vline', '&lt;': 'triangle_left', '*': 'star', 'rsx': 'rolling_support_x'}</em></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
 <dt id="sajou.plot.markers_mpl.MarkerStyle.markers_custom">
-<code class="descname">markers_custom</code><em class="property"> = {'psx': 'pinned_support_x', 'rex': 'rolling_encastrated_x', 'rsx': 'rolling_support_x', 'psy': 'pinned_support_y', 'rsy': 'rolling_support_y', 'es': 'encastrated_support', 'rey': 'rolling_encastrated_y', 'ap': 'arc_arrow_positive', 'an': 'arc_arrow_negative', 'rc': 'rotation_constrained'}</em><a class="headerlink" href="#sajou.plot.markers_mpl.MarkerStyle.markers_custom" title="Permalink to this definition">¶</a></dt>
+<code class="descname">markers_custom</code><em class="property"> = {'psy': 'pinned_support_y', 'ap': 'arc_arrow_positive', 'rex': 'rolling_encastrated_x', 'rey': 'rolling_encastrated_y', 'an': 'arc_arrow_negative', 'es': 'encastrated_support', 'rc': 'rotation_constrained', 'rsx': 'rolling_support_x', 'rsy': 'rolling_support_y', 'psx': 'pinned_support_x'}</em><a class="headerlink" href="#sajou.plot.markers_mpl.MarkerStyle.markers_custom" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>

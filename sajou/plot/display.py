@@ -96,6 +96,10 @@ class Display_mpl(Display):
                     'color': palette[1],
                     'markeredgewidth': 2,
                 },
+                'distributed load': {
+                    'color': sns.xkcd_rgb["bright pink"],
+                    'markeredgewidth': 2,
+                },
                 'reaction': {
                     'color': 'yellow',
                     'markeredgewidth': 2,
@@ -116,7 +120,8 @@ class Display_mpl(Display):
                     'markerfacecolor': 'None',
                 },
                 'node': {
-                    'color': palette[4]
+                    'color': sns.xkcd_rgb["green yellow"],
+                    'markersize': 3,
                 },
                 'member force positive': {
                     'edgecolor': 'white',
@@ -132,6 +137,10 @@ class Display_mpl(Display):
         elif theme == 'publication':
             self.draw_config = {
                 'force': {
+                    'color': 'black',
+                    'markeredgewidth': 2,
+                },
+                'distributed load': {
                     'color': 'black',
                     'markeredgewidth': 2,
                 },
@@ -156,7 +165,8 @@ class Display_mpl(Display):
                     'markeredgewidth': 2,
                 },
                 'node': {
-                    'color': 'black'
+                    'color': 'black',
+                    'markersize': 4,
                 },
                 'member force positive': {
                     'edgecolor': 'black',
@@ -174,6 +184,10 @@ class Display_mpl(Display):
             self.draw_config = {
                 'force': {
                     'color': palette[1],
+                    'markeredgewidth': 2,
+                },
+                'distributed load': {
+                    'color': sns.xkcd_rgb["deep pink"],
                     'markeredgewidth': 2,
                 },
                 'reaction': {
@@ -196,7 +210,8 @@ class Display_mpl(Display):
                     'markerfacecolor': 'None',
                 },
                 'node': {
-                    'color': palette[4]
+                    'color': sns.xkcd_rgb["azure"],
+                    'markersize': 3,
                 },
                 'member force positive': {
                     'edgecolor': 'black',
@@ -271,6 +286,7 @@ class Display_mpl(Display):
         background_options = self.draw_config['background']
         grid_options = self.draw_config['grid']
         force_options = self.draw_config['force']
+        distributed_load_options = self.draw_config['distributed load']
         support_options = self.draw_config['support']
         show_loads = kwargs.get('show_loads', self.display_config['forces'])
         # add line style to the 'elem_options' dictionary
@@ -768,7 +784,7 @@ class Display_mpl(Display):
 
         """
         # Get the draw options for the forces
-        force_options = self.draw_config['force']
+        force_options = self.draw_config['distributed load']
         #
         size = scale * 0.08
         #
@@ -879,7 +895,7 @@ class Display_mpl(Display):
 
         """
         # Get the draw options for the forces
-        force_options = self.draw_config['force']
+        force_options = self.draw_config['distributed load']
         #
         size = scale * 0.08
         #

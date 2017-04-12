@@ -44,6 +44,15 @@ def plot_beam2d(element, ax, elem_options):
     # plot the beam element
     ax.plot([n1.x, n2.x], [n1.y, n2.y], **elem_options)
 
+    # Released ends
+    if element.release_end_1:
+        ax.plot([n1.x], [n1.y], marker='o', fillstyle='full', zorder=100,
+                **elem_options)
+
+    if element.release_end_2:
+        ax.plot([n2.x], [n2.y], marker='o', fillstyle='full', zorder=100,
+                **elem_options)
+
     return ax
 
 

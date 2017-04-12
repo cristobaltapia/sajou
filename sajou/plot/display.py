@@ -309,11 +309,12 @@ class Display_mpl(Display):
 
         # Plot forces if requiered
         if show_loads:
+            # Plot element Loads
+            ax = self.plot_element_loads(ax, model)
+
             for ix, node_i in model.nodes.items():
                 for dof, val in node_i._loads.items():
                     ax = self.plot_nodal_force(ax, dof, at=node_i, val=val)
-            # Plot element Loads
-            ax = self.plot_element_loads(ax, model)
 
         # Plot supports
         if self.display_config['supports']:

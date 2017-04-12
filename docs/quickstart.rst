@@ -158,4 +158,3 @@ Finally, nice plots can be obtained for the different section forces (moment, sh
 
 .. plot:: sajou_examples/quickstart_post.py
 
-
